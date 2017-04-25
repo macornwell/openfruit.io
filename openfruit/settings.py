@@ -38,6 +38,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'auditlog',
+    'openfruit.geography',
+    'openfruit.taxonomy',
 )
 
 MIDDLEWARE_CLASSES = (
