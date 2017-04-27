@@ -36,14 +36,15 @@ class Genus(models.Model):
 class Species(models.Model):
     species_id = models.AutoField(primary_key=True)
     genus = models.ForeignKey(Genus)
+    origin = models.ForeignKey(Location, blank=True, null=True)
     latin_name = models.CharField(max_length=30)
     name = models.CharField(max_length=30)
     can_scale_with_pruning = models.BooleanField(default=False)
-    years_till_full_size = IntegerRangeField(min_value=1, max_value=100)
-    full_size_in_height = IntegerRangeField(min_value=1, max_value=500)
-    full_size_in_width = IntegerRangeField(min_value=1, max_value=200)
-    years_till_first_production = IntegerRangeField(min_value=1, max_value=30)
-    years_till_full_production = IntegerRangeField(min_value=1, max_value=100)
+    years_till_full_size = IntegerRangeField(min_value=1, max_value=100, blank=True, null=True)
+    full_size_height = IntegerRangeField(min_value=1, max_value=500, blank=True, null=True)
+    full_size_width = IntegerRangeField(min_value=1, max_value=200, blank=True, null=True)
+    years_till_first_production = IntegerRangeField(min_value=1, max_value=30, blank=True, null=True)
+    years_till_full_production = IntegerRangeField(min_value=1, max_value=100, blank=True, null=True)
 
     def __str__(self):
         return self.name or self.latin_name

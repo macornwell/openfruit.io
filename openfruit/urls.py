@@ -17,7 +17,7 @@ from django.conf.urls import include, url, patterns
 from django.contrib import admin
 from openfruit import settings
 from openfruit.views import home, SignupFormView, about, site_change
-
+from openfruit.taxonomy.urls import urlpatterns as TaxonomyURLs
 
 urlpatterns = [
     url(r'^$', home, name='home'),
@@ -26,5 +26,7 @@ urlpatterns = [
     url(r'^request/site-change/$', site_change, name='site_change'),
     url(r'^admin/', include(admin.site.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += TaxonomyURLs
 
 

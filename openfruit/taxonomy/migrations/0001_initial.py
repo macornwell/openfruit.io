@@ -8,7 +8,7 @@ import openfruit.common.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('geography', '__first__'),
+        ('geography', '0001_initial'),
     ]
 
     operations = [
@@ -17,34 +17,40 @@ class Migration(migrations.Migration):
             fields=[
                 ('cultivar_id', models.AutoField(primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=40)),
-                ('origin_year', models.IntegerField(blank=True, null=True)),
+                ('origin_year', models.IntegerField(null=True, blank=True)),
                 ('origin_exact', models.BooleanField(default=True)),
                 ('color_dominate_hex', models.CharField(max_length=6)),
                 ('color_secondary_hex', models.CharField(max_length=6)),
                 ('color_tertiary_hex', models.CharField(max_length=6)),
-                ('chromosome_count', models.IntegerField(blank=True, null=True)),
-                ('brief_description', models.CharField(max_length=50, blank=True, null=True)),
-                ('history', models.TextField(blank=True, null=True)),
-                ('origin_location', models.ForeignKey(to='geography.Location', null=True, blank=True)),
-                ('parent_a', models.ForeignKey(to='taxonomy.Cultivar', null=True, blank=True, related_name='first_children')),
-                ('parent_b', models.ForeignKey(to='taxonomy.Cultivar', null=True, blank=True, related_name='second_children')),
+                ('chromosome_count', models.IntegerField(null=True, blank=True)),
+                ('brief_description', models.CharField(null=True, max_length=50, blank=True)),
+                ('history', models.TextField(null=True, blank=True)),
+                ('origin_location', models.ForeignKey(null=True, to='geography.Location', blank=True)),
+                ('parent_a', models.ForeignKey(null=True, related_name='first_children', to='taxonomy.Cultivar', blank=True)),
+                ('parent_b', models.ForeignKey(null=True, related_name='second_children', to='taxonomy.Cultivar', blank=True)),
             ],
         ),
         migrations.CreateModel(
             name='Genus',
             fields=[
                 ('genus_id', models.AutoField(primary_key=True, serialize=False)),
-                ('latin_name', models.CharField(max_length=30, unique=True)),
-                ('name', models.CharField(max_length=30, blank=True, null=True)),
+                ('latin_name', models.CharField(unique=True, max_length=30)),
+                ('name', models.CharField(null=True, max_length=30, blank=True)),
             ],
+            options={
+                'ordering': ('latin_name',),
+            },
         ),
         migrations.CreateModel(
             name='Kingdom',
             fields=[
                 ('kingdom_id', models.AutoField(primary_key=True, serialize=False)),
-                ('latin_name', models.CharField(max_length=30, unique=True)),
-                ('name', models.CharField(max_length=30, unique=True)),
+                ('latin_name', models.CharField(unique=True, max_length=30)),
+                ('name', models.CharField(unique=True, max_length=30)),
             ],
+            options={
+                'ordering': ('latin_name',),
+            },
         ),
         migrations.CreateModel(
             name='Species',
@@ -53,13 +59,17 @@ class Migration(migrations.Migration):
                 ('latin_name', models.CharField(max_length=30)),
                 ('name', models.CharField(max_length=30)),
                 ('can_scale_with_pruning', models.BooleanField(default=False)),
-                ('years_till_full_size', openfruit.common.models.IntegerRangeField()),
-                ('full_size_in_height', openfruit.common.models.IntegerRangeField()),
-                ('full_size_in_width', openfruit.common.models.IntegerRangeField()),
-                ('years_till_first_production', openfruit.common.models.IntegerRangeField()),
-                ('years_till_full_production', openfruit.common.models.IntegerRangeField()),
+                ('years_till_full_size', openfruit.common.models.IntegerRangeField(null=True, blank=True)),
+                ('full_size_in_height', openfruit.common.models.IntegerRangeField(null=True, blank=True)),
+                ('full_size_in_width', openfruit.common.models.IntegerRangeField(null=True, blank=True)),
+                ('years_till_first_production', openfruit.common.models.IntegerRangeField(null=True, blank=True)),
+                ('years_till_full_production', openfruit.common.models.IntegerRangeField(null=True, blank=True)),
                 ('genus', models.ForeignKey(to='taxonomy.Genus')),
+                ('origin', models.ForeignKey(null=True, to='geography.Location', blank=True)),
             ],
+            options={
+                'ordering': ('name',),
+            },
         ),
         migrations.AddField(
             model_name='genus',

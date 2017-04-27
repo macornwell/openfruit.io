@@ -1,3 +1,6 @@
+import json
+import requests
+
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import View
@@ -51,6 +54,14 @@ class SignupFormView(View):
     initial = {'key': 'value'}
     template_name = 'signup.html'
 
+    def __does_captcha_validate(self, captcha):
+        secret = '6LdkER8UAAAAAIsCOzmyIhbEYDi0rngvu8y9pjcM',
+        googleUrl = 'https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}'.format(secret, captcha)
+        headers = {'content-type': 'application/json'}
+        response = requests.post(googleUrl, headers=headers)
+        responseData = response.json()
+        return responseData['success']
+
     def get(self, request, *args, **kwargs):
         form = self.form_class(initial=self.initial)
         return render(request, self.template_name, {'form': form})
@@ -58,34 +69,38 @@ class SignupFormView(View):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
         if form.is_valid():
-            signupModel = form.save(commit=False)
-            valid = True
-            try:
-                user = User(username=signupModel.username,
-                            first_name=signupModel.first_name,
-                            last_name=signupModel.last_name,
-                            email=signupModel.email,
-                       )
-                user.set_password(signupModel.password)
-                user.save()
-                setup_user_permissions_and_groups(user)
-                user.save()
-            except Exception as e:
-                form.add_error('__all__', e)
-                valid = False
+            captcha = request.POST['g-recaptcha-response']
+            if self.__does_captcha_validate(captcha):
+                signupModel = form.save(commit=False)
+                valid = True
                 try:
-                    user.delete()
-                except:
-                    pass
-            if valid:
-                userProfile = UserProfile(
-                    organization=signupModel.organization,
-                    zipcode=signupModel.zipcode,
-                    user=user
-                )
-                userProfile.save()
-                loginUrl = reverse('admin:login')
-                return HttpResponseRedirect(loginUrl)
+                    user = User(username=signupModel.username,
+                                first_name=signupModel.first_name,
+                                last_name=signupModel.last_name,
+                                email=signupModel.email,
+                                )
+                    user.set_password(signupModel.password)
+                    user.save()
+                    setup_user_permissions_and_groups(user)
+                    user.save()
+                except Exception as e:
+                    form.add_error('__all__', e)
+                    valid = False
+                    try:
+                        user.delete()
+                    except:
+                        pass
+                if valid:
+                    userProfile = UserProfile(
+                        organization=signupModel.organization,
+                        zipcode=signupModel.zipcode,
+                        user=user
+                    )
+                    userProfile.save()
+                    loginUrl = reverse('admin:login')
+                    return HttpResponseRedirect(loginUrl)
+            else:
+                form.add_error('__all__', 'Captcha did not validate.')
         return render(request, self.template_name, {'form': form})
 
 def signup(request):

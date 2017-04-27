@@ -1,29 +1,19 @@
-Screens
+MVP:
+Home Dashboard (10%)
+Signup (80%)
+About (50%)
+Add Cultivar, Species
+Request Feature.
+Request Modification/Delete.
+Add Report (Planted, Bloom, Review, Ripening)
+Species/Cultivar Bio Screen
+Browse Species/Cultivars
+Search Species/Cultivar
 
-Signup
-About
-Add Model Screen
-List Models
-Add Model Complete Screen
-Modify Model Screen
-Plant Profile Screen
-Add Reports (Bloom, characteristics, review, ripening)
-Request Feature
-Request Delete. Delete request sent.
 
-
-Autogenerators:
-States
-Countries
-
+NICE TO HAVES:
+- Bulk Insert of Cultivars, Species, Reports
+- Collaberation Features
 
 
 
-
-Collaberation Features
-
-
-
-Administrators Can:
-- See communications to the site from the dashboard.
-- 

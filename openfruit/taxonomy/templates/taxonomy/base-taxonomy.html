@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container">
+    <ol class="breadcrumb">
+      {% block breadcrumb %}
+      {% endblock %}
+    </ol>
+    {% block DeeperBody %}
+    {% endblock %}
+</div>
+{% endblock %}

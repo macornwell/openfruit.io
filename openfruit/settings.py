@@ -52,10 +52,8 @@ INSTALLED_APPS = (
     'openfruit.common',
     'openfruit.geography',
     'openfruit.taxonomy',
-    'openfruit.reports.bloom',
-    'openfruit.reports.characteristics',
+    'openfruit.reports.event',
     'openfruit.reports.review',
-    'openfruit.reports.ripening',
     'openfruit.fruit_profile',
 )
 
@@ -193,33 +191,27 @@ DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer
 # Group & User Model Permissions
 ##########
 def get_user_models_for_permissions():
-    from openfruit.reports.bloom.models import BloomReport
-    from openfruit.reports.characteristics.models import FruitCharacteristicReport
+    from openfruit.reports.event.models import EventReport
     from openfruit.reports.review.models import FruitReviewReport
-    from openfruit.reports.ripening.models import FruitRipeningReport
     from openfruit.taxonomy.models import Cultivar, Species
-    from openfruit.geography.models import City, GeoCoordinate, GeolocatedZipcode, Location
+    from openfruit.geography.models import GeoCoordinate, Location
 
     return (
-        BloomReport, FruitCharacteristicReport,
-        FruitRipeningReport, FruitRipeningReport,
-        FruitReviewReport, Cultivar, Species, City, GeoCoordinate, GeolocatedZipcode, Location
+        EventReport, FruitReviewReport,
+        FruitReviewReport, Cultivar, Species, GeoCoordinate, Location
     )
 
 def get_curator_models():
-    from openfruit.reports.bloom.models import BloomReport
-    from openfruit.reports.characteristics.models import FruitCharacteristicReport
+    from openfruit.reports.event.models import EventReport
     from openfruit.reports.review.models import FruitReviewReport
-    from openfruit.reports.ripening.models import FruitRipeningReport
     from openfruit.taxonomy.models import Cultivar, Kingdom, Species, Genus
-    from openfruit.geography.models import City, Continent, Country, GeoCoordinate, GeolocatedZipcode, Location, State
+    from openfruit.geography.models import City, Continent, Country, GeoCoordinate, Location, State
 
     return (
-        BloomReport, FruitCharacteristicReport,
-        FruitRipeningReport, FruitRipeningReport,
+        EventReport, FruitReviewReport,
         FruitReviewReport, Cultivar, Kingdom,
         Species, Genus, City, Continent, Country,
-        GeoCoordinate, GeolocatedZipcode, Location, State
+        GeoCoordinate, Location, State
     )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'

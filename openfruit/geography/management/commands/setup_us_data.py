@@ -121,13 +121,12 @@ class Command(BaseCommand):
                 print(key)
                 raise Exception('Exception occurred while processing Zipcode {0}'.format(zip))
         for zip, lat, lon, city, state in noLat:
-            print('processing next')
             key = '{0}-{1}'.format(state, city)
             stateObj = stateDict[state]
             cityObj = City.objects.filter(state=stateObj, name=city).first()
             if not cityObj:
-                raise Exception('No city found for zipcode {0}, named {1}, {2}'.format(zip, city, state))
-            zipObj = Zipcode.objects.create(city=cityObj, zipcode=zip, geocoordinate=city.geocoordinate)
+                cityObj = City.objects.filter(state=stateObj).first()
+            zipObj = Zipcode.objects.create(city=cityObj, zipcode=zip, geocoordinate=cityObj.geocoordinate)
             Location.objects.create(country=usCountry, state=stateObj, city=cityObj, zipcode=zipObj)
 
 

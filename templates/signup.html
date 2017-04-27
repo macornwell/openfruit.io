@@ -12,6 +12,7 @@
         <form action="" method="POST">
             {% csrf_token %}
              {{ form|crispy }}
+            <div class="g-recaptcha" data-sitekey="6LdkER8UAAAAAE7YK0SkbBxWJ23zX5tpGQ_cpRs1"></div>
             <input type="submit" value="Submit">
         </form>
     </div>

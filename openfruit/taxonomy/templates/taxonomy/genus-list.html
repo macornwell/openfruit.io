@@ -1,0 +1,18 @@
+{% extends "taxonomy/base-taxonomy.html" %}
+{% block title %}OpenFruit - {{ kingdom.latin_name }} Genus List{% endblock %}
+
+{% block breadcrumb %}
+    <li><a href="{% url 'home' %}">Home</a></li>
+    <li><a href="{% url 'kingdom-list' %}">Browse</a></li>
+    <li class="active">{{ kingdom.latin_name }}</li>
+{% endblock %}
+{% block DeeperBody %}
+    <h1>{{ kingdom.latin_name }} Genus List</h1>
+    <ul>
+    {% for genus in object_list %}
+        <li><a href="{% url 'genus-detail' kingdom=kingdom.latin_name genus=genus.latin_name %}">{{ genus }}</a></li>
+    {% empty %}
+        <li>No Genus Yet.</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "taxonomy/base-taxonomy.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}OpenFruit - Genus {{ object.latin_name }}{% endblock %}
+
+{% block breadcrumb %}
+    <li><a href="{% url 'home' %}">Home</a></li>
+    <li><a href="{% url 'kingdom-list' %}">Browse</a></li>
+    <li><a href="{% url 'genus-list' kingdom=kingdom %}">{{ kingdom.latin_name }}</a></li>
+    <li class="active">{{ object.latin_name }}</li>
+{% endblock %}
+
+{% block  DeeperBody %}
+<h1>Genus {{ object.latin_name }}</h1>
+<h2>
+    Kingdom
+</h2>
+<p>
+    {{ object.kingdom.latin_name }}
+</p>
+<h2>
+    Latin Name
+</h2>
+<p>
+    {{ object.latin_name }}
+</p>
+<h2>
+    Name
+</h2>
+<p>
+    {{ object.name }}
+</p>
+{% endblock %}
