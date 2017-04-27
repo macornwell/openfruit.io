@@ -16,12 +16,15 @@ from django.conf.urls.static import static
 from django.conf.urls import include, url, patterns
 from django.contrib import admin
 from openfruit import settings
+from openfruit.views import home, SignupFormView, about, site_change
+
 
 urlpatterns = [
+    url(r'^$', home, name='home'),
+    url(r'^signup/$', SignupFormView.as_view(), name='signup'),
+    url(r'^about/$', about, name='about'),
+    url(r'^request/site-change/$', site_change, name='site_change'),
     url(r'^admin/', include(admin.site.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-if not settings.DEBUG:
-    urlpatterns += patterns('',
-            (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
-            )
+

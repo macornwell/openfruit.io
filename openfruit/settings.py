@@ -16,6 +16,7 @@ from django.contrib import messages
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
@@ -35,15 +36,27 @@ if LOCAL_HOST:
 # Application definition
 
 INSTALLED_APPS = (
+    'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'bootstrap3',
+    'datetimewidget',
     'auditlog',
+    'crispy_forms',
+    'openfruit',
+    'openfruit.common',
     'openfruit.geography',
     'openfruit.taxonomy',
+    'openfruit.reports.bloom',
+    'openfruit.reports.characteristics',
+    'openfruit.reports.review',
+    'openfruit.reports.ripening',
+    'openfruit.fruit_profile',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -63,7 +76,7 @@ ROOT_URLCONF = 'openfruit.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -71,6 +84,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.static',
             ],
         },
     },
@@ -173,4 +187,39 @@ MESSAGE_TAGS = {
 
 DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
 
-###########
+
+
+##########
+# Group & User Model Permissions
+##########
+def get_user_models_for_permissions():
+    from openfruit.reports.bloom.models import BloomReport
+    from openfruit.reports.characteristics.models import FruitCharacteristicReport
+    from openfruit.reports.review.models import FruitReviewReport
+    from openfruit.reports.ripening.models import FruitRipeningReport
+    from openfruit.taxonomy.models import Cultivar, Species
+    from openfruit.geography.models import City, GeoCoordinate, GeolocatedZipcode, Location
+
+    return (
+        BloomReport, FruitCharacteristicReport,
+        FruitRipeningReport, FruitRipeningReport,
+        FruitReviewReport, Cultivar, Species, City, GeoCoordinate, GeolocatedZipcode, Location
+    )
+
+def get_curator_models():
+    from openfruit.reports.bloom.models import BloomReport
+    from openfruit.reports.characteristics.models import FruitCharacteristicReport
+    from openfruit.reports.review.models import FruitReviewReport
+    from openfruit.reports.ripening.models import FruitRipeningReport
+    from openfruit.taxonomy.models import Cultivar, Kingdom, Species, Genus
+    from openfruit.geography.models import City, Continent, Country, GeoCoordinate, GeolocatedZipcode, Location, State
+
+    return (
+        BloomReport, FruitCharacteristicReport,
+        FruitRipeningReport, FruitRipeningReport,
+        FruitReviewReport, Cultivar, Kingdom,
+        Species, Genus, City, Continent, Country,
+        GeoCoordinate, GeolocatedZipcode, Location, State
+    )
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
