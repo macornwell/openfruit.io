@@ -41,11 +41,22 @@ def get_add_model_form(request, templatePath, modelType, modelTypeFriendlyName, 
 
 
 def home(request):
+    if request.user.is_authenticated():
+        return dashboard(request)
     data = {}
     loginUrl = reverse('admin:login')
     loginNextUrl = escape(request.path)
     data['loginUrl'] = '{0}?next={1}'.format(loginUrl, loginNextUrl)
     return render(template_name='home.html', context=data, request=request)
+
+
+def dashboard(request):
+    data = {}
+    loginUrl = reverse('admin:login')
+    loginNextUrl = escape(request.path)
+    data['loginUrl'] = '{0}?next={1}'.format(loginUrl, loginNextUrl)
+    return render(template_name='dashboard.html', context=data, request=request)
+
 
 
 

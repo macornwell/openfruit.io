@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import permission_required
 
 from openfruit.taxonomy.forms import SpeciesForm, GenusForm
 from openfruit.taxonomy.models import Species, Cultivar, Genus, Kingdom
+from openfruit.taxonomy.services import get_genus_to_species_count
 
 
 class KingdomListView(ListView):
@@ -14,12 +15,14 @@ class KingdomListView(ListView):
 class GenusListView(ListView):
     model = Genus
     template_name = 'taxonomy/genus-list.html'
+    queryset = Genus.objects.all()
 
     def get_context_data(self, **kwargs):
         kingdom = self.kwargs['kingdom']
         kingdom = Kingdom.objects.filter(latin_name__iexact=kingdom).first()
         context = super(GenusListView, self).get_context_data(**kwargs)
         context['kingdom'] = kingdom
+        context['genus_to_species_count'] = get_genus_to_species_count()
         return context
 
 
@@ -38,26 +41,50 @@ class GenusDetailView(DetailView):
     template_name = 'taxonomy/genus-detail.html'
 
     def get(self, request, kingdom=None, genus=None, *args, **kwargs):
-        kingdom = Kingdom.objects.filter(latin_name__iexact=kingdom).first()
+        kingdom = Kingdom.objects.get_kingdom_by_name(kingdom)
         if not kingdom:
             raise Http404(request)
-        genus = Genus.objects.filter(latin_name__iexact=genus).first()
+        genus = Genus.objects.get_genus_by_name(genus)
         if not genus:
             raise Http404(request)
+        speciesList = Species.objects.get_species_from_genus(genus)
         data = {
             'kingdom': kingdom,
-            'object': genus,
+            'genus': genus,
+            'species_list': speciesList,
         }
         return render(request, self.template_name, data)
 
 
+class SpeciesDetailView(DetailView):
+    model = Species
+    template_name = 'taxonomy/species-detail.html'
 
+    def get(self, request, kingdom=None, genus=None, species=None, *args, **kwargs):
+        kingdom = Kingdom.objects.get_kingdom_by_name(kingdom)
+        if not kingdom:
+            raise Http404(request)
+        genus = Genus.objects.get_genus_by_name(genus)
+        if not genus:
+            raise Http404(request)
+        species = Species.objects.get_species_by_name(species)
+        if not species:
+            raise Http404(request)
+        cultivars = Cultivar.objects.get_cultivars_from_species(species)
+        data = {
+            'kingdom': kingdom,
+            'genus': genus,
+            'species': species,
+            'cultivar_list': cultivars,
+        }
+        return render(request, self.template_name, data)
 
-def display_genus(request, kingdom):
-    kingdom = Kingdom.objects.filter(latin_name__iexact=kingdom).first()
-    if not kingdom:
-        raise Http404(request)
-    return render(request, {'object'})
+class CultivarDetailView(DetailView):
+    model = Cultivar
+    template_name = 'taxonomy/cultivar-detail.html'
+
+    def get(self, request, kingdom=None, genus=None, species=None, cultivar=None, *args, **kwargs):
+        raise Exception('Not ready')
 
 class GenusFormView(View):
     form_class = GenusForm

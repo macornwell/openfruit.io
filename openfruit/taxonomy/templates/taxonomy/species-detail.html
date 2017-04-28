@@ -1,10 +1,39 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load openfruit_common_tags %}
+{% load thumbnail %}
+{% load staticfiles %}
 
-</body>
-</html>
+{% block title %}OpenFruit - Genus {{ genus.latin_name }}{% endblock %}
+
+{% block breadcrumb %}
+    <li><a href="{% url 'browse' %}">Browse</a></li>
+    <li><a href="{% url 'genus-list' kingdom=kingdom.url_latin_name %}">{{ kingdom.latin_name }}</a></li>
+    <li><a href="{% url 'genus-detail' kingdom=kingdom.url_latin_name genus=genus.url_latin_name %}">{{ genus.latin_name }}</a></li>
+    <li class="active">{{ species.latin_name }}</li>
+{% endblock %}
+{% block body %}
+    <h2>{{ species.latin_name }} Cultivar List</h2>
+    {% if request.user.is_staff %}
+        <div>
+            <a class="btn btn-default btn-lg" href="#">Add Cultivar</a>
+            <br>
+        </div>
+        <hr>
+    {% endif %}
+    <div>
+        {% for cultivar in cultivar_list %}
+            <p class="group-item" >
+                <a class="btn btn-default btn-lg btn-block list-group-item" href="{% url 'cultivar-detail' kingdom=kingdom.url_latin_name genus=genus.url_latin_name species=species.url_latin_name cultivar=cultivar.url_name %}">
+                {% if species.featured_image %}
+                    {% thumbnail cultivar.featured_image "50x50" crop="center" as im %}
+                        <img class="list-thumbnail" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                    {% endthumbnail %}
+                {% else %}
+                    <img class="list-thumbnail" src="{% static 'img/not_available.jpg' %}" height="50" width="50"/>
+                {% endif %}
+                    {{ cultivar.name }}
+                </a>
+            </p>
+        {% endfor %}
+    </div>
+{% endblock %}

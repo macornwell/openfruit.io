@@ -16,7 +16,9 @@ def openfruit_login(request):
     except NoReverseMatch:
         return ''
 
-    snippet = "<li><a href='{href}?next={next}'>Log in</a></li>"
+    snippet = """
+              <li><a class="btn btn-lg" href='{href}?next={next}'>Log in</a></li>
+              """
     snippet = format_html(snippet, href=login_url, next=escape(request.path))
 
     return mark_safe(snippet)
@@ -26,7 +28,7 @@ def openfruit_logout(request, user):
     try:
         logout_url = reverse('admin:logout')
     except NoReverseMatch:
-        snippet = format_html('<li class="navbar-text">{user}</li>', user=escape(user))
+        snippet = format_html('<li class="btn btn-lg btn-primary">{user}</li>', user=escape(user))
         return mark_safe(snippet)
     snippet = """<li role="presentation" class="dropdown">
                             <a class="dropdown-toggle btn btn-lg" data-toggle="dropdown"
@@ -51,4 +53,8 @@ def openfruit_logout(request, user):
 
     return mark_safe(snippet)
 
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
 

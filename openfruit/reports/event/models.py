@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from auditlog.registry import auditlog
+from sorl.thumbnail.fields import ImageField
 from openfruit.geography.models import GeoCoordinate
 from openfruit.taxonomy.models import Species, Cultivar
 from openfruit.taxonomy.validators import CultivarSpeciesMixin
@@ -14,13 +15,6 @@ AFFINITY_CHOICES = (
     (AFFINITY_NEUTRAL, 'Neutral'),
     (AFFINITY_GOOD, 'Good'),
 )
-
-
-class EventImage(models.Model):
-    event_image = models.AutoField(primary_key=True)
-    image = models.ImageField(upload_to='event-images')
-    name = models.CharField(max_length=20)
-    description = models.CharField(max_length=300, blank=True, null=True)
 
 
 class EventType(models.Model):
@@ -41,6 +35,7 @@ class EventReport(models.Model, CultivarSpeciesMixin):
     event_type = models.ForeignKey(EventType)
     affinity = models.IntegerField(choices=AFFINITY_CHOICES, default=AFFINITY_NEUTRAL)
     notes = models.TextField(blank=True, null=True)
+    image = ImageField(upload_to='event-images', blank=True, null=True)
 
     def save(self, *args, **kwargs):
         self.validate_species_cultivar()
@@ -55,4 +50,3 @@ class EventReport(models.Model, CultivarSpeciesMixin):
 
 auditlog.register(EventReport)
 auditlog.register(EventType)
-auditlog.register(EventImage)

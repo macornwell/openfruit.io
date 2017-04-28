@@ -1,33 +1,38 @@
-{% extends "taxonomy/base-taxonomy.html" %}
-{% load crispy_forms_tags %}
+{% extends "base.html" %}
+{% load openfruit_common_tags %}
+{% load thumbnail %}
+{% load staticfiles %}
 
-{% block title %}OpenFruit - Genus {{ object.latin_name }}{% endblock %}
+{% block title %}OpenFruit - Genus {{ genus.latin_name }}{% endblock %}
 
 {% block breadcrumb %}
-    <li><a href="{% url 'home' %}">Home</a></li>
-    <li><a href="{% url 'kingdom-list' %}">Browse</a></li>
-    <li><a href="{% url 'genus-list' kingdom=kingdom %}">{{ kingdom.latin_name }}</a></li>
-    <li class="active">{{ object.latin_name }}</li>
+    <li><a href="{% url 'browse' %}">Browse</a></li>
+    <li><a href="{% url 'genus-list' kingdom=kingdom.url_latin_name %}">{{ kingdom.latin_name }}</a></li>
+    <li class="active">{{ genus.latin_name }}</li>
 {% endblock %}
-
-{% block  DeeperBody %}
-<h1>Genus {{ object.latin_name }}</h1>
-<h2>
-    Kingdom
-</h2>
-<p>
-    {{ object.kingdom.latin_name }}
-</p>
-<h2>
-    Latin Name
-</h2>
-<p>
-    {{ object.latin_name }}
-</p>
-<h2>
-    Name
-</h2>
-<p>
-    {{ object.name }}
-</p>
+{% block body %}
+    <h1>{{ genus.latin_name }} Species List</h1>
+    {% if request.user.is_staff %}
+        <div>
+            <a class="btn btn-default btn-lg" href="#">Add Species</a>
+            <br>
+        </div>
+        <hr>
+    {% endif %}
+    <div>
+        {% for species in species_list %}
+            <p class="group-item" >
+                <a class="btn btn-default btn-lg btn-block list-group-item" href="{% url 'species-detail' kingdom=kingdom.url_latin_name genus=genus.url_latin_name species=species.url_latin_name %}">
+                {% if species.featured_image %}
+                    {% thumbnail species.featured_image "50x50" crop="center" as im %}
+                        <img class="list-thumbnail" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                    {% endthumbnail %}
+                {% else %}
+                    <img class="list-thumbnail" src="{% static 'img/not_available.jpg' %}" height="50" width="50"/>
+                {% endif %}
+                    {{ species.name }} ({{ species.latin_name }})
+                </a>
+            </p>
+        {% endfor %}
+    </div>
 {% endblock %}

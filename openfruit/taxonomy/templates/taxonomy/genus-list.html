@@ -1,18 +1,58 @@
-{% extends "taxonomy/base-taxonomy.html" %}
+{% extends "base.html" %}
+{% load openfruit_common_tags %}
+{% load thumbnail %}
+{% load staticfiles %}
+
 {% block title %}OpenFruit - {{ kingdom.latin_name }} Genus List{% endblock %}
 
 {% block breadcrumb %}
-    <li><a href="{% url 'home' %}">Home</a></li>
-    <li><a href="{% url 'kingdom-list' %}">Browse</a></li>
+    <li><a href="{% url 'browse' %}">Browse</a></li>
     <li class="active">{{ kingdom.latin_name }}</li>
 {% endblock %}
-{% block DeeperBody %}
+{% block body %}
     <h1>{{ kingdom.latin_name }} Genus List</h1>
-    <ul>
-    {% for genus in object_list %}
-        <li><a href="{% url 'genus-detail' kingdom=kingdom.latin_name genus=genus.latin_name %}">{{ genus }}</a></li>
-    {% empty %}
-        <li>No Genus Yet.</li>
-    {% endfor %}
-    </ul>
+    {% if request.user.is_staff %}
+        <div>
+            <a class="btn btn-default btn-lg" href="#">Add New Genus</a>
+            <br>
+        </div>
+        <hr>
+    {% endif %}
+    <div>
+        {% for genus in object_list %}
+            <p class="group-item" >
+                {% if genus_to_species_count|get_item:genus.genus_id %}
+                    <a class="btn btn-default btn-lg btn-block list-group-item" href="{% url 'genus-detail' kingdom=kingdom.url_latin_name genus=genus.url_latin_name %}">
+                    {% if genus.featured_image %}
+                        {% thumbnail genus.featured_image "50x50" crop="center" as im %}
+                            <img class="list-thumbnail" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                        {% endthumbnail %}
+                    {% else %}
+                        <img class="list-thumbnail" src="{% static 'img/not_available.jpg' %}" height="50" width="50"/>
+                    {% endif %}
+                        {{ genus.name }} ({{ genus.latin_name }})<span class="badge">{{ genus_to_species_count|get_item:genus.genus_id }}</span>
+                    </a>
+                {% endif %}
+            </p>
+        {% endfor %}
+        <div>
+           <h3>Genus with no species entries</h3>
+        </div>
+        {% for genus in object_list %}
+            <p class="group-item" >
+                {% if not genus_to_species_count|get_item:genus.genus_id %}
+                    <a class="btn btn-default btn-lg btn-block list-group-item" href="{% url 'genus-detail' kingdom=kingdom.url_latin_name genus=genus.url_latin_name %}">
+                        {% if genus.featured_image %}
+                            {% thumbnail genus.featured_image "50x50" crop="center" as im %}
+                                <img class="list-thumbnail" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                            {% endthumbnail %}
+                        {% else %}
+                            <img class="list-thumbnail" src="{% static 'img/not_available.jpg' %}" height="50" width="50"/>
+                        {% endif %}
+                        {{ genus.name }} ({{ genus.latin_name }})<span class="badge">{{ genus_to_species_count|get_item:genus.genus_id }}</span>
+                    </a>
+                {% endif %}
+            </p>
+        {% endfor %}
+    </div>
 {% endblock %}

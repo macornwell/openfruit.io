@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'bootstrap3',
     'datetimewidget',
     'auditlog',
+    'sorl.thumbnail',
     'crispy_forms',
     'openfruit',
     'openfruit.common',
@@ -169,7 +170,7 @@ STATICFILES_DIRS = [
 #STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = '/media/'
+MEDIA_ROOT = '/home/mcornwell/dev/openfruit/media/'
 
 LOGIN_URL = '/api-auth/login/'
 LOGIN_REDIRECT_URL = '/'
@@ -215,3 +216,10 @@ def get_curator_models():
     )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+#################
+# Uploaded Images
+#################
+SMALL_THUMBNAILS = (125, 125)
+MEDIUM_THUMBNAILS = (200, 200)
+LARGE_THUMBNAILS = (300, 300)
