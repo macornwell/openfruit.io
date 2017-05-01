@@ -1,0 +1,10 @@
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+INSERT INTO "geography_continent" VALUES(1,'Asia');
+INSERT INTO "geography_continent" VALUES(2,'Europe');
+INSERT INTO "geography_continent" VALUES(3,'Africa');
+INSERT INTO "geography_continent" VALUES(4,'Oceania');
+INSERT INTO "geography_continent" VALUES(5,'North America');
+INSERT INTO "geography_continent" VALUES(6,'South America');
+INSERT INTO "geography_continent" VALUES(7,'Australia');
+COMMIT;

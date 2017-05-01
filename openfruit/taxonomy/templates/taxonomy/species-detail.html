@@ -12,7 +12,17 @@
     <li class="active">{{ species.latin_name }}</li>
 {% endblock %}
 {% block body %}
-    <h2>{{ species.latin_name }} Cultivar List</h2>
+    <h1>{{ species.name }} ({{ species.latin_name }})</h1>
+    <div class="plant-metadata">
+        <img src="{% static "img/not_available.jpg" %}" class="pull-right plant-featured-image" width="300" height="300">
+    <span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin dapibus facilisis dolor, id ornare tortor aliquam at. Nam sit amet hendrerit elit. Sed dapibus arcu non orci dignissim, at gravida lacus efficitur. Ut iaculis ut nisl in congue. Cras lacinia luctus ex id accumsan. Nunc porttitor tincidunt semper. Maecenas vulputate finibus commodo. Phasellus pellentesque leo in ex porta egestas. Vivamus at urna non tellus vulputate consectetur. Praesent pharetra est nec facilisis varius.
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Pellentesque purus enim, interdum semper auctor vel, ullamcorper ut nibh. Cras mollis nisi id condimentum ultricies. Sed quis enim feugiat, commodo magna ac, tincidunt odio. Suspendisse semper, lorem dignissim accumsan placerat, arcu neque vestibulum risus, nec posuere nibh felis et elit. Aenean ac velit at ipsum ornare placerat at ut massa. Aenean elementum velit vel nulla elementum egestas.
+    </span>
+    </div>
+
+    <h2>Cultivar List</h2>
     {% if request.user.is_staff %}
         <div>
             <a class="btn btn-default btn-lg" href="#">Add Cultivar</a>
@@ -20,6 +30,9 @@
         </div>
         <hr>
     {% endif %}
+
+<div class="google-map" id="map"/>
+
     <div>
         {% for cultivar in cultivar_list %}
             <p class="group-item" >
@@ -36,4 +49,42 @@
             </p>
         {% endfor %}
     </div>
+{% endblock %}
+{% block scripts %}
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap">
+    </script>
+    <script>
+        function initMap() {
+            var mapCenter = { lat: {{ GM_SETTINGS.lat }}, lng: {{ GM_SETTINGS.lon }}};
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: {{ GM_SETTINGS.zoom }},
+                center: mapCenter
+            });
+            {% for cultivar in cultivar_list %}
+                {% if cultivar.origin_location %}
+                    var cultivarCenter = { lat: {{ cultivar.origin_location.lat }}, lng: {{ cultivar.origin_location.lon }}};
+                    var contentString = "History about " + "{{ cultivar.name }}";
+                    var infowindow = new google.maps.InfoWindow({
+                        content: contentString
+                    });
+                    var marker = new google.maps.Marker({
+                        position: cultivarCenter,
+                        draggable: true,
+                        map: map,
+                        title: "{{ cultivar.name }}",
+                    });
+                    marker.addListener('click', function() {
+                        infowindow.open(map, marker);
+                    });
+                    google.maps.event.addListener(marker, 'dragend', function(){
+                        var position = marker.getPosition();
+                        console.log(position);
+                        console.log('lat:' + position.lat());
+                        console.log('lng:' + position.lng());
+                    });
+                {% endif %}
+            {% endfor %}
+        }
+    </script>
 {% endblock %}

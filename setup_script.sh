@@ -8,4 +8,4 @@ echo 'setup_default_taxonomy';
 echo 'Setting up Events';
 ./manage.py setup_events;
 echo 'Setting up Geo Data';
-cat openfruit/geography/processed_geo.sql | sqlite3 db.sqlite3 
+./drop_then_add_geo.sh db.sqlite3

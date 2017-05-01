@@ -9,6 +9,7 @@ PLANT_KINGDOM_NAMES = (
     'Plants', 'Plantae',
 )
 
+
 class UrlNameMixin:
 
     def url_latin_name(self):
@@ -114,6 +115,8 @@ class SpeciesImage(models.Model):
     image = ImageField(upload_to='species-images')
     name = models.CharField(max_length=20)
     description = models.CharField(max_length=300, blank=True, null=True)
+
+
 
 
 auditlog.register(Kingdom)

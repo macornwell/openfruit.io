@@ -18,3 +18,4 @@ whitenoise==2.0.6
 pillow
 requests
 sorl-thumbnail
+django-autocomplete-light

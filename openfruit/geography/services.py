@@ -1,10 +1,19 @@
 import os
 import csv
 from openfruit.settings import BASE_DIR
+from openfruit.geography.models import UserGeographySettings, UserLocation
 
 US_CITIES_FILE = 'us-cities-and-zips.csv'
 US_STATES_FILE = 'us-states.csv'
 COUNTRIES_FILE = 'countries.csv'
+
+
+def get_users_locations(user):
+    return UserLocation.objects.filter(user=user).values_list('location', flat=True)
+
+
+def get_users_geography_settings(user):
+    return UserGeographySettings.objects.filter(user=user).first()
 
 
 def generate_current_us_states_list():

@@ -79,12 +79,14 @@ class SpeciesDetailView(DetailView):
         }
         return render(request, self.template_name, data)
 
+
 class CultivarDetailView(DetailView):
     model = Cultivar
     template_name = 'taxonomy/cultivar-detail.html'
 
     def get(self, request, kingdom=None, genus=None, species=None, cultivar=None, *args, **kwargs):
         raise Exception('Not ready')
+
 
 class GenusFormView(View):
     form_class = GenusForm

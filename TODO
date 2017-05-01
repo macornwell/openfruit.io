@@ -1,6 +1,9 @@
 MVP:
 Home Dashboard (10%)
 Signup (80%) - Add a video. Force people to click a "I understand" clause.
+- Add Google Maps for selecting Lat/Lon
+
+
 About (50%) - Add a video.
 Browse Species/Cultivars (%50)
 Species/Cultivar Bio Screen (%5)
@@ -12,10 +15,14 @@ Add Report (Planted, Bloom, Review, Ripening)
 
 Search Species/Cultivar
 
+FIX ABILITY TO SELECT LOCATION IN ADMINNNNN
 
 NICE TO HAVES:
 - Bulk Insert of Cultivars, Species, Reports
 - Collaberation Features
+- Cultivar Explorer (Multiswitches, etc). Search for closest cultivar to you.
+- Geo positioning of records
+- Geo positioning of cultivars
 
 
 

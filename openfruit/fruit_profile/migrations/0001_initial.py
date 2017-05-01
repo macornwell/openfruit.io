@@ -14,8 +14,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='FruitProfileImage',
             fields=[
-                ('fruit_profile_image', models.AutoField(primary_key=True, serialize=False)),
-                ('image', models.ImageField(upload_to='fruit_profile_images', null=True)),
+                ('fruit_profile_image', models.AutoField(serialize=False, primary_key=True)),
+                ('image', models.ImageField(null=True, upload_to='fruit_profile_images')),
                 ('cultivar', models.ForeignKey(to='taxonomy.Cultivar')),
                 ('species', models.ForeignKey(to='taxonomy.Species')),
             ],

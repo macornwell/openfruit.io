@@ -36,6 +36,8 @@ if LOCAL_HOST:
 # Application definition
 
 INSTALLED_APPS = (
+    'dal',
+    'dal_select2',
     'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -48,6 +50,7 @@ INSTALLED_APPS = (
     'datetimewidget',
     'auditlog',
     'sorl.thumbnail',
+    'django_mobile',
     'crispy_forms',
     'openfruit',
     'openfruit.common',
@@ -68,6 +71,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'auditlog.middleware.AuditlogMiddleware',
+    'django_mobile.middleware.MobileDetectionMiddleware',
+    'django_mobile.middleware.SetFlavourMiddleware',
 )
 
 ROOT_URLCONF = 'openfruit.urls'
@@ -76,14 +81,18 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates'),],
-        'APP_DIRS': True,
         'OPTIONS': {
+            'loaders': ['django.template.loaders.filesystem.Loader', 'django.template.loaders.app_directories.Loader', 'django_mobile.loader.Loader',],
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.static',
+                'django_mobile.context_processors.flavour',
+                'openfruit.geography.context_processors.google_maps_api_key',
+                'openfruit.geography.context_processors.google_maps_settings',
+                'openfruit.geography.context_processors.user_map_settings',
             ],
         },
     },
@@ -223,3 +232,13 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 SMALL_THUMBNAILS = (125, 125)
 MEDIUM_THUMBNAILS = (200, 200)
 LARGE_THUMBNAILS = (300, 300)
+
+
+
+#############
+# Geography
+#############
+from openfruit.geography.settings import GoogleMapsSettings
+GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')
+GM_SETTINGS = GoogleMapsSettings(lat=33.16025, lon=-87.6104341, zoom=6)
+

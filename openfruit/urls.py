@@ -15,9 +15,11 @@ Including another URLconf
 from django.conf.urls.static import static
 from django.conf.urls import include, url, patterns
 from django.contrib import admin
+from django.conf import settings
 from openfruit import settings
-from openfruit.views import home, SignupFormView, about, site_change
+from openfruit.views import home, SignupFormView, about, site_change, testing
 from openfruit.taxonomy.urls import urlpatterns as TaxonomyURLs
+from openfruit.geography.urls import urlpatterns as GeographyUrls
 
 urlpatterns = [
     url(r'^$', home, name='home'),
@@ -27,6 +29,9 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-urlpatterns += TaxonomyURLs
+if settings.DEBUG:
+    urlpatterns += [url(r'^testing/$', testing, name='testing'),]
 
+urlpatterns += TaxonomyURLs
+urlpatterns += GeographyUrls
 

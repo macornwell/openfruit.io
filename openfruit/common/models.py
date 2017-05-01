@@ -11,6 +11,7 @@ class IntegerRangeField(models.IntegerField):
         defaults.update(kwargs)
         return super(IntegerRangeField, self).formfield(**defaults)
 
+
 class Signup(models.Model):
     signup_id = models.AutoField(primary_key=True)
     user = models.OneToOneField(User, blank=True, null=True)

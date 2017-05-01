@@ -1,6 +1,4 @@
-import json
 import requests
-
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import View
@@ -11,6 +9,15 @@ from django.contrib import messages
 from openfruit.common.models import UserProfile
 from openfruit.forms import SignupForm
 from openfruit.common.services import setup_user_permissions_and_groups
+
+def testing(request):
+    from openfruit.geography.services import get_users_locations
+    data = {
+        'PREVIOUS_LOCATIONS': get_users_locations(request.user) or [],
+    }
+
+    return render(request, 'testing.html', data)
+
 
 def get_add_model_form(request, templatePath, modelType, modelTypeFriendlyName, datePropertyName, formType, customValidator=None, additionalDataGenerator=None):
     if request.method == 'POST':
