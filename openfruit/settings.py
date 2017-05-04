@@ -50,7 +50,6 @@ INSTALLED_APPS = (
     'datetimewidget',
     'auditlog',
     'sorl.thumbnail',
-    'django_mobile',
     'crispy_forms',
     'colorful',
     'openfruit',
@@ -71,8 +70,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'auditlog.middleware.AuditlogMiddleware',
-    'django_mobile.middleware.MobileDetectionMiddleware',
-    'django_mobile.middleware.SetFlavourMiddleware',
 )
 
 ROOT_URLCONF = 'openfruit.urls'
@@ -82,14 +79,13 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates'),],
         'OPTIONS': {
-            'loaders': ['django.template.loaders.filesystem.Loader', 'django.template.loaders.app_directories.Loader', 'django_mobile.loader.Loader',],
+            'loaders': ['django.template.loaders.filesystem.Loader', 'django.template.loaders.app_directories.Loader'],
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.static',
-                'django_mobile.context_processors.flavour',
                 'openfruit.geography.context_processors.google_maps_api_key',
                 'openfruit.geography.context_processors.google_maps_settings',
                 'openfruit.geography.context_processors.user_map_settings',

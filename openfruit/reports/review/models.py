@@ -32,7 +32,7 @@ class FruitReviewReport(models.Model, CultivarSpeciesMixin):
     was_auto_generated = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        self.validate_species_cultivar()
+        self.prepare_for_save()
         super(FruitReviewReport, self).save(*args, **kwargs)
 
     def __str__(self):

@@ -1,3 +1,4 @@
+import os.path
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
@@ -32,6 +33,10 @@ EVENT_TYPES = (
 )
 
 
+def upload_image(instance, filename):
+    return os.path.join('event-images', instance.submitted_by.username, filename)
+
+
 class EventType(models.Model):
     event_type_id = models.AutoField(primary_key=True)
     type = models.CharField(max_length=15)
@@ -53,10 +58,10 @@ class EventReport(models.Model, CultivarSpeciesMixin):
     event_type = models.ForeignKey(EventType)
     affinity = models.IntegerField(choices=AFFINITY_CHOICES, default=AFFINITY_NEUTRAL)
     notes = models.TextField(blank=True, null=True)
-    image = ImageField(upload_to='event-images', blank=True, null=True)
+    image = ImageField(upload_to=upload_image, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        self.validate_species_cultivar()
+        self.prepare_for_save()
         super(EventReport, self).save(*args, **kwargs)
 
     def __str__(self):

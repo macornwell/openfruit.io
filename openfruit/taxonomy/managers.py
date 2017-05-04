@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models.loading import get_model
 
 
 class KingdomManager(models.Manager):

@@ -11,3 +11,8 @@ class CultivarSpeciesMixin:
                 if self.cultivar.species != self.species:
                     raise Exception("Cultivar's species is not the same as the instance's species.")
 
+    def prepare_for_save(self):
+        self.validate_species_cultivar()
+        if not self.species and self.cultivar:
+            self.species = self.cultivar.species
+
