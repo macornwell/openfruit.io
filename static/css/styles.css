@@ -1,8 +1,63 @@
+@import url('https://fonts.googleapis.com/css?family=Lora');
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  font-family: 'Lora';
+  color: white;
+}
+label {
+  font-family: 'Lora';
+  color: white;
+}
+.navbar {
+  margin-bottom: 0px;
+}
+#bootstrap-body {
+  background-color: black;
+  color: #008000;
+}
+#record-row {
+  margin-left: 15px;
+}
+#record-row div .main-icon {
+  background-color: #292929;
+  border-color: #252525;
+  border-radius: 10px 10px 0px 0px;
+  margin-left: 5px;
+  margin-bottom: 3px;
+  width: 50px;
+  height: 50px;
+  font-size: 25px;
+  padding: 8px 13px;
+}
+#record-row div .main-icon i {
+  color: white;
+}
+#record-row div .main-icon .dashboard-direction {
+  font-size: 20px;
+  margin-left: 10px;
+}
+#record-row div .main-icon:hover {
+  background-color: #545454;
+}
 .contrast-banner {
   padding: 10px;
   background-color: #F5F5F5;
 }
 .list-thumbnail {
+  height: 50px;
+  width: 50px;
+}
+.thumbnail {
   height: 50px;
   width: 50px;
 }
@@ -24,4 +79,16 @@
 .google-map {
   height: 400px;
   width: auto;
+}
+.main-icon {
+  display: inline-block;
+  text-align: center;
+  vertical-align: bottom;
+  width: 70px;
+  height: 60px;
+  font-size: 30px;
+}
+.flower-icon {
+  height: 30px;
+  margin-bottom: 10px;
 }

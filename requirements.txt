@@ -5,7 +5,7 @@ django-admin-bootstrapped==2.5.7
 django-auditlog==0.4.3
 django-bootstrap3==7.0.1
 django-classy-tags==0.7.2
-django-datetime-widget==0.9.3
+django-datetime-widget
 django-jsonfield==1.0.1
 djangorestframework==3.3.3
 gunicorn==19.4.5
@@ -19,3 +19,4 @@ pillow
 requests
 sorl-thumbnail
 django-autocomplete-light
+django-colorful

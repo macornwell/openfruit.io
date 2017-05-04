@@ -1,5 +1,5 @@
 from django.conf import settings
-from openfruit.geography.services import get_users_geography_settings
+from openfruit.geography.services import GEO_DAL
 
 
 def google_maps_api_key(request):
@@ -13,5 +13,5 @@ def google_maps_settings(request):
 def user_map_settings(request):
     settings = None
     if request.user.is_authenticated():
-        settings = get_users_geography_settings(request.user)
+        settings = GEO_DAL.get_users_geography_settings(request.user)
     return {'USER_GEO': settings}

@@ -1,10 +1,13 @@
+from django.db.models import Q
 from django.shortcuts import render, Http404
 from django.views.generic import View, ListView, DetailView
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required, login_required
+from django.utils.decorators import method_decorator
 
+from openfruit.common.views import NameAutocomplete, GeneratedNameAutocomplete
 from openfruit.taxonomy.forms import SpeciesForm, GenusForm
 from openfruit.taxonomy.models import Species, Cultivar, Genus, Kingdom
-from openfruit.taxonomy.services import get_genus_to_species_count
+from openfruit.taxonomy.services import GENUS_DAL
 
 
 class KingdomListView(ListView):
@@ -22,7 +25,7 @@ class GenusListView(ListView):
         kingdom = Kingdom.objects.filter(latin_name__iexact=kingdom).first()
         context = super(GenusListView, self).get_context_data(**kwargs)
         context['kingdom'] = kingdom
-        context['genus_to_species_count'] = get_genus_to_species_count()
+        context['genus_to_species_count'] = GENUS_DAL.get_genus_to_species_count()
         return context
 
 
@@ -93,20 +96,14 @@ class GenusFormView(View):
     initial = {'key': 'value'}
     template_name = 'taxonomy/genus-form.html'
 
-    def get(self, request, kingdom=None, genus=None, *args, **kwargs):
-        kingdom = Kingdom.objects.filter(latin_name__iexect=kingdom).first()
-        if not kingdom:
-            raise Http404(request)
+    @method_decorator(login_required)
+    def get(self, request, genus=None, *args, **kwargs):
         if genus:
-            genus = Genus.objects.filter(kingdom=kingdom, latin_name__iexact=genus).first()
-        if not request.user.is_staff:
-            if not genus:
-                raise Http404(request)
-            return render(request, 'taxonomy/genus-detail.html', {'object': genus, 'kingdom': kingdom})
+            genus = GENUS_DAL.get_genus_by_name(genus)
         form = self.form_class(initial=self.initial, instance=genus)
         return render(request, self.template_name, {'form': form, 'kingdom': kingdom})
 
-    @permission_required('taxonomy.can add genus', login_url="/login/")
+    @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
 
@@ -132,3 +129,24 @@ class CultivarFormView(View):
 
     def post(self, request, *args, **kwargs):
         pass
+
+
+
+
+################
+# Auto Completes
+################
+
+
+class GenusAutocomplete(GeneratedNameAutocomplete):
+    model_type = Genus
+    is_contains = True
+
+
+class SpeciesAutocomplete(GeneratedNameAutocomplete):
+    model_type = Species
+    is_contains = True
+
+
+class CultivarAutocomplete(NameAutocomplete):
+    model_type = Cultivar

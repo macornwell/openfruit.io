@@ -1,6 +1,7 @@
 from auditlog.registry import auditlog
 from django.db import models
 from sorl.thumbnail.fields import ImageField
+from colorful.fields import RGBColorField
 from openfruit.common.models import IntegerRangeField
 from openfruit.geography.models import Location
 from openfruit.taxonomy.managers import GenusManager, KingdomManager, SpeciesManager, CultivarManager
@@ -9,6 +10,14 @@ PLANT_KINGDOM_NAMES = (
     'Plants', 'Plantae',
 )
 
+CHROMOSOME_CHOICES = (
+    ('2', 'Diploid x2'),
+    ('3', 'Triploid x3'),
+    ('4', 'Tetraploid x4'),
+    ('5', 'Pentaploid x5'),
+    ('6', 'Hexaploid x6'),
+    ('8', 'Octoploid x8'),
+)
 
 class UrlNameMixin:
 
@@ -40,12 +49,20 @@ class Genus(models.Model, UrlNameMixin):
     latin_name = models.CharField(max_length=30, unique=True)
     name = models.CharField(max_length=30, blank=True, null=True)
     featured_image = ImageField(upload_to='featured-images', blank=True, null=True)
-
-    def __str__(self):
-        return '{0} ({1})'.format(self.name, self.latin_name)
+    generated_name = models.CharField(max_length=60, unique=True, blank=True, null=True)
 
     class Meta:
-        ordering = ('name',)
+        ordering = ('generated_name',)
+
+    def save(self, *args, **kwargs):
+        self.generated_name = self.__get_generated_name()
+        return super(Genus, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.generated_name or self.__get_generated_name()
+
+    def __get_generated_name(self):
+        return '{0} ({1})'.format(self.name, self.latin_name)
 
 
 class Species(models.Model, UrlNameMixin):
@@ -62,13 +79,21 @@ class Species(models.Model, UrlNameMixin):
     years_till_first_production = IntegerRangeField(min_value=1, max_value=30, blank=True, null=True)
     years_till_full_production = IntegerRangeField(min_value=1, max_value=100, blank=True, null=True)
     featured_image = ImageField(upload_to='featured-images', blank=True, null=True)
-
-    def __str__(self):
-        return self.name or self.latin_name
+    generated_name = models.CharField(max_length=60, unique=True, blank=True, null=True)
 
     class Meta:
-        unique_together = (("genus", "name"),)
-        ordering = ('name',)
+        ordering = ('generated_name',)
+        unique_together = (('genus', 'name'))
+
+    def save(self, *args, **kwargs):
+        self.generated_name = self.__get_generated_name()
+        return super(Species, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.generated_name or self.__get_generated_name()
+
+    def __get_generated_name(self):
+        return '{0} ({1})'.format(self.name, self.latin_name)
 
 
 class Cultivar(models.Model, UrlNameMixin):
@@ -83,13 +108,13 @@ class Cultivar(models.Model, UrlNameMixin):
     origin_location = models.ForeignKey(Location, blank=True, null=True)
     origin_year = models.IntegerField(blank=True, null=True)
     origin_exact = models.BooleanField(default=True)
-    color_dominate_hex = models.CharField(max_length=6, blank=False, null=True)
-    color_secondary_hex = models.CharField(max_length=6, blank=False, null=True)
-    color_tertiary_hex = models.CharField(max_length=6, blank=False, null=True)
+    color_dominate_hex = RGBColorField(blank=True, null=True)
+    color_secondary_hex = RGBColorField(blank=True, null=True)
+    color_tertiary_hex = RGBColorField(blank=True, null=True)
     featured_image = ImageField(upload_to='featured-images', blank=True, null=True)
 
     # Breeding Information
-    chromosome_count = models.IntegerField(blank=True, null=True)
+    chromosome_count = models.CharField(max_length=1, choices=CHROMOSOME_CHOICES, default='2', blank=True, null=True)
     parent_a = models.ForeignKey('Cultivar', blank=True, null=True, related_name='first_children')
     parent_b = models.ForeignKey('Cultivar', blank=True, null=True, related_name='second_children')
 

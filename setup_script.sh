@@ -1,4 +1,7 @@
 #!/bin/bash
+source $HOME/dev/env/openfruit/bin/activate;
+echo 'makemigrations'
+./manage.py makemigrations;
 echo 'migrate';
 ./manage.py migrate;
 echo 'setup_groups';

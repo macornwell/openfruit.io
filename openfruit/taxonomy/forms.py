@@ -1,6 +1,6 @@
 from django.forms.models import ModelForm
 from openfruit.taxonomy.models import Species, Cultivar, Genus
-
+from dal.autocomplete import ModelSelect2
 
 class GenusForm(ModelForm):
     class Meta:
@@ -8,12 +8,17 @@ class GenusForm(ModelForm):
         fields = ['kingdom',
                   'latin_name',
                   'name',
+                  'featured_image',
                   ]
 
 
 class SpeciesForm(ModelForm):
     class Meta:
         model = Species
+        widgets = {
+            'origin': ModelSelect2(url='location-autocomplete'),
+            'genus': ModelSelect2(url='genus-autocomplete'),
+        }
         fields = ['genus',
                   'origin',
                   'latin_name',
@@ -24,6 +29,18 @@ class SpeciesForm(ModelForm):
                   'full_size_width',
                   'years_till_first_production',
                   'years_till_full_production',
+                  'featured_image',
                   ]
 
+
+class CultivarForm(ModelForm):
+    class Meta:
+        model = Cultivar
+        widgets = {
+            'origin_location': ModelSelect2(url='location-autocomplete'),
+            'species': ModelSelect2(url='species-autocomplete'),
+            'parent_a': ModelSelect2(url='cultivar-autocomplete'),
+            'parent_b': ModelSelect2(url='cultivar-autocomplete'),
+        }
+        fields = '__all__'
 

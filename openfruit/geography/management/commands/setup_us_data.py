@@ -1,3 +1,4 @@
+from decimal import Decimal
 from datetime import datetime
 from django.core.management.base import BaseCommand
 from openfruit.geography.models import City, Continent, Country, \
@@ -16,14 +17,16 @@ class Command(BaseCommand):
 
 
     def __get_geocoordinate(self, lat, lon):
-        latInt, latFrac = GeoCoordinate.get_standardized(lat)
-        lonInt, lonFrac = GeoCoordinate.get_standardized(lon)
+        lat = GeoCoordinate.get_standardized(lat)
+        lon = GeoCoordinate.get_standardized(lon)
         try:
-            geoCoord = GeoCoordinate.objects.create(lat_integer=latInt, lat_fractional=latFrac,
-                                                    lon_integer=lonInt, lon_fractional=lonFrac)
+            geoCoord = GeoCoordinate.objects.create(lat=lat, lon=lon)
         except:
-            geoCoord = GeoCoordinate.objects.get(lat_integer=latInt, lat_fractional=latFrac,
-                                                 lon_integer=lonInt, lon_fractional=lonFrac)
+            try:
+                geoCoord = GeoCoordinate.objects.get(lat=lat, lon=lon)
+            except Exception as e:
+                print('Lat: {0}, Lon: {1}'.format(lat, lon))
+                raise e
         return geoCoord
 
 
@@ -93,9 +96,9 @@ class Command(BaseCommand):
             stateDict[state.abbreviation] = state
         uniqueCities = set()
         noLat = []
-        for zip, lat, lon, city, state in generate_current_us_cities_list():
+        for zip, lat, lon, city, state, timezone in generate_current_us_cities_list():
             if not lat:
-                noLat.append((zip, lat, lon, city, state))
+                noLat.append((zip, lat, lon, city, state, timezone))
                 continue
             stateObj = stateDict[state]
             cityObj = None
@@ -111,22 +114,23 @@ class Command(BaseCommand):
                 if not cityObj:
                     cityObj = City.objects.get(state=stateObj, name=city)
                     keyFound = True
-                zipObj = Zipcode.objects.create(city=cityObj, zipcode=zip, geocoordinate=geoCoordinate)
+                zipObj = Zipcode.objects.create(city=cityObj, zipcode=zip, geocoordinate=geoCoordinate, timezone=timezone)
                 if stateObj != cityObj.state:
                     raise Exception('{0} is not {1} in city {2}. KeyFound {3}. Key {4}'.format(stateObj, cityObj.state, cityObj, keyFound, key))
                 Location.objects.create(country=usCountry, state=stateObj, city=cityObj, zipcode=zipObj)
             except:
-                print(stateObj)
-                print(state)
-                print(key)
+                print('zip: ' + zip)
+                print('StateObj: ' + str(stateObj))
+                print('State: ' + str(state))
+                print('Key: ' + str(key))
                 raise Exception('Exception occurred while processing Zipcode {0}'.format(zip))
-        for zip, lat, lon, city, state in noLat:
+        for zip, lat, lon, city, state, timezone in noLat:
             key = '{0}-{1}'.format(state, city)
             stateObj = stateDict[state]
             cityObj = City.objects.filter(state=stateObj, name=city).first()
             if not cityObj:
                 cityObj = City.objects.filter(state=stateObj).first()
-            zipObj = Zipcode.objects.create(city=cityObj, zipcode=zip, geocoordinate=cityObj.geocoordinate)
+            zipObj = Zipcode.objects.create(city=cityObj, zipcode=zip, geocoordinate=cityObj.geocoordinate, timezone=timezone)
             Location.objects.create(country=usCountry, state=stateObj, city=cityObj, zipcode=zipObj)
 
 

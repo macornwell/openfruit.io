@@ -1,21 +1,22 @@
 MVP:
 Home Dashboard (10%)
 Signup (80%) - Add a video. Force people to click a "I understand" clause.
-- Add Google Maps for selecting Lat/Lon
+- Add Location selector.
+-- Add Google Maps for selecting Lat/Lon
+-- Add ability to create a new location. (Require closest city, zipcode)
+Add Report (Planted, Bloom, Review, Ripening) (95%)
 
 
 About (50%) - Add a video.
-Browse Species/Cultivars (%50)
+Browse Species/Cultivars (%80)
 Species/Cultivar Bio Screen (%5)
+Add Cultivar, Species (10%)
 
-Add Cultivar, Species
+Add new Location (require city, zipcode optional)
 Request Feature.
 Request Modification/Delete.
-Add Report (Planted, Bloom, Review, Ripening)
-
 Search Species/Cultivar
 
-FIX ABILITY TO SELECT LOCATION IN ADMINNNNN
 
 NICE TO HAVES:
 - Bulk Insert of Cultivars, Species, Reports

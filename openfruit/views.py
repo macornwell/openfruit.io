@@ -9,11 +9,14 @@ from django.contrib import messages
 from openfruit.common.models import UserProfile
 from openfruit.forms import SignupForm
 from openfruit.common.services import setup_user_permissions_and_groups
+from openfruit.geography.forms import LocationForm
+
 
 def testing(request):
-    from openfruit.geography.services import get_users_locations
+    from openfruit.geography.services import GEO_DAL
     data = {
-        'PREVIOUS_LOCATIONS': get_users_locations(request.user) or [],
+        'PREVIOUS_LOCATIONS': GEO_DAL.get_users_locations(request.user) or [],
+        'LOCATION_FORM': LocationForm(),
     }
 
     return render(request, 'testing.html', data)

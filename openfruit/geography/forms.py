@@ -7,7 +7,7 @@ class UserLocationForm(forms.ModelForm):
   class Meta:
     model = UserLocation
     widgets = {
-      'location': ModelSelect2(url='location-autocomplete'),
+      'location': ModelSelect2(url='location-autocomplete')
     }
     fields = '__all__'
 
@@ -16,7 +16,7 @@ class UserGeographySettingsForm(forms.ModelForm):
     class Meta:
         model = UserGeographySettings
         widgets = {
-            'location': ModelSelect2(url='location-autocomplete'),
+            'location': ModelSelect2(url='location-autocomplete')
             }
         fields = '__all__'
 
@@ -30,6 +30,8 @@ class LocationForm(forms.ModelForm):
             'geocoordinate': ModelSelect2(url='geocoordinate-autocomplete'),
             }
         fields = '__all__'
+
+
 
 
 class CityForm(forms.ModelForm):

@@ -1,0 +1,5 @@
+<ul class="event-list">
+    {% for event in events %}
+        <li><a href="{% url url_name id=event.event_report_id %}">{{ event }}</a></li>
+    {% endfor %}
+</ul>

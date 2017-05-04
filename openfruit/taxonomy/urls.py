@@ -1,5 +1,7 @@
 from django.conf.urls import url
-from openfruit.taxonomy.views import GenusListView, KingdomListView, GenusDetailView, SpeciesDetailView, CultivarDetailView
+from openfruit.taxonomy.views import GenusListView, KingdomListView, \
+    GenusDetailView, SpeciesDetailView, CultivarDetailView, SpeciesAutocomplete, \
+    CultivarAutocomplete, GenusAutocomplete, GenusFormView
 
 
 urlpatterns = [
@@ -8,5 +10,12 @@ urlpatterns = [
     url(r'^browse/(?P<kingdom>.+)/(?P<genus>.+)$', GenusDetailView.as_view(), name='genus-detail'),
     url(r'^browse/(?P<kingdom>.+)$', GenusListView.as_view(), name='genus-list'),
     url(r'^browse/$', KingdomListView.as_view(), name='browse'),
+
+    url(r'^genus/(?P<genus>.+)?$', GenusFormView.as_view(), name='genus'),
+
+    url('^autocomplete/genus/$', GenusAutocomplete.as_view(), name='genus-autocomplete'),
+    url('^autocomplete/species/$', SpeciesAutocomplete.as_view(), name='species-autocomplete'),
+    url('^autocomplete/cultivar/$', CultivarAutocomplete.as_view(), name='cultivar-autocomplete'),
 ]
+
 

@@ -1,3 +1,4 @@
+from decimal import Decimal
 from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
@@ -7,17 +8,9 @@ from openfruit.common.models import IntegerRangeField
 
 class GeoCoordinate(models.Model):
     geocoordinate_id = models.AutoField(primary_key=True)
-    lat_integer = IntegerRangeField(min_value=-89, max_value=89)
-    lat_fractional = models.IntegerField()
-    lon_integer = IntegerRangeField(min_value=-179, max_value=179)
-    lon_fractional = models.IntegerField()
+    lat = models.DecimalField(max_digits=7, decimal_places=5)
+    lon = models.DecimalField(max_digits=8, decimal_places=5)
     generated_name = models.CharField(max_length=50, blank=True, null=True)
-
-    def lat(self):
-        return '{0}.{1}'.format(self.lat_integer, self.lat_fractional)
-
-    def lon(self):
-        return '{0}.{1}'.format(self.lon_integer, self.lon_fractional)
 
     def __str__(self):
         return self.generated_name or self.__get_generated_name()
@@ -28,25 +21,21 @@ class GeoCoordinate(models.Model):
         super(GeoCoordinate, self).save(*args, **kwargs)
 
     def __get_generated_name(self):
-        return '{0} {1}'.format(self.lat(), self.lon())
+        return '{0} {1}'.format(self.lat, self.lon)
 
     @staticmethod
     def get_standardized(latOrLon):
-        objInt, objFrac = latOrLon.split('.', 1)
+        objInt, objFrac = str(latOrLon).split('.', 1)
         objFrac = int(str(objFrac)[0:5])
         objFrac = int('{0:05d}'.format(objFrac))
-        return (objInt, objFrac)
+        return Decimal('{0}.{1}'.format(objInt, objFrac))
 
     def __standardize_fractionals(self):
-        latFrac = str(self.lat_fractional)[0:5]
-        lonFrac = str(self.lon_fractional)[0:5]
-        latFrac = '{0:05d}'.format(int(latFrac))
-        lonFrac = '{0:05d}'.format(int(lonFrac))
-        self.lat_fractional = latFrac
-        self.lon_fractional = lonFrac
+        self.lat = GeoCoordinate.get_standardized(self.lat)
+        self.lon = GeoCoordinate.get_standardized(self.lon)
 
     class Meta:
-        unique_together = ('lat_integer', 'lat_fractional', 'lon_integer', 'lon_fractional')
+        unique_together = ('lat', 'lon')
 
 
 class Continent(models.Model):
@@ -112,10 +101,11 @@ class City(models.Model):
 
 
 class Zipcode(models.Model):
-    us_zipcode_id = models.AutoField(primary_key=True)
+    zipcode_id = models.AutoField(primary_key=True)
     city = models.ForeignKey(City)
     zipcode = IntegerRangeField(unique=True, min_value=1, max_value=99999)
     geocoordinate = models.ForeignKey(GeoCoordinate)
+    timezone = models.IntegerField()
     generated_name = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:

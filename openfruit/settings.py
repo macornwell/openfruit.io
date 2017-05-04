@@ -52,13 +52,13 @@ INSTALLED_APPS = (
     'sorl.thumbnail',
     'django_mobile',
     'crispy_forms',
+    'colorful',
     'openfruit',
     'openfruit.common',
     'openfruit.geography',
     'openfruit.taxonomy',
     'openfruit.reports.event',
     'openfruit.reports.review',
-    'openfruit.fruit_profile',
 )
 
 MIDDLEWARE_CLASSES = (

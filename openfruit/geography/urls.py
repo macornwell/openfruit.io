@@ -1,8 +1,11 @@
-from openfruit.geography.views import LocationAutocomplete, ZipcodeAutocomplete, CityAutocomplete, GeoCoordinateAutocomplete
+from openfruit.geography.views import LocationAutocomplete, ZipcodeAutocomplete, CityAutocomplete, GeoCoordinateAutocomplete, NamedLocationAutocomplete
 from django.conf.urls import url
 
 
 urlpatterns = [
+    url('^autocomplete/named-location/$',
+        NamedLocationAutocomplete.as_view(),
+        name='named-location-autocomplete'),
     url('^autocomplete/location/$',
         LocationAutocomplete.as_view(),
         name='location-autocomplete'),

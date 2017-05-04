@@ -13,6 +13,7 @@
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/styles.css">
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://code.jquery.com/jquery-1.9.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script src="{{ STATIC_URL }}js/bootstrap-datetimepicker.js"></script>
@@ -23,7 +24,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
-<body>
+<body  id="bootstrap-body">
 <nav class="navbar navbar-default">
   <div class="container">
     <div class="navbar-header">
@@ -32,7 +33,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a href="{% url 'home' %}" class="navbar-brand">OpenFruit</a>
+      <a href="{% url 'home' %}" class="navbar-brand"><i class="fa fa-globe" aria-hidden="true"></i>OpenFruit</a>
     </div>
     <div class="navbar-collapse collapse" id="searchbar">
 
@@ -84,78 +85,33 @@
 </nav>
 
 
-{% comment %}
-  <nav class="navbar navbar-default" role="navigation">
-        <div class="container">
-            <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed " data-toggle="collapse"
-                            data-target="#navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a href="{% url 'home' %}" class="navbar-brand">OpenFruit</a>
-            </div>
-            <div id="navbar-collapse" class="collapse navbar-collapse">
-                <ul class="nav navbar-nav">
-                    <li role="presentation" class="{% block nav-browse %}{% endblock %}" >
-                        <a class="btn btn-lg" href="{% url 'browse' %}">Browse</a>
-                    </li>
-                    {% if user.is_authenticated %}
-                        <li role="presentation" class="{% block nav-home %}{% endblock %}" >
-                            <a class="btn btn-lg" href="/">Home</a>
-                        </li>
-
-                        <li class="nav-submenu">
-                            {% openfruit_logout request user %}
-                        </li>
-                    {% else %}
-                        <li >
-                         {% openfruit_login request %}
-                        </li>
-                    {% endif %}
-
-                    <!--
-                    <form class="search-bar" action="/search" method="GET">
-                        <div class="row">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Search for a Fruit" id="txtSearch">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-default" type="submit">
-                                        <span class="glyphicon glyphicon-search"></span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    -->
-                <li>
-
-                <div style="display:table;" class="input-group">
-            <span style="width: 1%;" class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-            <input type="text" autofocus="autofocus" autocomplete="off" placeholder="Search Here" name="search" style="" class="form-control">
-          </div>
-                </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    {% endcomment %}
-
-
-
 {# BODY. Where everything should go #}
   <div class="main-body">
     <div class="container">
+        <div id="record-row">
+            <div class="row">
+                <a data-toggle="tooltip" title="You planted one." class="col-xs-1 btn btn-default btn-lg main-icon"  href="{% url 'plant' %}">
+                    <i class="fa fa-tree" aria-hidden="true"></i></a>
+                <a data-toggle="tooltip" title="It leafed out" class="col-xs-1 btn btn-default btn-lg main-icon" href="{% url 'leaf' %}">
+                    <i class="fa fa-leaf" aria-hidden="true"></i></a>
+                <a data-toggle="tooltip" title="Blooms are coming out." class="col-xs-1 btn btn-default btn-lg main-icon" href="{% url 'bloom' %}">
+                    <i class="fa fa-thumbs-up" aria-hidden="true"></i></a>
+                <a data-toggle="tooltip" title="The fruit looks ripe." class="col-xs-1 btn btn-default btn-lg main-icon" href="{% url 'ripe' %}">
+                    <i class="fa fa-apple" aria-hidden="true"></i></a>
+                <a data-toggle="tooltip" title="This fruit tastes like..." class="col-xs-1 btn btn-default btn-lg main-icon">
+                    <i class="fa fa-star" aria-hidden="true"></i></a>
+                <a data-toggle="tooltip" title="Configure" class="col-xs-1 btn btn-default btn-lg main-icon" href="{% url 'browse' %}">
+                    <i class="fa fa-gears" aria-hidden="true"></i></a>
+            </div>
+        </div>
         <ol class="breadcrumb">
-        {% if user.is_authenticated %}
-            <li><a href="{% url 'home' %}">Dashboard</a></li>
-        {% else %}
-            <li><a href="{% url 'home' %}">Home</a></li>
-        {% endif %}
-        {% block breadcrumb %}
-        {% endblock %}
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'home' %}">Dashboard</a></li>
+            {% else %}
+                <li><a href="{% url 'home' %}">Home</a></li>
+            {% endif %}
+            {% block breadcrumb %}
+            {% endblock %}
         </ol>
         {% block body %}
         {% endblock body %}
@@ -176,6 +132,13 @@
 <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
 <!-- Latest compiled and minified JavaScript -->
 
+<script>
+    $(document).ready(function(){
+        var mainIcon = $('.main-icon');
+        mainIcon.tooltip({ show: { effect: "blind", duration: 800 } });
+
+    })
+</script>
 {% block scripts %}
 {% endblock %}
 

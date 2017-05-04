@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}OpenFruit - Add Genus{% endblock %}
+
+{% block breadcrumb %}
+    <li class="active">Add Genus </li>
+{% endblock %}
+{% block body %}
+    <h1>Add Genus </h1>
+    <div>
+    <form action="" method="post">
+    {% csrf_token %}
+        {{ form|crispy }}
+    <input type="submit" value="Submit" />
+    </form>
+    </div>
+{% endblock %}
+{% block scripts %}
+    {{ form.media }}
+{% endblock %}

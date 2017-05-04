@@ -7,13 +7,20 @@ US_CITIES_FILE = 'us-cities-and-zips.csv'
 US_STATES_FILE = 'us-states.csv'
 COUNTRIES_FILE = 'countries.csv'
 
+class GeographyDAL:
 
-def get_users_locations(user):
-    return UserLocation.objects.filter(user=user).values_list('location', flat=True)
+    def get_users_locations(self, user):
+        return UserLocation.objects.filter(user=user).values_list('location', flat=True)
 
+    def get_users_geography_settings(self, user):
+        return UserGeographySettings.objects.filter(user=user).first()
 
-def get_users_geography_settings(user):
-    return UserGeographySettings.objects.filter(user=user).first()
+    def append_user_location(self, user, locationUsedByUser):
+        obj, created = UserLocation.objects.get_or_create(user=user, location=locationUsedByUser)
+        if not created:
+            obj.save()  # This triggers the updating of the date.
+
+GEO_DAL = GeographyDAL()
 
 
 def generate_current_us_states_list():
@@ -35,7 +42,7 @@ def generate_current_us_states_list():
 def generate_current_us_cities_list():
     """
     Iterates through a list of all of the US cities.
-    (zip_code,latitude,longitude,city,state)
+    (zip_code,latitude,longitude,city,state, timezone)
     :return:
     """
     with open(os.path.join(BASE_DIR, 'openfruit', 'geography', US_CITIES_FILE)) as file:
@@ -45,8 +52,9 @@ def generate_current_us_cities_list():
             city = row['city'].strip()
             lat = row['latitude'].strip()
             lon = row['longitude'].strip()
-            zip = row['zip_code'].strip()
-            yield (zip, lat, lon, city, state)
+            zip = row['zip'].strip()
+            timezone = row['timezone']
+            yield (zip, lat, lon, city, state, timezone)
 
 
 def generate_countries():

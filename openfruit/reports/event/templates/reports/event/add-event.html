@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load event_tags %}
+{% load thumbnail %}
+{% load staticfiles %}
+
+{% block title %}OpenFruit - {% if is_add %}Add{% else%}Edit{% endif %} {% block event_type_readable %}{% endblock %}{% endblock %}
+
+{% block breadcrumb %}
+    <li class="active">{% if is_add %}Add{% else %}Edit{% endif %} {{ event_type_readable }}</li>
+{% endblock %}
+{% block body %}
+    <h1>{% if is_add %}Add{% else %}Edit{% endif %} {{ event_type_readable }} </h1>
+    <div>
+        <form action="" method="post">
+        {% csrf_token %}
+            <input name="event_report_id" hidden type="number" value="{{ event_report_id }}">
+            {% for field in form %}
+                {% should_display_form_field field as shouldDisplay%}
+                {% if shouldDisplay %}
+                    {{ field|as_crispy_field }}
+                    {% is_image field as isImage%}
+                    {% if isImage %}
+                        {% if form.instance.image != None %}
+                        {% thumbnail form.instance.image "50x50" crop="center" as im %}
+                            <img class="thumbnail" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                        {% endthumbnail %}
+                        {% else %}
+                            <img class="thumbnail" src="{% static 'img/not_available.jpg' %}" height="50" width="50"/>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        <input class="btn btn-default btn-lg" type="submit" value="Submit" />
+        <input class="btn btn-primary btn-lg pull-right" name="add-new" type="submit" value="Submit Add Next" />
+        </form>
+    </div>
+    <div>
+        {% if events|length %}
+            <h3>Last {{ events|length }} {{ event_type_readable }}</h3>
+            {% include "reports/event/list-event.html" %}
+        {% else %}
+            <h3>No Previous {{ event_type_readable }} Reports</h3>
+        {% endif %}
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function(){
+            var addBulkButton = $('#add-bulk').on('click', function(){
+            });
+        });
+    </script>
+    {{ form.media }}
+{% endblock %}

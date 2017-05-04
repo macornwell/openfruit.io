@@ -15,11 +15,14 @@ Including another URLconf
 from django.conf.urls.static import static
 from django.conf.urls import include, url, patterns
 from django.contrib import admin
-from django.conf import settings
+from rest_framework import routers
 from openfruit import settings
 from openfruit.views import home, SignupFormView, about, site_change, testing
 from openfruit.taxonomy.urls import urlpatterns as TaxonomyURLs
 from openfruit.geography.urls import urlpatterns as GeographyUrls
+from openfruit.reports.event.urls import urlpatterns as EventUrls
+
+router = routers.DefaultRouter()
 
 urlpatterns = [
     url(r'^$', home, name='home'),
@@ -27,11 +30,15 @@ urlpatterns = [
     url(r'^about/$', about, name='about'),
     url(r'^request/site-change/$', site_change, name='site_change'),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += router.urls
 
 if settings.DEBUG:
     urlpatterns += [url(r'^testing/$', testing, name='testing'),]
 
 urlpatterns += TaxonomyURLs
 urlpatterns += GeographyUrls
+urlpatterns += EventUrls
 

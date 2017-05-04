@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from auditlog.registry import auditlog
 from openfruit.common.models import IntegerRangeField
 from openfruit.taxonomy.models import Species, Cultivar
-from openfruit.geography.models import GeoCoordinate
+from openfruit.geography.models import Location
 from openfruit.taxonomy.validators import CultivarSpeciesMixin
 
 
@@ -18,7 +18,7 @@ class FruitReviewReport(models.Model, CultivarSpeciesMixin):
     fruit_review_report_id = models.AutoField(primary_key=True)
     submitted_by = models.ForeignKey(User)
     datetime = models.DateTimeField(auto_now_add=True)
-    geocoordinate = models.ForeignKey(GeoCoordinate)
+    location = models.ForeignKey(Location)
     species = models.ForeignKey(Species, blank=True, null=True)
     cultivar = models.ForeignKey(Cultivar, blank=True, null=True)
     sweet = IntegerRangeField(min_value=1, max_value=10)

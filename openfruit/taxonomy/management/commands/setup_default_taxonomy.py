@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from openfruit.taxonomy.services import generate_default_genus_entries
+from openfruit.taxonomy.services import GENUS_DAL
 from openfruit.taxonomy.models import PLANT_KINGDOM_NAMES, Kingdom, Genus
 
 
@@ -14,7 +14,7 @@ class Command(BaseCommand):
         if created:
             print('Created Plant Kingdom')
         print('Looking at Genus')
-        for commonName, latinName in generate_default_genus_entries():
+        for commonName, latinName in GENUS_DAL.generate_default_genus_entries():
             obj, created = Genus.objects.get_or_create(kingdom=plantKingdom, name=commonName, latin_name=latinName)
             if created:
                 print('Created Genus "{0}"'.format(latinName))
