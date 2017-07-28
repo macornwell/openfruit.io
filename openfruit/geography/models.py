@@ -4,9 +4,12 @@ from django.db import models
 from django.contrib.auth.models import User
 from auditlog.registry import auditlog
 from openfruit.common.models import IntegerRangeField
+from openfruit.geography.managers import LocationManager, GeoCoordinateManager
+from openfruit.geography.utilities import get_standardized_coordinate
 
 
 class GeoCoordinate(models.Model):
+    objects = GeoCoordinateManager()
     geocoordinate_id = models.AutoField(primary_key=True)
     lat = models.DecimalField(max_digits=7, decimal_places=5)
     lon = models.DecimalField(max_digits=8, decimal_places=5)
@@ -23,16 +26,9 @@ class GeoCoordinate(models.Model):
     def __get_generated_name(self):
         return '{0} {1}'.format(self.lat, self.lon)
 
-    @staticmethod
-    def get_standardized(latOrLon):
-        objInt, objFrac = str(latOrLon).split('.', 1)
-        objFrac = int(str(objFrac)[0:5])
-        objFrac = int('{0:05d}'.format(objFrac))
-        return Decimal('{0}.{1}'.format(objInt, objFrac))
-
     def __standardize_fractionals(self):
-        self.lat = GeoCoordinate.get_standardized(self.lat)
-        self.lon = GeoCoordinate.get_standardized(self.lon)
+        self.lat = get_standardized_coordinate(self.lat)
+        self.lon = get_standardized_coordinate(self.lon)
 
     class Meta:
         unique_together = ('lat', 'lon')
@@ -129,6 +125,7 @@ class Location(models.Model):
     It is a cascading of Locational information that gets more detailed depending on
     what level of granularity is desired, the minimum being a country.
     """
+    objects = LocationManager()
     location_id = models.AutoField(primary_key=True)
     country = models.ForeignKey(Country)
     state = models.ForeignKey(State, blank=True, null=True)
@@ -136,6 +133,7 @@ class Location(models.Model):
     zipcode = models.ForeignKey(Zipcode, blank=True, null=True)
     geocoordinate = models.ForeignKey(GeoCoordinate, blank=True, null=True, help_text='This is a very specific location.')
     name = models.CharField(max_length=30, blank=True, null=True)
+    is_private = models.BooleanField(default=False, help_text='Is this a location that should not be available to be seen publically?')
     generated_name = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
@@ -158,10 +156,10 @@ class Location(models.Model):
         return obj.geocoordinate
 
     def lat(self):
-        return self.get_geocoordinate().lat()
+        return self.get_geocoordinate().lat
 
     def lon(self):
-        return self.get_geocoordinate().lon()
+        return self.get_geocoordinate().lon
 
     def lat_lon(self):
         return str(self.get_geocoordinate())
@@ -221,6 +219,7 @@ class UserLocation(models.Model):
     user = models.ForeignKey(User)
     location = models.ForeignKey(Location)
     last_used = models.DateTimeField(default=datetime.now, blank=True)
+    user_created = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         self.last_used = datetime.now()
@@ -232,37 +231,6 @@ class UserLocation(models.Model):
     class Meta:
         ordering = ('last_used',)
         unique_together = ('user', 'location')
-
-
-class UserGeographySettings(models.Model):
-    user_geography_settings_id = models.AutoField(primary_key=True)
-    user = models.OneToOneField(User)
-    location = models.ForeignKey(Location)
-
-    def get_geocoordinate(self):
-        """
-        Gets the most specific geocoordinate for this Location.
-        :return:
-        """
-        return self.location.get_geocoordinate()
-
-    def lat(self):
-        return self.get_geocoordinate().lat()
-
-    def lon(self):
-        return self.get_geocoordinate().lon()
-
-    def lat_lon(self):
-        return str(self.get_geocoordinate())
-
-    def save(self, *args, **kwargs):
-        if not self.location.geocoordinate and not self.location.zipcode:
-            raise Exception('Must have either a specific GeoCoordinate or a Zipcode for a location.')
-        super(UserGeographySettings, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return "{0}'s Geography Settings".format(self.user.username)
-
 
 
 

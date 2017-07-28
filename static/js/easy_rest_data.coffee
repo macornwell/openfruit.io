@@ -1,12 +1,14 @@
 root = exports ? this
-root.grow_journal = root.grow_journal ? {}
+root.openfruit = root.openfruit ? {}
 
 class EasyRestData
-  __genericURL = '/api/{0}/'
+  __genericURL = '/api/v1/{0}/'
 
-  constructor:(cache=true)->
+  constructor:(cache=true, url=null)->
     @shouldCache = cache
     @_urlToObjs = {}
+    if url
+      __genericURL = url
 
   clearCache:()=>
     @_urlToObjs = {}
@@ -25,6 +27,15 @@ class EasyRestData
       )
       if @shouldCache
         @_urlToObjs[url] = objs
+      callback(objs)
+    )
+
+  getManyResultsWithData: (url, toSendData, callback) =>
+    objs = []
+    $.get(url, toSendData, (data)=>
+      _.each(data, (obj)->
+        objs.push(obj)
+      )
       callback(objs)
     )
 
@@ -53,11 +64,23 @@ class EasyRestData
   getObjectURL:(restObjName)=>
     return __genericURL.format(restObjName)
 
+  post:(url, data, successCallback, errorCallback) =>
+    setup_ajax_post()
+    $.ajax({
+      url: url
+      type: 'POST',
+      contentType: 'application/json; charset=utf-8',
+      data: JSON.stringify(data),
+      dataType: 'text',
+      success: successCallback,
+      error: errorCallback
+    });
+
 setup_ajax_post = ()=>
-  csrftoken = $.cookie('csrftoken')
+  csrftoken = Cookies.get('csrftoken')
   $.ajaxSetup({
     beforeSend: (xhr, settings) => xhr.setRequestHeader("X-CSRFToken", csrftoken)
   })
 
-root.grow_journal.setup_ajax_post = setup_ajax_post
-root.grow_journal.EasyRestData = EasyRestData
+root.openfruit.setup_ajax_post = setup_ajax_post
+root.openfruit.EasyRestData = EasyRestData

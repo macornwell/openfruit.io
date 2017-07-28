@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block head %}
+    <script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>
+    {{ form.media }}
+    <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+{% endblock %}
+{% block body %}
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.species|as_crispy_field }}
+        {{ form.cultivar|as_crispy_field }}
+        {{ form.location|as_crispy_field }}
+        <label>Geocoordinate</label>
+        <input id="id_lat" type="text" name="lat" hidden value="{{ center_lat }}">
+        <input id="id_lon" type="text" name="lon" hidden value="{{ center_lon }}">
+        {% include 'geography/geocoordinate.html' %}
+        {{ form.planted|as_crispy_field }}
+        {{ form.is_private|as_crispy_field }}
+        {% if popup %}<input type="hidden" name="_popup" value="1">{% endif %}
+        <input class="btn btn-primary btn-lg pull-right" type="submit" value="Save">
+    </form>
+{% endblock %}
+{% block scripts %}
+{% endblock %}

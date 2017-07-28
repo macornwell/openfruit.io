@@ -14,10 +14,16 @@
     <h1>{{ genus.latin_name }} Species List</h1>
     {% if request.user.is_staff %}
         <div>
-            <a class="btn btn-default btn-lg" href="#">Add Species</a>
+            <a class="btn btn-default btn-lg" href="{% url 'genus' id=genus.genus_id %}">Edit {{ genus.latin_name }}</a>
             <br>
         </div>
-        <hr>
+    {% endif %}
+    <hr>
+    {% if request.user.is_staff %}
+        <div>
+            <a class="btn btn-default btn-lg" href="{% url 'species' genusID=genus.genus_id %}">Add Species</a>
+            <br>
+        </div>
     {% endif %}
     <div>
         {% for species in species_list %}

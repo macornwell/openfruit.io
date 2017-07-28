@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 from openfruit.geography.models import City, Continent, Country, \
     GeoCoordinate, State, Location, Zipcode
 from openfruit.geography.services import generate_current_us_cities_list, generate_current_us_states_list, generate_countries
+from openfruit.geography.utilities import get_standardized_coordinate
 
 
 def get_minutes(timeDelta):
@@ -17,8 +18,8 @@ class Command(BaseCommand):
 
 
     def __get_geocoordinate(self, lat, lon):
-        lat = GeoCoordinate.get_standardized(lat)
-        lon = GeoCoordinate.get_standardized(lon)
+        lat = get_standardized_coordinate(lat)
+        lon = get_standardized_coordinate(lon)
         try:
             geoCoord = GeoCoordinate.objects.create(lat=lat, lon=lon)
         except:

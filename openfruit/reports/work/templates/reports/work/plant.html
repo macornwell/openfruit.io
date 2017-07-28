@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block body %}
+<div class="locator">
+    <h3>Select Location</h3>
+            <div class="plant-select pull-right">
+                <ul>
+                    <li>
+                        <a class="btn btn-sm btn-default" id="tree-btn" href="#">Tree</a>
+                    </li>
+                    <li>
+                        <a class="btn btn-sm btn-default" href="#">Bush</a>
+                    </li>
+                </ul>
+            </div>
+            <div id="custom-map" >
+                <div style="height:500px; width: 500px;" class="google-map" id="map"></div>
+            </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}"></script>
+<script src="{% static 'js/markerclusterer.js' %}"></script>
+<script>
+    $(document).ready(function(){
+        var newLatLonSpan = $('#new-lat-lon');
+        var markers = [];
+        var markerCluster = null;
+        var map = null;
+            var initMap = function() {
+                var mapCenter = { lat: {{ USER_GEO.lat }}, lng: {{ USER_GEO.lon }}};
+                map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 6,
+                    center: mapCenter
+                });
+                markerCluster = new MarkerClusterer(map, markers, {
+                    imagePath: 'https://cdn.rawgit.com/googlemaps/js-marker-clusterer/gh-pages/images/m',
+                    maxZoom: 18
+                });
+      };
+        initMap();
+        setTimeout(function(){
+            google.maps.event.trigger(map, 'resize');
+        }, 1000);
+        newLatLonSpan.html('' + {{ USER_GEO.lat }} + ' ' + {{ USER_GEO.lon }});
+
+
+        var iconBase = 'https://maps.google.com/mapfiles/kml/shapes/';
+        var icons = {
+          parking: {
+            icon: iconBase + 'parking_lot_maps.png'
+          },
+          library: {
+            icon: iconBase + 'library_maps.png'
+          },
+          info: {
+            icon: iconBase + 'info-i_maps.png'
+          }
+        };
+        var treeIcon = "http://maps.google.com/mapfiles/kml/pal2/icon4.png";
+        var newPoint = function(){
+            var currentCenter = map.getCenter();
+            //var contentString = '<div class="content-window"><a href="#" class="btn btn-default btn-lg">&#x273F</a></div>';
+            var newMarker = new google.maps.Marker({
+                position: currentCenter,
+                draggable: true,
+                map: map,
+                title: 'Title of the marker',
+                icon: treeIcon
+            });
+
+            markers.push(newMarker);
+            newMarker.addListener('click', function() {
+                var contentString = `
+                {{ form.cultivar|as_crispy_field}}
+                 <div class="row">
+                <a data-toggle="tooltip" title="It leafed out" class="col-xs-1 btn btn-default btn-lg main-icon" href="{% url 'leaf' %}">
+                    <i class="fa fa-leaf" aria-hidden="true"></i></a>
+                <a data-toggle="tooltip" title="Blooms are coming out." class="unicode-icon col-xs-1 btn btn-default btn-lg main-icon" href="{% url 'bloom' %}">
+                    &#x273F</a>
+                <a data-toggle="tooltip" title="The fruit looks ripe." class="col-xs-1 btn btn-default btn-lg main-icon" href="{% url 'ripe' %}">
+                    <i class="fa fa-apple" aria-hidden="true"></i></a>
+                <a data-toggle="tooltip" title="This fruit tastes like..." class="col-xs-1 btn btn-default btn-lg main-icon">
+                    <i class="fa fa-star" aria-hidden="true"></i></a>
+            </div>
+
+                <a href="#" class="btn btn-lg btn-default pull-right">Save</a>
+                `;
+                var infowindow = new google.maps.InfoWindow({
+                    content: contentString
+                });
+                infowindow.open(map, newMarker);
+            });
+            markerCluster.addMarker(newMarker, true);
+        };
+        $('#tree-btn').click(function(){
+            newPoint();
+        });
+    });
+</script>
+{{ form.media }}
+{% endblock %}

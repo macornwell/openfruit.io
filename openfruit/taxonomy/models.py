@@ -1,10 +1,12 @@
-from auditlog.registry import auditlog
 from django.db import models
-from sorl.thumbnail.fields import ImageField
+from django.utils import timezone
+from django.contrib.auth.models import User
+from auditlog.registry import auditlog
 from colorful.fields import RGBColorField
+from sorl.thumbnail.fields import ImageField
 from openfruit.common.models import IntegerRangeField
-from openfruit.geography.models import Location
-from openfruit.taxonomy.managers import GenusManager, KingdomManager, SpeciesManager, CultivarManager
+from openfruit.geography.models import Location, GeoCoordinate
+from openfruit.taxonomy.managers import GenusManager, KingdomManager, SpeciesManager, CultivarManager, FruitingPlantManager
 
 PLANT_KINGDOM_NAMES = (
     'Plants', 'Plantae',
@@ -47,7 +49,7 @@ class Genus(models.Model, UrlNameMixin):
     genus_id = models.AutoField(primary_key=True)
     kingdom = models.ForeignKey(Kingdom)
     latin_name = models.CharField(max_length=30, unique=True)
-    name = models.CharField(max_length=30, blank=True, null=True)
+    name = models.CharField(max_length=30)
     featured_image = ImageField(upload_to='featured-images', blank=True, null=True)
     generated_name = models.CharField(max_length=60, unique=True, blank=True, null=True)
 
@@ -79,6 +81,7 @@ class Species(models.Model, UrlNameMixin):
     years_till_first_production = IntegerRangeField(min_value=1, max_value=30, blank=True, null=True)
     years_till_full_production = IntegerRangeField(min_value=1, max_value=100, blank=True, null=True)
     featured_image = ImageField(upload_to='featured-images', blank=True, null=True)
+    google_maps_image_url = models.CharField(max_length=100, blank=True, null=True)
     generated_name = models.CharField(max_length=60, unique=True, blank=True, null=True)
 
     class Meta:
@@ -112,6 +115,8 @@ class Cultivar(models.Model, UrlNameMixin):
     color_secondary_hex = RGBColorField(blank=True, null=True)
     color_tertiary_hex = RGBColorField(blank=True, null=True)
     featured_image = ImageField(upload_to='featured-images', blank=True, null=True)
+    generated_name = models.CharField(max_length=60, unique=True, blank=True, null=True)
+
 
     # Breeding Information
     chromosome_count = models.CharField(max_length=1, choices=CHROMOSOME_CHOICES, default='2', blank=True, null=True)
@@ -122,7 +127,17 @@ class Cultivar(models.Model, UrlNameMixin):
     brief_description = models.CharField(max_length=50, blank=True, null=True)
     history = models.TextField(blank=True, null=True)
 
+    class Meta:
+        ordering = ('generated_name',)
+
+    def save(self, *args, **kwargs):
+        self.generated_name = self.__get_generated_name()
+        return super(Cultivar, self).save(*args, **kwargs)
+
     def __str__(self):
+        return self.generated_name or self.__get_generated_name()
+
+    def __get_generated_name(self):
         return '{0} ({1})'.format(self.name, self.species.name)
 
 
@@ -142,6 +157,39 @@ class SpeciesImage(models.Model):
     description = models.CharField(max_length=300, blank=True, null=True)
 
 
+class FruitingPlant(models.Model):
+    """
+    This is the main use model that is a specific plant in a specific location.
+    Everything happens through this plant.
+    """
+    objects = FruitingPlantManager()
+    fruiting_plant_id = models.AutoField(primary_key=True)
+    user_manager = models.ForeignKey(User)
+    location = models.ForeignKey(Location)
+    geocoordinate = models.ForeignKey(GeoCoordinate)
+    species = models.ForeignKey(Species, null=True, blank=True)
+    cultivar = models.ForeignKey(Cultivar, null=True, blank=True)
+    planted = models.DateField(default=timezone.now)
+    is_private = models.BooleanField(default=False, help_text='If the exact location of this tree should be kept private. Only you can see its location.')
+    date_died = models.DateField(null=True, blank=True)
+
+    def get_name(self):
+        obj = self.species
+        if self.cultivar:
+            obj = self.cultivar
+        return obj.generated_name
+
+    def __str__(self):
+        name = None
+        if self.cultivar:
+            name = str(self.cultivar)
+        else:
+            name = str(self.species)
+        return '{0} - {1} @ {2}'.format(self.user_manager, name, self.location)
+
+
+
+
 
 
 auditlog.register(Kingdom)
@@ -150,3 +198,4 @@ auditlog.register(Species)
 auditlog.register(Cultivar)
 auditlog.register(GenusImage)
 auditlog.register(SpeciesImage)
+auditlog.register(FruitingPlant)

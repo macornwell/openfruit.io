@@ -6,10 +6,11 @@ USER_GROUP_NAME = 'User'
 
 def is_curator(user):
     try:
-        obj = Group.objects.get(name=CURATOR_GROUP_NAME) in user.groups.all()
+        obj = Group.objects.get(name=CURATOR_GROUP_NAME) in user.groups.all() or user.is_superuser
     except:
         raise Exception('Curator group has not been initialized.')
     return obj
+
 
 def setup_user_permissions_and_groups(user):
     user.is_staff = True

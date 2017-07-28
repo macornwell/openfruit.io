@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
 import os
+import datetime
 from django.contrib import messages
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -52,16 +53,20 @@ INSTALLED_APPS = (
     'sorl.thumbnail',
     'crispy_forms',
     'colorful',
+    'corsheaders',
     'openfruit',
     'openfruit.common',
     'openfruit.geography',
     'openfruit.taxonomy',
     'openfruit.reports.event',
     'openfruit.reports.review',
+    'openfruit.reports.work',
+    'openfruit.userdata',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -88,7 +93,7 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'openfruit.geography.context_processors.google_maps_api_key',
                 'openfruit.geography.context_processors.google_maps_settings',
-                'openfruit.geography.context_processors.user_map_settings',
+                'openfruit.userdata.context_processors.user_profile',
             ],
         },
     },
@@ -236,5 +241,28 @@ LARGE_THUMBNAILS = (300, 300)
 #############
 from openfruit.geography.settings import GoogleMapsSettings
 GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')
-GM_SETTINGS = GoogleMapsSettings(lat=33.16025, lon=-87.6104341, zoom=6)
+GM_SETTINGS = GoogleMapsSettings(lat=33.16025, lon=-87.6104341, zoom=4)
+DEFAULT_MAP_CENTER = (39.77476, -97.11914)
 
+
+
+################
+# REST FRAMEWORK
+################
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+JWT_ALLOW_REFRESH = True
+JWT_EXPIRATION_DELTA = datetime.timedelta(hours=1)
+
+############
+# MISC
+############
+CORS_ORIGIN_ALLOW_ALL = True

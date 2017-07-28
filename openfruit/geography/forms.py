@@ -1,24 +1,30 @@
 from django import forms
 from dal.autocomplete import ModelSelect2
-from openfruit.geography.models import UserLocation, City, State, Location, UserGeographySettings
+from openfruit.geography.models import UserLocation, City, Location, GeoCoordinate
+from openfruit.geography.widgets import GeocoordinateWidget
+
+
+class GeocoordinateForm(forms.ModelForm):
+    class Meta:
+        model = GeoCoordinate
+        fields = [
+            'generated_name',
+            'lat',
+            'lon',
+        ]
+        widgets = {
+            'generated_name': GeocoordinateWidget
+        }
 
 
 class UserLocationForm(forms.ModelForm):
-  class Meta:
-    model = UserLocation
-    widgets = {
-      'location': ModelSelect2(url='location-autocomplete')
-    }
-    fields = '__all__'
-
-
-class UserGeographySettingsForm(forms.ModelForm):
     class Meta:
-        model = UserGeographySettings
+        model = UserLocation
         widgets = {
             'location': ModelSelect2(url='location-autocomplete')
-            }
+        }
         fields = '__all__'
+
 
 
 class LocationForm(forms.ModelForm):

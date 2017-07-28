@@ -7,14 +7,24 @@
 
 {% block breadcrumb %}
     <li><a href="{% url 'browse' %}">Browse</a></li>
-    <li><a href="{% url 'genus-list' kingdom=kingdom.url_latin_name %}">{{ kingdom.latin_name }}</a></li>
-    <li><a href="{% url 'genus-detail' kingdom=kingdom.url_latin_name genus=genus.url_latin_name %}">{{ genus.latin_name }}</a></li>
+    <li><a href="{% url 'genus-list' kingdom=kingdom.latin_name %}">{{ kingdom.latin_name }}</a></li>
+    <li><a href="{% url 'genus-detail' kingdom=kingdom.latin_name genus=genus.latin_name %}">{{ genus.latin_name }}</a></li>
     <li class="active">{{ species.latin_name }}</li>
 {% endblock %}
 {% block body %}
-    <h1>{{ species.name }} ({{ species.latin_name }})</h1>
+    {% if user.is_authenticated %}
+        <h1>{{ species.name }} ({{ species.latin_name }}) <a href="{% url 'species' genus.genus_id species.species_id %}" class="btn btn-default">Edit</a></h1>
+    {% else %}
+        <h1>{{ species.name }} ({{ species.latin_name }})</h1>
+    {% endif %}
     <div class="plant-metadata">
-        <img src="{% static "img/not_available.jpg" %}" class="pull-right plant-featured-image" width="300" height="300">
+        {% if species.featured_image %}
+            {% thumbnail species.featured_image "300x300" crop="center" as im %}
+                <img class="pull-right plant-featured-image" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+            {% endthumbnail %}
+        {% else %}
+            <img src="{% static "img/not_available.jpg" %}" class="pull-right plant-featured-image" width="300" height="300">
+        {% endif %}
     <span>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin dapibus facilisis dolor, id ornare tortor aliquam at. Nam sit amet hendrerit elit. Sed dapibus arcu non orci dignissim, at gravida lacus efficitur. Ut iaculis ut nisl in congue. Cras lacinia luctus ex id accumsan. Nunc porttitor tincidunt semper. Maecenas vulputate finibus commodo. Phasellus pellentesque leo in ex porta egestas. Vivamus at urna non tellus vulputate consectetur. Praesent pharetra est nec facilisis varius.
 
@@ -23,20 +33,22 @@ Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
     </div>
 
     <h2>Cultivar List</h2>
-    {% if request.user.is_staff %}
-        <div>
-            <a class="btn btn-default btn-lg" href="#">Add Cultivar</a>
-            <br>
-        </div>
-        <hr>
-    {% endif %}
-
-<div class="google-map" id="map"/>
+    <h3>
+    Birth Places
+    </h3>
+    <div class="google-map" id="map"></div>
+    <hr>
 
     <div>
+        {% if request.user.is_staff %}
+            <div>
+                <a class="btn btn-default btn-lg" href="#">Add Cultivar</a>
+                <br>
+            </div>
+        {% endif %}
         {% for cultivar in cultivar_list %}
             <p class="group-item" >
-                <a class="btn btn-default btn-lg btn-block list-group-item" href="{% url 'cultivar-detail' kingdom=kingdom.url_latin_name genus=genus.url_latin_name species=species.url_latin_name cultivar=cultivar.url_name %}">
+                <a class="btn btn-default btn-lg btn-block list-group-item" href="{% url 'cultivar-detail' kingdom=kingdom.latin_name genus=genus.latin_name species=species.latin_name cultivar=cultivar.name %}">
                 {% if species.featured_image %}
                     {% thumbnail cultivar.featured_image "50x50" crop="center" as im %}
                         <img class="list-thumbnail" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
@@ -51,40 +63,61 @@ Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
     </div>
 {% endblock %}
 {% block scripts %}
-    <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap">
-    </script>
+    <script src="{% static 'js/markerclusterer.js' %}"></script>
+    <script src="https://cdn.rawgit.com/googlemaps/v3-utility-library/master/markerwithlabel/src/markerwithlabel.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sprintf/1.0.3/sprintf.js"></script>
+
     <script>
         function initMap() {
+            var markers = [];
             var mapCenter = { lat: {{ GM_SETTINGS.lat }}, lng: {{ GM_SETTINGS.lon }}};
             var map = new google.maps.Map(document.getElementById('map'), {
                 zoom: {{ GM_SETTINGS.zoom }},
                 center: mapCenter
             });
+
+            var setupCultivar = function(lat, lon, cultivarName, detailsUrl){
+                var cultivarCenter = { lat: lat, lng: lon};
+                var contentString = sprintf(`
+                <div>
+                    <h3>%s</h3>
+                    <p>
+                    </p>
+                    <a class="btn btn-default btn-sm" href="%s">Details</a>
+                </div>`, cultivarName, detailsUrl);
+                var infowindow = new google.maps.InfoWindow({
+                    content: contentString
+                });
+                var marker = new MarkerWithLabel({
+                    position: cultivarCenter,
+                    draggable: true,
+                    map: map,
+                    labelContent: sprintf('<div class="gmaps-label">%s</div>',cultivarName)
+                });
+                markers.push(marker);
+                marker.addListener('click', function() {
+                    infowindow.open(map, marker);
+                });
+                google.maps.event.addListener(marker, 'dragend', function(){
+                    var position = marker.getPosition();
+                    console.log(position);
+                    console.log('lat:' + position.lat());
+                    console.log('lng:' + position.lng());
+                });
+            };
+
+            data = {};
             {% for cultivar in cultivar_list %}
                 {% if cultivar.origin_location %}
-                    var cultivarCenter = { lat: {{ cultivar.origin_location.lat }}, lng: {{ cultivar.origin_location.lon }}};
-                    var contentString = "History about " + "{{ cultivar.name }}";
-                    var infowindow = new google.maps.InfoWindow({
-                        content: contentString
-                    });
-                    var marker = new google.maps.Marker({
-                        position: cultivarCenter,
-                        draggable: true,
-                        map: map,
-                        title: "{{ cultivar.name }}",
-                    });
-                    marker.addListener('click', function() {
-                        infowindow.open(map, marker);
-                    });
-                    google.maps.event.addListener(marker, 'dragend', function(){
-                        var position = marker.getPosition();
-                        console.log(position);
-                        console.log('lat:' + position.lat());
-                        console.log('lng:' + position.lng());
-                    });
+                    var url = '{% url 'cultivar-detail' kingdom=cultivar.species.genus.kingdom.latin_name genus=cultivar.species.genus.latin_name species=cultivar.species.latin_name cultivar=cultivar.name %}';
+                    setupCultivar({{ cultivar.origin_location.lat}}, {{ cultivar.origin_location.lon }}, '{{ cultivar.name }}', url);
                 {% endif %}
             {% endfor %}
+            var markerCluster = new MarkerClusterer(map, markers, {
+                    imagePath: 'https://cdn.rawgit.com/googlemaps/js-marker-clusterer/gh-pages/images/m',
+                    maxZoom: 18
+            });
         }
+        initMap();
     </script>
 {% endblock %}

@@ -8,12 +8,10 @@ class EventReportForm(forms.ModelForm):
     class Meta:
         model = EventReport
         widgets = {
-            'location': ModelSelect2(url='named-location-autocomplete'),
-            'cultivar': ModelSelect2(url='cultivar-autocomplete'),
-            'species': ModelSelect2(url='species-autocomplete'),
+            'plant': ModelSelect2(url='fruiting-plant-autocomplete'),
             'datetime': DateTimeWidget(attrs={'id': 'datetime-id'}, usel10n=True, bootstrap_version=3),
             }
         fields = (
-            'submitted_by', 'datetime', 'location', 'species', 'cultivar', 'event_type', 'affinity', 'image', 'notes'
+            'submitted_by', 'datetime', 'plant', 'event_type', 'affinity', 'image', 'notes'
         )
 

@@ -1,0 +1,9 @@
+<div *ngIf="_breadcrumbService.hasNodes()">
+  <ol class="breadcrumb">
+    <li *ngFor="let node of _breadcrumbService.getNodes()">
+      <a href="{{ node.url }}">
+        {{ node.text }}
+      </a>
+    </li>
+  </ol>
+</div>

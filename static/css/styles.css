@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Lora');
+/* Hacker Scheme */
+/* Light Color Scheme */
 h1,
 h2,
 h3,
@@ -10,48 +12,105 @@ h6,
 .h3,
 .h4,
 .h5,
-.h6 {
-  font-family: 'Lora';
-  color: white;
-}
+.h6,
 label {
   font-family: 'Lora';
-  color: white;
-}
-.navbar {
-  margin-bottom: 0px;
+  color: #000000;
 }
 #bootstrap-body {
-  background-color: black;
-  color: #008000;
+  background-color: #e2e2e2;
+  color: #777;
 }
-#record-row {
-  margin-left: 15px;
+/*
+Navigation
+*/
+.navbar {
+  margin-bottom: 0;
 }
-#record-row div .main-icon {
-  background-color: #292929;
-  border-color: #252525;
-  border-radius: 10px 10px 0px 0px;
-  margin-left: 5px;
-  margin-bottom: 3px;
+.navbar-brand {
+  color: #5F5F5F;
+}
+.nav-pills > li > .nav-btn,
+nav li .unicode-icon span {
+  color: #5F5F5F;
+  background-color: #f8f8f8;
+  border-color: #f8f8f8;
+}
+.nav-pills > li > .nav-btn {
+  border-radius: 10px 10px 0 0;
+  display: inline-block;
+  font-size: 25px;
+  text-align: center;
+  vertical-align: bottom;
   width: 50px;
   height: 50px;
-  font-size: 25px;
-  padding: 8px 13px;
+  padding-left: 12px;
 }
-#record-row div .main-icon i {
-  color: white;
+.nav-pills > li > .nav-btn i {
+  color: #5F5F5F;
 }
-#record-row div .main-icon .dashboard-direction {
+.nav-pills > li > .nav-btn .dashboard-direction {
   font-size: 20px;
   margin-left: 10px;
 }
-#record-row div .main-icon:hover {
+.nav-pills > li > .dropdown-toggle {
+  padding-left: 9px;
+}
+.nav-pills > li > .dropdown-toggle i .nav-drop-caret {
+  position: relative;
+  left: -5px;
+  top: 10px;
+}
+/*
+.navbar-default .navbar-nav>li>a{
+  color: @btn-navigation-font-color;
+  border-color: #f8f8f8;
+  border-radius: 10px 10px 0 0;
+  font-size: 25px;
+}
+*/
+nav li .unicode-icon span {
+  font-size: 40px;
+  position: relative;
+  top: 6px;
+  left: -4px;
+  line-height: 0;
+  background: transparent;
+}
+nav li .unicode-icon span :hover {
+  color: black;
+}
+div .nav-btn:hover {
   background-color: #545454;
 }
+nav .dropdown-menu {
+  width: 60px;
+  min-width: 60px;
+}
+nav .dropdown-menu > li > a {
+  height: 50px;
+  font-size: 30px;
+  color: #5F5F5F;
+}
+nav .dropdown-menu > li > a i {
+  left: -4px;
+  position: relative;
+}
+nav .dropdown-menu > li > a span {
+  left: -8px;
+  top: 3px;
+  position: relative;
+}
+.flower-icon {
+  height: 30px;
+  margin-bottom: 10px;
+}
+/*
+Reusable Components
+*/
 .contrast-banner {
   padding: 10px;
-  background-color: #F5F5F5;
+  background-color: #9E9E9E;
 }
 .list-thumbnail {
   height: 50px;
@@ -61,6 +120,20 @@ label {
   height: 50px;
   width: 50px;
 }
+.large-radio {
+  transform: scale(2);
+  margin-left: 4px;
+  margin-right: 4px;
+}
+/*
+Google Maps
+*/
+.moving {
+  background-color: darkgray;
+}
+/*
+Taxonomy
+*/
 .plant-metadata {
   min-height: 300px;
 }
@@ -71,26 +144,24 @@ label {
   width: 300px;
   height: 300px;
 }
-.large-radio {
-  transform: scale(2);
-  margin-left: 4px;
-  margin-right: 4px;
-}
+/*
+Geography
+*/
 .google-map {
   height: 400px;
   width: auto;
 }
-.main-icon {
-  display: inline-block;
-  text-align: center;
-  vertical-align: bottom;
-  width: 70px;
-  height: 60px;
-  font-size: 30px;
+.google-map-large {
+  height: 500px;
+  width: auto;
 }
-.flower-icon {
-  height: 30px;
-  margin-bottom: 10px;
+.gmaps-label {
+  background: white;
+  color: black;
+  font-size: 14px;
+}
+.info-link {
+  padding-left: 5px;
 }
 /*
 Autocomplete
@@ -106,9 +177,10 @@ Events
   width: 55px;
   height: 55px;
   margin: 5px;
+  color: #5F5F5F;
 }
 .event-section {
-  background-color: #2A6F30;
+  background-color: #9E9E9E;
 }
 .toggled {
   background-color: darkgray;
@@ -116,6 +188,16 @@ Events
 .toggled :hover {
   background-color: darkgray;
 }
+.notes-area {
+  width: 100%;
+}
 .current-location {
   font-size: 30px;
+}
+/*
+Testing area
+*/
+.content-window {
+  height: 100px;
+  width: 200px;
 }

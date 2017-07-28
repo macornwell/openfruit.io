@@ -1,84 +1,110 @@
 {% load rest_framework %}
 {% load openfruit_common_tags %}
+{% load staticfiles %}
 
 <!DOCTYPE html>
 <html>
 <head lang="en">
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock title %}</title>
-    {% block head %}{% endblock head %}
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-datetimepicker.css">
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/datetimepicker.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/styles.css">
+    <link href=' http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://code.jquery.com/jquery-1.9.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script src="{{ STATIC_URL }}js/bootstrap-datetimepicker.js"></script>
     <script src='https://www.google.com/recaptcha/api.js'></script>
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}"></script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-datetimepicker.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/datetimepicker.css">
+    <script src="{{ STATIC_URL }}js/bootstrap-datetimepicker.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {% block head %}{% endblock head %}
 </head>
 
 <body  id="bootstrap-body">
-<nav class="navbar navbar-default">
+<nav class="">
   <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
       <a href="{% url 'home' %}" class="navbar-brand"><i class="fa fa-globe" aria-hidden="true"></i>OpenFruit</a>
-    </div>
-    <div class="navbar-collapse collapse" id="searchbar">
+    <div>
+        <ul class="nav nav-pills pull-right">
+            {% if user.is_authenticated %}
+                {% comment %}
+                <li>
+                    <a class="btn btn-default btn-lg nav-btn" data-toggle="tooltip" title="You planted one." href="{% url 'plant' %}">
+                        <i class="fa fa-briefcase" aria-hidden="true"></i>
+                    </a>
+                </li>
+                <li role="presentation" class="dropdown">
+                    <a class="dropdown-toggle btn btn-lg btn-default nav-btn" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                       <i class="fa fa-binoculars" aria-hidden="true">
+                           <span class="nav-drop-caret caret"></span>
+                       </i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a data-toggle="tooltip" title="It leafed out" class=" btn btn-default btn-lg nav-btn" href="{% url 'leaf' %}">
+                            <i class="fa fa-leaf" aria-hidden="true"></i></a>
+                        </li>
+                        <li><a data-toggle="tooltip" title="Blooms are coming out." class="unicode-icon  btn btn-default btn-lg nav-btn" href="{% url 'bloom' %}">
+                            <span>&#x273F</span></a>
+                        </li>
+                        <li><a data-toggle="tooltip" title="The fruit looks ripe." class=" btn btn-default btn-lg nav-btn" href="{% url 'ripe' %}">
+                            <i class="fa fa-apple" aria-hidden="true"></i></a>
+                        </li>
+                    </ul>
+                </li>
+            {% endcomment %}
+                <li><a data-toggle="tooltip" title="Browse" class=" btn btn-default btn-lg nav-btn" href="{% url 'browse' %}">
+                    <i class="fa fa-book" aria-hidden="true"></i></a>
+                </li>
+                <li><a data-toggle="tooltip" title="This fruit tastes like..." class=" btn btn-default btn-lg nav-btn">
+                    <i class="fa fa-star" aria-hidden="true"></i></a>
+                </li>
+                <li role="presentation" class="dropdown">
+                    <a class="dropdown-toggle btn btn-default btn-lg nav-btn" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-bars" aria-hidden="true">
+                            <span class="nav-drop-caret caret"></span>
+                        </i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a data-toggle="tooltip" title="Configure" class=" btn btn-default btn-lg nav-btn" href="{% url 'admin:login' %}">
+                            <i class="fa fa-gears" aria-hidden="true"></i></a>
+                        </li>
+                        <li class="nav-submenu">
+                            {% openfruit_logout request user %}
+                        </li>
+                    </ul>
+                </li>
 
-      <ul class="nav navbar-nav navbar-right">
-        {% if user.is_authenticated %}
-        <li role="presentation" class="{% block nav-home %}{% endblock %}" >
-            <a class="btn btn-lg" href="/">Home</a>
-        </li>
 
-        <li class="nav-submenu">
-            {% openfruit_logout request user %}
-        </li>
-        {% else %}
-        <li >
-            {% openfruit_login request %}
-        </li>
-        {% endif %}
-      </ul>
-        <ul class="nav navbar-nav navbar-right">
-        <li role="presentation" class="{% block nav-browse %}{% endblock %}" >
-            <a class="btn btn-lg" href="{% url 'browse' %}">Browse</a>
-        </li>
-        </ul>
-    <!--
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#" title="Start a new search">Clear</a></li>
-      </ul>
-      -->
+            {% else %}
+            <li >
+                {% openfruit_login request %}
+            </li>
+            {% endif %}
+          </ul>
 
+        <!--
+         <form class="navbar-form">
+            <div class="form-group" style="display:inline;">
+              <div class="input-group" style="display:table;">
+                <span class="input-group-addon" style="width:1%;">
+                    <a href="">
 
-
-     <form class="navbar-form">
-        <div class="form-group" style="display:inline;">
-          <div class="input-group" style="display:table;">
-            <span class="input-group-addon" style="width:1%;">
-                <a href="">
-
-                <span class="glyphicon glyphicon-search">
+                    <span class="glyphicon glyphicon-search">
+                    </span>
+                    </a>
                 </span>
-                </a>
-            </span>
-            <input class="form-control" name="search" placeholder="Search Here" autocomplete="off" autofocus="autofocus" type="text">
-          </div>
-        </div>
-      </form>
+                <input class="form-control" name="search" placeholder="Search Here" autocomplete="off" autofocus="autofocus" type="text">
+              </div>
+            </div>
+          </form>
+          -->
 
     </div><!--/.nav-collapse -->
   </div>
@@ -90,18 +116,20 @@
     <div class="container">
         <div id="record-row">
             <div class="row">
-                <a data-toggle="tooltip" title="You planted one." class="col-xs-1 btn btn-default btn-lg main-icon"  href="{% url 'plant' %}">
-                    <i class="fa fa-tree" aria-hidden="true"></i></a>
-                <a data-toggle="tooltip" title="It leafed out" class="col-xs-1 btn btn-default btn-lg main-icon" href="{% url 'leaf' %}">
+                <!--
+                <a data-toggle="tooltip" title="You planted one." class="unicode-icon col-xs-1 btn btn-default btn-lg nav-btn"  href="{% url 'plant' %}">
+                    &#x2692</a>
+                <a data-toggle="tooltip" title="It leafed out" class="col-xs-1 btn btn-default btn-lg nav-btn" href="{% url 'leaf' %}">
                     <i class="fa fa-leaf" aria-hidden="true"></i></a>
-                <a data-toggle="tooltip" title="Blooms are coming out." class="col-xs-1 btn btn-default btn-lg main-icon" href="{% url 'bloom' %}">
-                    <i class="fa fa-thumbs-up" aria-hidden="true"></i></a>
-                <a data-toggle="tooltip" title="The fruit looks ripe." class="col-xs-1 btn btn-default btn-lg main-icon" href="{% url 'ripe' %}">
+                <a data-toggle="tooltip" title="Blooms are coming out." class="unicode-icon col-xs-1 btn btn-default btn-lg nav-btn" href="{% url 'bloom' %}">
+                    &#x273F</a>
+                <a data-toggle="tooltip" title="The fruit looks ripe." class="col-xs-1 btn btn-default btn-lg nav-btn" href="{% url 'ripe' %}">
                     <i class="fa fa-apple" aria-hidden="true"></i></a>
-                <a data-toggle="tooltip" title="This fruit tastes like..." class="col-xs-1 btn btn-default btn-lg main-icon">
+                <a data-toggle="tooltip" title="This fruit tastes like..." class="col-xs-1 btn btn-default btn-lg nav-btn">
                     <i class="fa fa-star" aria-hidden="true"></i></a>
-                <a data-toggle="tooltip" title="Configure" class="col-xs-1 btn btn-default btn-lg main-icon" href="{% url 'browse' %}">
+                <a data-toggle="tooltip" title="Configure" class="col-xs-1 btn btn-default btn-lg nav-btn" href="{% url 'browse' %}">
                     <i class="fa fa-gears" aria-hidden="true"></i></a>
+                -->
             </div>
         </div>
         <ol class="breadcrumb">
@@ -133,11 +161,13 @@
 <!-- Latest compiled and minified JavaScript -->
 
 <script>
+    /*
     $(document).ready(function(){
-        var mainIcon = $('.main-icon');
+        var mainIcon = $('.nav-btn');
         mainIcon.tooltip({ show: { effect: "blind", duration: 800 } });
 
     })
+    */
 </script>
 {% block scripts %}
 {% endblock %}

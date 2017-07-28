@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+{% load rest_framework %}
+{% load staticfiles %}
+{% load openfruit_common_tags %}
+{% load crispy_forms_tags %}
+
+{% block title %}OpenFruit - Signup{% endblock %}
+{% block  body %}
+
+    <h1>Signup for OpenFruit</h1>
+    <div class="container">
+    {% if form.errors %}
+        <h3>Errors</h3>
+        <div id="errors">
+            <ul>
+                {% for field, errors in form.errors.items %}
+                    {% if field == '__all__' %}
+                        {% for error in errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+        <form action="" method="POST">
+            {% csrf_token %}
+            {{ form.username|as_crispy_field }}
+            {{ form.password|as_crispy_field }}
+            {{ form.first_name|as_crispy_field }}
+            {{ form.last_name|as_crispy_field }}
+            {{ form.email|as_crispy_field }}
+            {{ form.organization|as_crispy_field }}
+            {{ form.request_to_be_a_curator|as_crispy_field }}
+            {{ form.reason_to_be_curator|as_crispy_field }}
+            <div id="signup-location">
+                <h3>Where will you be posting from mostly?</h3>
+                <p>This should be your home, your business, a farm, etc.</p>
+                <div class="contrast-banner text-center">
+                    <label class="radio-inline">
+                        <input id="new-location" class="radio-show large-radio" checked="checked" type="radio" name="location" value="new-location" data-target="#new-location-select">New Location <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
+                    </label>
+                    <label class="radio-inline">
+                        <input class="radio-show large-radio" type="radio" name="location" value="existing-location" data-target="#existing-location-select">Existing Location
+                    </label>
+                </div>
+
+                <div id="new-location-select">
+                    {{ form.new_location_lat_lon.as_hidden }}
+                    {{ form.new_location_name|as_crispy_field }}
+                    <div>
+                        <p>Your Lat Lon: <span id="new-lat-lon"></span></p>
+                    </div>
+                    <div>
+                        <p>Your Zipcode:<span id="zipcode-display"></span></p>
+                        <input hidden id="zipcode" name="zipcode" type="text"
+                               {% if zipcode %}
+                                   value="{{ zipcode }}"
+                               {% endif %}
+                               >
+                    </div>
+                    <div id="map" class="google-map"></div>
+                    <input id="location-moved" name="location-moved" type="text"
+                           {% if has_moved %}
+                               value="moved"
+                           {% endif %}
+                           hidden>
+                </div>
+                <div id="existing-location-select" >
+                    <div id="existing-location-text">Location:</div>
+                    <div id="existing-location-map" class="google-map"></div>
+                    <input id="existing_location" name="existing_location" type="text" hidden>
+                </div>
+            </div>
+
+            <!--<div class="g-recaptcha" data-sitekey="6LdkER8UAAAAAE7YK0SkbBxWJ23zX5tpGQ_cpRs1"></div>-->
+            <br>
+            <input id="submit" type="submit" class="btn btn-primary btn-lg pull-right" value="Submit" disabled>
+        </form>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="https://cdn.rawgit.com/googlemaps/v3-utility-library/master/markerwithlabel/src/markerwithlabel.js"></script>
+    <script src="{% static 'js/markerclusterer.js' %}"></script>
+    <script src="{% static 'js/common/radio-show.js' %}"></script>
+    <script src="{% static 'js/easy_rest_data.js' %}"></script>
+    <script src="{% static 'js/geography/geography-service.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sprintf/1.0.3/sprintf.js"></script>
+    <script>
+    /*
+    Validation logic for btn
+    If New Location
+    - Name must be typed.
+    - Zipcode and Latlon must exist.
+
+    if existing location is selected
+    - input cannot be empty
+     */
+        var radioShow = new openfruit.common.RadioShow();
+        var newLatLon = $('#new-lat-lon');
+        var locationLatLon = $('#id_new_location_lat_lon');
+        var existingLocationLatLon = $('#id_existing_location');
+        var locationMovedInput = $('#location-moved');
+        var zipcode = $('#zipcode');
+        var zipcodeDisplay = $('#zipcode-display');
+        var radioButtons = $('input[name=location]');
+        var submitButton = $('#submit');
+        var locations = null;
+        var easyData = new openfruit.EasyRestData();
+        var geographyService = new openfruit.geography.GeographyService(easyData);
+
+        var isNewLocationChecked = function() {
+            var checked = $('input[name=location]:checked').val();
+            if (checked == 'new-location'){
+                return true;
+            }
+            else{
+                return false;
+            }
+        };
+
+
+        var validateLocation = function(){
+            if (isNewLocationChecked()){
+                var moved = locationMovedInput.val();
+                if (moved == 'moved'){
+                    var locationNameObj = $('#id_new_location_name');
+                    var locationName = locationNameObj.val();
+                    if (locationName !== '' && locationName !== undefined){
+                        submitButton.prop('disabled', false);
+                        return;
+                    }
+                    else{
+                        submitButton.prop('disabled', true);
+                        return;
+                    }
+                }
+                else{
+                    submitButton.prop('disabled', true);
+                    return;
+                }
+            }
+            else{
+                /*
+                var existingLocationValue = $( "#id_existing_location option:selected" ).text();
+                if (existingLocationValue !== '---------'){
+                    submitButton.prop('disabled', false);
+                }
+                else{
+                    submitButton.prop('disabled', true);
+                }
+                */
+                var text = $('#existing-location-text').text();
+                if (text !== 'Location:'){
+                    submitButton.prop('disabled', false);
+                }
+                else{
+                    submitButton.prop('disabled', true);
+                }
+            }
+        };
+        radioButtons.click(function(){
+            validateLocation();
+            if (!isNewLocationChecked() && locations === null){
+                setupExistingMap();
+            }
+        });
+        $('#id_new_location_name').on('input propertychange paste', function() {
+            validateLocation();
+        });
+
+        var geoCodeLocation = function (marker){
+            var position = marker.getPosition();
+            var latlng = new google.maps.LatLng(position.lat(), position.lng());
+            geocoder = new google.maps.Geocoder();
+
+            geocoder.geocode({'latLng': latlng}, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    if (results[0]) {
+                        for (j = 0; j < results[0].address_components.length; j++) {
+                            if (results[0].address_components[j].types[0] == 'postal_code') {
+                                var value  = results[0].address_components[j].short_name;
+                                zipcodeDisplay.text(value);
+                                zipcode.val(value);
+                            }
+                        }
+                    }
+                } else {
+                    alert('Zipcode look up failed. Make sure the arrow is over the US.');
+                    console.log("Failed to find zipcode: " + status);
+                }
+            });
+        };
+
+        var setupExistingMap = function(){
+            var mapCenter = { lat: {{ map_center.0 }}, lng: {{ map_center.1 }}};
+            var map = new google.maps.Map(document.getElementById('existing-location-map'), {
+                zoom: 4,
+                center: mapCenter
+            });
+            var homeIcon = 'http://maps.google.com/mapfiles/kml/pal3/icon23.png';
+            locations = {};
+            geographyService.get_public_locations(function(locations){
+                var markers = [];
+                var markerCluster = new MarkerClusterer(map, [], {
+                    imagePath: 'https://cdn.rawgit.com/googlemaps/js-marker-clusterer/gh-pages/images/m',
+                    maxZoom: 18
+                });
+                for (var index in locations) {
+                    var obj = locations[index];
+                    locations.push(obj);
+                    data = {
+                        position: {lat:parseFloat(obj.lat), lng:parseFloat(obj.lon)},
+                        map: map,
+                        title: obj.name,
+                        icon: homeIcon,
+                        labelContent: sprintf('<div class="gmaps-label">%s</div>', obj.name)
+                    };
+                    marker = new MarkerWithLabel(data);
+                    markerCluster.addMarker(marker, true);
+                    new function(theObj){
+                        marker.addListener('click', function () {
+                            var div = $('#existing-location-text');
+                            div.text('Location:' + theObj.name);
+                            div.addClass('alert alert-success');
+                            $('#existing_location').val(theObj.location_id);
+                            validateLocation();
+                        });
+                    }(obj);
+                }
+            });
+            setTimeout(function(){
+                google.maps.event.trigger(map, 'resize');
+            }, 1000);
+        };
+
+        var initMap = function() {
+            var mapCenter = { lat: {{ map_center.0 }}, lng: {{ map_center.1 }}};
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 4,
+                center: mapCenter
+            });
+            var marker = new google.maps.Marker({
+                position: mapCenter,
+                draggable: true,
+                title: "Select Location",
+                map: map
+            });
+            google.maps.event.addListener(marker, 'dragend', function () {
+                var position = marker.getPosition();
+                var value = '' + parseFloat(position.lat()).toFixed(5) + ' ' + parseFloat(position.lng()).toFixed(5);
+                locationLatLon.val(value);
+                newLatLon.html(value);
+                locationMovedInput.val('moved');
+                geoCodeLocation(marker);
+                validateLocation();
+            });
+        };
+        initMap();
+        setTimeout(function(){
+            google.maps.event.trigger(map, 'resize');
+        }, 1000);
+        validateLocation();
+
+
+        var curatorCheckbox = $('#id_request_to_be_a_curator');
+        var curatorSection = $('#div_id_reason_to_be_curator');
+        curatorSection.hide();
+        curatorCheckbox.click(function() {
+            $('#div_id_reason_to_be_curator')[this.checked ? "show" : "hide"]();
+        });
+    </script>
+{{ form.media }}
+{% endblock %}

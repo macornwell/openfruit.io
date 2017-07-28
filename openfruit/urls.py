@@ -16,21 +16,32 @@ from django.conf.urls.static import static
 from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework import routers
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
+
 from openfruit import settings
-from openfruit.views import home, SignupFormView, about, site_change, testing
+from openfruit.views import home, about, site_change, testing
 from openfruit.taxonomy.urls import urlpatterns as TaxonomyURLs
 from openfruit.geography.urls import urlpatterns as GeographyUrls
 from openfruit.reports.event.urls import urlpatterns as EventUrls
+from openfruit.userdata.urls import urlpatterns as UserDataUrls
 
 router = routers.DefaultRouter()
 
 urlpatterns = [
     url(r'^$', home, name='home'),
-    url(r'^signup/$', SignupFormView.as_view(), name='signup'),
     url(r'^about/$', about, name='about'),
     url(r'^request/site-change/$', site_change, name='site_change'),
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^admin/', include(admin.site.urls), name='admin'),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api/v1/auth/token/$', obtain_jwt_token),
+    url(r'^api/v1/auth/token/verify/$', verify_jwt_token),
+    url(r'^api/v1/auth/token/refresh/$', refresh_jwt_token),
+
+    url(r'^', include('openfruit.common.urls')),
+    url(r'^', include('openfruit.geography.urls')),
+    url(r'^', include('openfruit.taxonomy.urls')),
+    url(r'^', include('openfruit.reports.event.urls')),
+    url(r'^', include('openfruit.userdata.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += router.urls
@@ -38,7 +49,4 @@ urlpatterns += router.urls
 if settings.DEBUG:
     urlpatterns += [url(r'^testing/$', testing, name='testing'),]
 
-urlpatterns += TaxonomyURLs
-urlpatterns += GeographyUrls
-urlpatterns += EventUrls
 

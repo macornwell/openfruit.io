@@ -13,7 +13,7 @@
     <h1>{{ kingdom.latin_name }} Genus List</h1>
     {% if request.user.is_staff %}
         <div>
-            <a class="btn btn-default btn-lg" href="#">Add New Genus</a>
+            <a class="btn btn-default btn-lg" href="{% url 'genus' %}">Add New Genus</a>
             <br>
         </div>
         <hr>

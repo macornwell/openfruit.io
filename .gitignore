@@ -3,6 +3,23 @@ db.sqlite3
 db.sqlite3-journal
 media/
 
+.idea
+node_modules
+jspm_packages
+npm-debug.log
+debug.log
+src/**/*.js
+!src/systemjs.config.extras.js
+!src/systemjs.config.js
+!src/systemjs-angular-loader.js
+*.js.map
+e2e/**/*.js
+e2e/**/*.js.map
+_test-output
+_temp
+
+
+
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/

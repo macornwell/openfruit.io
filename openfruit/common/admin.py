@@ -2,10 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.forms.models import ModelChoiceField
 from openfruit.common.services import is_curator
-from openfruit.common.models import UserProfile, Signup
 
-admin.site.register(UserProfile)
-admin.site.register(Signup)
 
 class FilterUserAdmin(admin.ModelAdmin):
     """

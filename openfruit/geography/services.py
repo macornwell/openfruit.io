@@ -1,7 +1,10 @@
 import os
 import csv
+import googlemaps
+from django.conf import settings
+
 from openfruit.settings import BASE_DIR
-from openfruit.geography.models import UserGeographySettings, UserLocation
+from openfruit.geography.models import UserLocation, Zipcode, Location
 
 US_CITIES_FILE = 'us-cities-and-zips.csv'
 US_STATES_FILE = 'us-states.csv'
@@ -9,16 +12,45 @@ COUNTRIES_FILE = 'countries.csv'
 
 class GeographyDAL:
 
+    def get_all_named_locations(self, include_private=False):
+        objects = Location.objects.filter(name__isnull=False)
+        if not include_private:
+            objects = objects.filter(is_private=False)
+        return objects
+
+    def get_location_by_id(self, id):
+        return Location.objects.get(pk=id)
+
     def get_users_locations(self, user):
         return UserLocation.objects.filter(user=user).values_list('location', flat=True)
-
-    def get_users_geography_settings(self, user):
-        return UserGeographySettings.objects.filter(user=user).first()
 
     def append_user_location(self, user, locationUsedByUser):
         obj, created = UserLocation.objects.get_or_create(user=user, location=locationUsedByUser)
         if not created:
             obj.save()  # This triggers the updating of the date.
+
+    def get_zipcode_by_zip(self, zipcode):
+        return Zipcode.objects.get(zipcode=zipcode)
+
+    def create_location(self, zipcode, coordinate, name):
+        city = zipcode.city
+        state = city.state
+        country = state.country
+        location, created = Location.objects.get_or_create(country=country, state=state, city=city, zipcode=zipcode, geocoordinate=coordinate, name=name)
+        return location
+
+    def geocode_zipcode_from_lat_lon(self, lat, lon):
+        gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
+        reverse_geocode_result = gmaps.reverse_geocode((40.714224, -73.961452))
+        zipcodeObj = None
+        for index in range(0, len(reverse_geocode_result[0]['address_components'])):
+            obj = reverse_geocode_result[0]['address_components']
+            if obj[index]['types'][0] == 'postal_code':
+                zipcode = obj[index]['short_name']
+                zipcodeObj = Zipcode.objects.get(zipcode=zipcode)
+                break
+        return zipcodeObj
+
 
 GEO_DAL = GeographyDAL()
 

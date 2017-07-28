@@ -1,11 +1,19 @@
+import json
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, HttpResponseRedirect, Http404
+from django.shortcuts import render, HttpResponseRedirect, Http404, HttpResponse
+from django.http import HttpResponseServerError
 from django.core.urlresolvers import reverse
 from django.views.generic import View
+from django.utils import timezone
 from django.utils.decorators import method_decorator
-from openfruit.reports.event.models import EventReport
+
+from rest_framework import generics
+
+from openfruit.reports.event.models import EventReport, DIED_TYPE
 from openfruit.reports.event.forms import EventReportForm
 from openfruit.reports.event.services import EVENT_DAL
+from openfruit.reports.event.serializers import EventReportSerializer
+from openfruit.taxonomy.services import TAXONOMY_DAL
 from openfruit.geography.services import GEO_DAL
 
 
@@ -64,7 +72,13 @@ class DistinctEventView(View):
                     instance = form.save(commit=False)
                     if id:
                         instance.event_report_id = id
-                    instance.image = form.cleaned_data['image'] or None
+                        oldInstance = EVENT_DAL.get_event_by_id(id)
+                        if oldInstance.image:
+                            instance.image = oldInstance.image
+                    if 'image' in form.cleaned_data and form.cleaned_data['image']:
+                        instance.image = form.cleaned_data['image']
+                    if 'image-clear' in data:
+                        instance.image = None
                     instance.save()
                     success = True
                 except Exception as e:
@@ -72,7 +86,49 @@ class DistinctEventView(View):
                 if success:
                     if 'add-new' in data:
                         return HttpResponseRedirect(reverse(self.url_name))
-                    return HttpResponseRedirect(reverse('home'))
+                    return HttpResponseRedirect(reverse(self.url_name, kwargs={'id':id}))
         data = self.__get_data(form, request.user)
         return render(request, self.template_name, data)
+
+
+
+
+
+################
+# JSON
+################
+
+def add_event_record(request):
+    if request.method == 'POST':
+        jsonData = json.loads(request.read().decode('utf-8'))
+        try:
+            eventType = jsonData['event_type']
+            fruitingPlantID = jsonData['fruiting_plant_id']
+        except KeyError:
+            return HttpResponseServerError("Malformed data!")
+        event = EVENT_DAL.get_event_type_by_type(eventType)
+        fruitingPlant = TAXONOMY_DAL.get_fruiting_plant_by_id(fruitingPlantID)
+        if event.type == DIED_TYPE:
+            fruitingPlant.date_died = timezone.now()
+            fruitingPlant.save()
+        EVENT_DAL.create_event(request.user, event, fruitingPlant)
+    return HttpResponse("OK")
+
+
+class EventReportListView(generics.ListAPIView):
+    serializer_class = EventReportSerializer
+
+    def get_queryset(self):
+        jsonData = self.request.GET
+        try:
+            fruitingPlantID = jsonData.get('fruiting_plant_id', None)
+            submittedBy = jsonData.get('submitted_by', None)
+            eventType = jsonData.get('event_type', None)
+            types = jsonData.get('types', [])
+        except KeyError:
+            return HttpResponseServerError("Malformed data!")
+        events = EVENT_DAL.get_events(fruiting_plant_id=fruitingPlantID, submitted_by=submittedBy, event_type=eventType, types=types)
+        return events
+
+
 
