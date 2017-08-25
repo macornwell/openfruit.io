@@ -11,4 +11,4 @@ class GeoCoordinateManager(models.Manager):
 class LocationManager(models.Manager):
 
     def public_locations(self):
-        return super(LocationManager, self).filter(name__isnull=False, is_private=False)
+        return super(LocationManager, self).filter(name__isnull=False)

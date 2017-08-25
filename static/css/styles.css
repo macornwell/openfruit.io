@@ -151,6 +151,10 @@ Geography
   height: 400px;
   width: auto;
 }
+.small-google-map {
+  height: 200px;
+  width: auto;
+}
 .google-map-large {
   height: 500px;
   width: auto;
@@ -200,4 +204,8 @@ Testing area
 .content-window {
   height: 100px;
   width: 200px;
+}
+.equal-table .table td,
+.equal-table .table th {
+  min-width: 100px;
 }

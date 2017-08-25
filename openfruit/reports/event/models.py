@@ -53,7 +53,7 @@ class EventReport(models.Model):
     event_report_id = models.AutoField(primary_key=True)
     submitted_by = models.ForeignKey(User)
     datetime = models.DateTimeField(default=timezone.now)
-    plant = models.ForeignKey(FruitingPlant)
+    fruiting_plant = models.ForeignKey(FruitingPlant)
     was_auto_generated = models.BooleanField(default=False)
     event_type = models.ForeignKey(EventType)
     affinity = models.IntegerField(choices=AFFINITY_CHOICES, default=AFFINITY_NEUTRAL)
@@ -61,7 +61,7 @@ class EventReport(models.Model):
     image = ImageField(upload_to=upload_image, blank=True, null=True)
 
     def __str__(self):
-        value = '{0} - {1} - {2}'.format(self.datetime, self.event_type, str(self.plant))
+        value = '{0} - {1} - {2}'.format(self.datetime, self.event_type, str(self.fruiting_plant))
         return value
 
 

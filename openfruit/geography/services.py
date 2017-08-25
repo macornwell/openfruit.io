@@ -4,7 +4,7 @@ import googlemaps
 from django.conf import settings
 
 from openfruit.settings import BASE_DIR
-from openfruit.geography.models import UserLocation, Zipcode, Location
+from openfruit.geography.models import UserLocation, Zipcode, Location, Country
 
 US_CITIES_FILE = 'us-cities-and-zips.csv'
 US_STATES_FILE = 'us-states.csv'
@@ -12,10 +12,12 @@ COUNTRIES_FILE = 'countries.csv'
 
 class GeographyDAL:
 
+    def get_country_by_name(self, name):
+        country = Country.objects.filter(name__iexact=name).first()
+        return country
+
     def get_all_named_locations(self, include_private=False):
         objects = Location.objects.filter(name__isnull=False)
-        if not include_private:
-            objects = objects.filter(is_private=False)
         return objects
 
     def get_location_by_id(self, id):

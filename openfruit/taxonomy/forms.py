@@ -7,26 +7,28 @@ from dal.autocomplete import ModelSelect2
 from datetimewidget.widgets import DateWidget
 from openfruit.taxonomy.models import Species, Cultivar, Genus, FruitingPlant
 from openfruit.common.widgets import CustomRelatedFieldWidgetWrapper
+from openfruit.geography.models import Location
 
 class FruitingPlantForm(ModelForm):
     class Meta:
         model = FruitingPlant
         fields = [
-            'user_manager',
+            'fruiting_plant_id',
+            'created_by',
             'species',
             'cultivar',
             'location',
             'geocoordinate',
-            'planted',
-            'is_private',
+            'date_planted',
             'date_died',
         ]
         widgets = {
+            'fruiting_plant_id': HiddenInput(),
             'species': ModelSelect2(url='species-autocomplete'),
             'cultivar': ModelSelect2(url='cultivar-autocomplete'),
             'geocoordinate': ModelSelect2(url='geocoordinate-autocomplete'),
             'location': ModelSelect2(url='named-location-autocomplete'),
-            'user_manager': ModelSelect2(url='curator-only-user-autocomplete'),
+            'created_by': ModelSelect2(url='curator-only-user-autocomplete'),
         }
 
 class FruitingPlantQuickForm(ModelForm):
@@ -43,6 +45,11 @@ class FruitingPlantQuickForm(ModelForm):
             reverse('admin:taxonomy_species_add') + "?_to_field=species_id&_popup=1",
             True)
         self.fields['species'].queryset = Species.objects.all()
+        self.fields['location'].widget = CustomRelatedFieldWidgetWrapper(
+            ModelSelect2(url='location-autocomplete'),
+            reverse('admin:geography_location_add') + "?_to_field=location_id&_popup=1",
+            True)
+        self.fields['location'].queryset = Location.objects.all()
 
     class Media:
         ## media for the FilteredSelectMultiple widget
@@ -55,19 +62,18 @@ class FruitingPlantQuickForm(ModelForm):
     class Meta:
         model = FruitingPlant
         fields = [
-            'user_manager',
+            'created_by',
             'species',
             'cultivar',
             'location',
-            'planted',
-            'is_private'
+            'date_planted',
         ]
         widgets = {
-            'user_manager': HiddenInput(),
+            'created_by': HiddenInput(),
             'species': ModelSelect2(url='species-autocomplete'),
             'cultivar': ModelSelect2(url='cultivar-autocomplete'),
             'location': ModelSelect2(url='location-autocomplete'),
-            'planted': DateWidget(usel10n=True, bootstrap_version=3),
+            'date_planted': DateWidget(usel10n=True, bootstrap_version=3),
         }
 
 

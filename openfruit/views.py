@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.utils.html import escape
 from django.contrib import messages
 
+from openfruit.dashboard.views import dashboard
 from openfruit.reports.event.forms import EventReportForm
 from openfruit.taxonomy.models import FruitingPlant
 from openfruit.taxonomy.services import TAXONOMY_DAL
@@ -52,13 +53,6 @@ def home(request):
     loginNextUrl = escape(request.path)
     data['loginUrl'] = '{0}?next={1}'.format(loginUrl, loginNextUrl)
     return render(template_name='home.html', context=data, request=request)
-
-
-def dashboard(request):
-    data = {}
-    data['users_plants'] = FruitingPlant.objects.get_plants_for_user_that_are_living(request.user)
-    data['species_list'] = TAXONOMY_DAL.get_all_species_with_fruiting_plants_of_user(request.user)
-    return render(template_name='dashboard.html', context=data, request=request)
 
 
 def explore_public(request):

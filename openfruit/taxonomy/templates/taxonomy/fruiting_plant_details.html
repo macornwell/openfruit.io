@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load taxonomy_tags %}
+
+{% block body %}
+    <div id="data">
+    <h1>{% get_name_of_species_or_cultivar model.species model.cultivar %}</h1>
+    <div class="row">
+        <div class="col-sm-6">
+            <strong>Created By:</strong> {{ model.created_by }}
+        </div>
+        <div class="col-sm-6">
+            <strong>Date Planted:</strong> <span>{{ model.date_planted }}</span>
+        </div>
+        <div class="col-sm-6">
+            <strong>Species: </strong> {{ model.species }}
+        </div>
+        <div class="col-sm-6">
+            <strong>Cultivar: </strong> <span>{{ model.cultivar }}</span>
+        </div>
+        {% if model.date_died %}
+            <div>
+                <strong>Date Died:</strong> <span>{{ model.date_died }}</span>
+            </div>
+        {% endif %}
+    </div>
+    <div id="aggregate-reports">
+        <h3>Aggregated Events</h3>
+        <table class="table table-striped equal-table">
+            <thead>
+                <tr>
+                    <td>J</td>
+                    <td>F</td>
+                    <td>M</td>
+                    <td>A</td>
+                    <td>M</td>
+                    <td>J</td>
+                    <td>J</td>
+                    <td>A</td>
+                    <td>S</td>
+                    <td>O</td>
+                    <td>N</td>
+                    <td>D</td>
+                </tr>
+            </thead>
+            <tbody>
+            <tr>
+                {% for leaf in leafs %}
+                    <td>
+                    {% if leaf %}
+                        <i class="fa fa-leaf" aria-hidden="true"></i>
+                    {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                {% for bloom in blooms %}
+                    <td>
+                        {% if bloom %}
+                            <span>✿</span>
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                {% for ripening in ripenings %}
+                    <td>
+                        {% if ripening %}
+                            <i class="fa fa-apple" aria-hidden="true"></i>
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+    {% if model.location %}
+    <div>
+        <h3>
+            Located At: {{ model.location.name }}
+        </h3>
+    </div>
+    {% endif %}
+    <div id="map" class="small-google-map"></div>
+    </div>
+    {% if all_events %}
+    <div id="events">}
+       <h2>Logged Events</h2>
+        {% for event in all_events %}
+            <ul>
+                <li>
+                {{ event }}
+                </li>
+            </ul>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div>
+    <h2>No Events Logged</h2>
+    </div>
+    {% endif %}
+
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function(){
+            var map = null;
+            var initMap = function() {
+                var imageUrl = '{{ model.species.google_maps_image_url }}';
+                var zoom = 19;
+                var mapCenter = {lat: {{ model.geocoordinate.lat }}, lng: {{ model.geocoordinate.lon }}};
+                map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 19,
+                    mapTypeId: 'hybrid',
+                    center: mapCenter,
+                    styles: [
+                        {
+                            featureType: 'poi.business',
+                            stylers: [{visibility: 'off'}]
+                        },
+                        {
+                            featureType: 'transit',
+                            elementType: 'labels.icon',
+                            stylers: [{visibility: 'off'}]
+                        }
+                    ]
+                });
+                var marker = new google.maps.Marker({
+                    position: mapCenter,
+                    map: map,
+                    //title: "Select Location",
+                    icon: imageUrl
+                });
+                console.log(map);
+            };
+            initMap();
+            setTimeout(function(){
+                google.maps.event.trigger(map, 'resize');
+            }, 1000);
+        });
+    </script>
+{% endblock %}

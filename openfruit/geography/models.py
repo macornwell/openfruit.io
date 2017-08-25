@@ -8,6 +8,12 @@ from openfruit.geography.managers import LocationManager, GeoCoordinateManager
 from openfruit.geography.utilities import get_standardized_coordinate
 
 
+def get_united_states():
+    from openfruit.geography.services import GEO_DAL
+    country = GEO_DAL.get_country_by_name('United States of America')
+    return country
+
+
 class GeoCoordinate(models.Model):
     objects = GeoCoordinateManager()
     geocoordinate_id = models.AutoField(primary_key=True)
@@ -15,12 +21,32 @@ class GeoCoordinate(models.Model):
     lon = models.DecimalField(max_digits=8, decimal_places=5)
     generated_name = models.CharField(max_length=50, blank=True, null=True)
 
+    lat_neg = models.BooleanField(default=False)
+    lat_tens = IntegerRangeField(min_value=-9, max_value=9, blank=True, null=True)
+    lat_ones = IntegerRangeField(min_value=0, max_value=9, blank=True, null=True)
+    lat_tenths = IntegerRangeField(min_value=0, max_value=9, blank=True, null=True)
+    lat_hundredths = IntegerRangeField(min_value=0, max_value=9, blank=True, null=True)
+    lat_thousands = IntegerRangeField(min_value=-0, max_value=9, blank=True, null=True)
+    lat_ten_thousands = IntegerRangeField(min_value=0, max_value=9, blank=True, null=True)
+    lat_hundred_thousands = IntegerRangeField(min_value=0, max_value=9, blank=True, null=True)
+
+    lon_neg = models.BooleanField(default=False)
+    lon_hundreds = IntegerRangeField(min_value=-9, max_value=9, blank=True, null=True)
+    lon_tens = IntegerRangeField(min_value=-0, max_value=9, blank=True, null=True)
+    lon_ones = IntegerRangeField(min_value=0, max_value=9, blank=True, null=True)
+    lon_tenths = IntegerRangeField(min_value=0, max_value=9, blank=True, null=True)
+    lon_hundredths = IntegerRangeField(min_value=0, max_value=9, blank=True, null=True)
+    lon_thousands = IntegerRangeField(min_value=-0, max_value=9, blank=True, null=True)
+    lon_ten_thousands = IntegerRangeField(min_value=0, max_value=9, blank=True, null=True)
+    lon_hundred_thousands = IntegerRangeField(min_value=0, max_value=9, blank=True, null=True)
+
     def __str__(self):
         return self.generated_name or self.__get_generated_name()
 
     def save(self, *args, **kwargs):
         self.__standardize_fractionals()
         self.generated_name = self.__get_generated_name()
+        self.__generate_whole_fractionals()
         super(GeoCoordinate, self).save(*args, **kwargs)
 
     def __get_generated_name(self):
@@ -29,6 +55,71 @@ class GeoCoordinate(models.Model):
     def __standardize_fractionals(self):
         self.lat = get_standardized_coordinate(self.lat)
         self.lon = get_standardized_coordinate(self.lon)
+
+    def __generate_whole_fractionals(self):
+        try:
+            self.lat_neg, self.lat_tens, self.lat_ones, self.lat_tenths, self.lat_hundredths, self.lat_thousands, self.lat_ten_thousands, self.lat_hundred_thousands = GeoCoordinate.split_lat_coordinate(self.lat)
+        except:
+            message = '{0} {1}'.format(self.lat, GeoCoordinate.split_lat_coordinate(self.lat))
+            raise Exception(message)
+        try:
+            self.lon_neg, self.lon_hundreds, self.lon_tens, self.lon_ones, self.lon_tenths, self.lon_hundredths, self.lon_thousands, self.lon_ten_thousands, self.lon_hundred_thousands = GeoCoordinate.split_lon_coordinate(self.lon)
+        except:
+            message = '{0} {1}'.format(self.lon, GeoCoordinate.split_lon_coordinate(self.lon))
+            raise Exception(message)
+
+    @staticmethod
+    def __split_frac(frac):
+        coord_points = []
+        for i in range(0, len(frac)):
+            coord_points.append(int(frac[i]))
+        return coord_points
+
+    @staticmethod
+    def split_lat_coordinate(coordinate):
+        coord_points = []
+        whole, frac = str(coordinate).split('.', 1)
+        is_negative = whole[0] is '-'
+        if is_negative:
+            whole = whole[1:]
+            coord_points.append(True)
+        else:
+            coord_points.append(False)
+        whole = '{0:02d}'.format(int(whole))
+        if whole[0] == '0':
+            coord_points.append(0)
+            coord_points.append(int(whole[1]))
+        else:
+            coord_points.append(int(whole[0]))
+            coord_points.append(int(whole[1]))
+        coord_points += GeoCoordinate.__split_frac(frac)
+        return coord_points
+
+    @staticmethod
+    def split_lon_coordinate(coordinate):
+        coord_points = []
+        whole, frac = str(coordinate).split('.', 1)
+        is_negative = whole[0] is '-'
+        if is_negative:
+            whole = whole[1:]
+            coord_points.append(True)
+        else:
+            coord_points.append(False)
+        whole = '{0:03d}'.format(int(whole))
+        if whole[0] == '0':
+            coord_points.append(0)
+            if whole[1] == '0':
+                coord_points.append(0)
+            else:
+                coord_points.append(int(whole[1]))
+            coord_points.append(int(whole[2]))
+        else:
+            coord_points.append(int(whole[0]))
+            coord_points.append(int(whole[1]))
+            coord_points.append(int(whole[2]))
+        coord_points += GeoCoordinate.__split_frac(frac)
+        return coord_points
+
 
     class Meta:
         unique_together = ('lat', 'lon')
@@ -127,13 +218,12 @@ class Location(models.Model):
     """
     objects = LocationManager()
     location_id = models.AutoField(primary_key=True)
-    country = models.ForeignKey(Country)
+    country = models.ForeignKey(Country, default=get_united_states)
     state = models.ForeignKey(State, blank=True, null=True)
     city = models.ForeignKey(City, blank=True, null=True)
     zipcode = models.ForeignKey(Zipcode, blank=True, null=True)
     geocoordinate = models.ForeignKey(GeoCoordinate, blank=True, null=True, help_text='This is a very specific location.')
     name = models.CharField(max_length=30, blank=True, null=True)
-    is_private = models.BooleanField(default=False, help_text='Is this a location that should not be available to be seen publically?')
     generated_name = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
@@ -167,6 +257,7 @@ class Location(models.Model):
     def save(self, *args, **kwargs):
         self.__set_cascading_details()
         self.__set_generated_name()
+        self.__set_coordinate()
         self.__validate_interconnection_details()
         return super(Location, self).save(*args, **kwargs)
 
@@ -174,9 +265,22 @@ class Location(models.Model):
         if self.zipcode and not self.city:
             self.city = self.zipcode.city
         if self.city and not self.state:
-            self.country = self.city.state
+            self.state = self.city.state
         if self.state and not self.country:
             self.country = self.state.country
+
+    def __set_coordinate(self):
+        if self.geocoordinate:
+            return
+        if self.zipcode:
+            self.geocoordinate = self.zipcode.geocoordinate
+        elif self.city:
+            self.geocoordinate = self.city.geocoordinate
+        elif self.country:
+            self.geocoordinate = self.country.geocoordinate
+        else:
+            raise Exception('No ability to set geocoordinate.')
+        return
 
     def __validate_interconnection_details(self):
         if self.state and self.state.country != self.country:

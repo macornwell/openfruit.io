@@ -62,6 +62,7 @@ INSTALLED_APPS = (
     'openfruit.reports.review',
     'openfruit.reports.work',
     'openfruit.userdata',
+    'openfruit.chat',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -75,6 +76,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'auditlog.middleware.AuditlogMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
 )
 
 ROOT_URLCONF = 'openfruit.urls'
@@ -203,24 +205,24 @@ DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer
 ##########
 def get_user_models_for_permissions():
     from openfruit.reports.event.models import EventReport
-    from openfruit.reports.review.models import FruitReviewReport
+    from openfruit.reports.review.models import FruitReview
     from openfruit.taxonomy.models import Cultivar, Species
     from openfruit.geography.models import GeoCoordinate, Location
 
     return (
-        EventReport, FruitReviewReport,
-        FruitReviewReport, Cultivar, Species, GeoCoordinate, Location
+        EventReport, FruitReview,
+        FruitReview, Cultivar, Species, GeoCoordinate, Location
     )
 
 def get_curator_models():
     from openfruit.reports.event.models import EventReport
-    from openfruit.reports.review.models import FruitReviewReport
+    from openfruit.reports.review.models import FruitReview
     from openfruit.taxonomy.models import Cultivar, Kingdom, Species, Genus
     from openfruit.geography.models import City, Continent, Country, GeoCoordinate, Location, State
 
     return (
-        EventReport, FruitReviewReport,
-        FruitReviewReport, Cultivar, Kingdom,
+        EventReport, FruitReview,
+        FruitReview, Cultivar, Kingdom,
         Species, Genus, City, Continent, Country,
         GeoCoordinate, Location, State
     )

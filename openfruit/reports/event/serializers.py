@@ -12,4 +12,4 @@ class EventReportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EventReport
-        fields = ('event_report_id', 'submitted_by', 'datetime', 'plant', 'event_type', 'event_type_text', 'notes')
+        fields = ('event_report_id', 'submitted_by', 'datetime', 'fruiting_plant', 'event_type', 'event_type_text', 'notes')

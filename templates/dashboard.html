@@ -48,6 +48,7 @@
 
 {% block scripts %}
     <script src="{% static 'js/js.cookie.js' %}"></script>
+    <script src="{% static 'js/oms.min.js' %}"></script>
     <script src="{% static 'js/markerclusterer.js' %}"></script>
     <script src="{% static 'js/geography/googlemaps.js'%}"></script>
     <script src="{% static 'js/geography/utilities.js'%}"></script>
@@ -57,9 +58,12 @@
     <script src="{% static 'js/plantmenu.js' %}"></script>
     <script src="{% static 'js/format.js'%}"></script>
     <script>
+        var map = null;
+        var markers = [];
+        var markerCluster = null;
         var userID = {{ user.id }};
         var userLocation = '{{ USER_PROFILE.location.name }}';
-        var center = new openfruit.geography.LatLon({{ USER_PROFILE.location.lat }}, {{ USER_PROFILE.location.lon }});
+        var center = {lat: {{ USER_PROFILE.location.lat }}, lng:{{ USER_PROFILE.location.lon }}};
         var easyData = new openfruit.EasyRestData();
         var menuFactory = new openfruit.PlantMenuFactory();
         var utilities = new openfruit.geography.GeoUtilities();
@@ -74,6 +78,16 @@
         var lastOpenWindow = null;
         var movingOn = false;
         var canMoveObjects = false;
+        var mapupdater;
+        var insidePopup = false;
+        var spiderfier;
+
+
+        var speciesIDToIcon = {
+            {% for species in species_to_icon %}
+                {{  species.species_id }}: '{{ species.google_maps_image_url }}',
+            {% endfor %}
+        };
 
         {% for fruit in users_plants %}
             usersFruits[{{ fruit.fruiting_plant_id }}] = {
@@ -120,6 +134,7 @@
             refresh();
         };
 
+
         var addButtons = function(map) {
             var addControl = document.createElement('div');
 
@@ -154,18 +169,108 @@
             map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(moveButton);
 
       };
+        function mapSettleTime() {
+            if (!insidePopup){
+                clearTimeout(mapupdater);
+                mapupdater=setTimeout(requestMarkers,200);
+            }
+        }
+
+        var requestMarkers = function(){
+            var bounds = map.getBounds();
+            var ne = "" + bounds.getNorthEast();
+            ne = ne.replace(/[\(\),]+/g, '');
+            var sw = "" + bounds.getSouthWest();
+            sw = sw.replace(/[\(\),]+/g, '');
+            taxonomyService.getBoundingBoxOfFruit(setupMarkers, ne, sw);
+        };
+
+        var setupMarkers = function(plants){
+            console.log('Returned ' + plants.length + ' plants.');
+            initializeMarkersAndCluster(map);
+            for (var index in plants){
+                var fruit = plants[index];
+                (function(fruitingPlant){
+                    if (fruitsToDisplay === 'ALL' || fruitingPlant.species == fruitsToDisplay){
+                      setupMarker(fruitingPlant, map);
+                    }
+                })(fruit);
+            }
+        };
+
+        var initializeMarkersAndCluster = function(map) {
+            for(var i=0; i<markers.length; i++) {
+                markerCluster.removeMarker(markers[i]);
+            }
+            if (markerCluster !== null){
+                markerCluster.clearMarkers();
+            }
+            while (markers.length) {
+                markers.pop();
+            }
+            markerCluster = new MarkerClusterer(map, markers, {
+                imagePath: 'https://cdn.rawgit.com/googlemaps/js-marker-clusterer/gh-pages/images/m',
+                maxZoom: 17
+            });
+            data = {
+                position: center,
+                map: map,
+                title: userLocation,
+                icon:'http://maps.google.com/mapfiles/kml/pal3/icon23.png'
+            };
+
+            var marker = new google.maps.Marker(data);
+            markers.push(marker);
+            markerCluster.addMarker(marker, true);
+        };
 
         var refresh = function(){
-            var map = new openfruit.geography.GoogleMaps('location-map', currentCenter, currentZoom);
-
-            map._map.addListener('bounds_changed', function(){
-                currentCenter = map._map.getCenter();
+            map = new google.maps.Map(document.getElementById('location-map'), {
+                zoom: currentZoom,
+                mapTypeId: 'hybrid',
+                center: currentCenter,
+                styles:
+                  [
+                    {
+                      featureType: 'poi.business',
+                      stylers: [{visibility: 'off'}]
+                    },
+                    {
+                      featureType: 'transit',
+                      elementType: 'labels.icon',
+                      stylers: [{visibility: 'off'}]
+                    }
+                  ]
             });
-            map._map.addListener('zoom_changed', function(){
-                currentZoom = map._map.getZoom();
+            spiderfier = new OverlappingMarkerSpiderfier(map, {
+                markersWontMove: true,
+                markersWontHide: true,
+                basicFormatEvents: true
             });
-            map.addMarker(center.getLatLon(), userLocation, {icon:'http://maps.google.com/mapfiles/kml/pal3/icon23.png'}, addToCluster=false);
+            map.markers = markers;
 
+            initializeMarkersAndCluster(map);
+
+            map.addListener('bounds_changed', function(){
+                currentCenter = map.getCenter();
+            });
+            map.addListener('bounds_changed', mapSettleTime);
+            map.addListener('zoom_changed', function(){
+                currentZoom = map.getZoom();
+            });
+            data = {
+                position: center,
+                map: map,
+                title: userLocation,
+                icon:'http://maps.google.com/mapfiles/kml/pal3/icon23.png'
+            };
+
+            var marker = new google.maps.Marker(data);
+            markers.push(marker);
+            markerCluster.addMarker(marker, true);
+            setTimeout(function(){google.maps.event.trigger(map, 'resize')}, 1000);
+
+            /*
             for (var fruitingPlantID in usersFruits){
                 var fruit = usersFruits[fruitingPlantID];
                 (function(fruitingPlant){
@@ -174,8 +279,15 @@
                     }
                 })(fruit);
             }
-            setupCenterMarker(map._map);
-            addButtons(map._map);
+            */
+            setupCenterMarker(map);
+            addButtons(map);
+        };
+
+        var clearMarkers = function() {
+            while (markers.length){
+                markers.pop().setMap(null);
+            }
         };
 
         var setupMarker = function(fruitingPlant, map) {
@@ -190,7 +302,23 @@
             if (iconUrl === 'None') {
                 iconUrl = treeIcon;
             }
-            var marker = map.addMarker(coord, name, {icon: iconUrl, draggable: canMoveObjects});
+            if (fruitingPlant.species in speciesIDToIcon){
+                iconUrl = speciesIDToIcon[fruitingPlant.species];
+            }
+            else {
+                iconUrl = treeIcon;
+            }
+            var data = {
+                position: coord,
+                draggable: canMoveObjects,
+                map: map,
+                title: userLocation,
+                icon: iconUrl
+            };
+            var marker = new google.maps.Marker(data);
+            //markers.push(marker);
+            markerCluster.addMarker(marker, true);
+            spiderfier.addMarker(marker);
 
             marker.addListener('dragend', function () {
                 var position = marker.getPosition();
@@ -201,18 +329,23 @@
                 });
             });
 
-            marker.addListener('click', function () {
+            marker.addListener('spider_click', function () {
+                insidePopup = true;
                 eventService.getEvents(
                         function(objects){
-                            console.log(objects);
                             var content = menuFactory.createMenu(fruitingPlant);
                             var summary = menuFactory.createEventSummary(objects);
+                            var link = menuFactory.createDetailsLink(fruitingPlant);
                             content += summary;
+                            content += link;
                             if (lastOpenWindow !== null) {
                                 lastOpenWindow.close();
                             }
                             var infowindow = new google.maps.InfoWindow({
                                 content: content
+                            });
+                            google.maps.event.addListener(infowindow,'closeclick',function(){
+                                insidePopup = false;
                             });
                             infowindow.open(map, marker);
                             lastOpenWindow = infowindow;
@@ -221,14 +354,15 @@
                         fruitingPlant.fruiting_plant_id,
                         null,
                         null,
-                        ['Leafing Out', 'Blooming', 'Ripening']);
+                        ['Leafing Out', 'Blooming', 'Ripening']
+                );
             });
         };
 
-
         $(document).ready(function(){
 
-            currentCenter = center.getLatLon();
+            //currentCenter = center.getLatLon();
+            currentCenter = center;
             currentZoom = 19;
             refresh('ALL');
 
@@ -248,6 +382,11 @@
                 eventService.createEventRecord(eventType, id, onSuccess, onError);
                 if (lastOpenWindow !== null) {
                     lastOpenWindow.close();
+                }
+                if (eventType === 'Died'){
+                    setInterval(function(){
+                        window.location.reload();
+                    }, 1000);
                 }
             });
             confirmDialog.on('show.bs.modal', function(e) {

@@ -15,7 +15,7 @@
         <form action="" method="post" enctype='multipart/form-data'>
         {% csrf_token %}
             <input name="event_report_id" hidden type="number" value="{{ event_report_id }}">
-            {{ form.plant|as_crispy_field }}
+            {{ form.fruiting_plant|as_crispy_field }}
             {% if form.instance.image != None %}
                 {% thumbnail form.instance.image "50x50" crop="center" as im %}
                     <img class="thumbnail pull-right" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">

@@ -21,10 +21,10 @@ cultivarHTML = """
     <a data-toggle="modal" data-record-id="{0}" data-event-type="Died" data-plant="{1}" data-target="#confirm" class="btn btn-default btn-lg" href="#">
         <i class="fa fa-times" aria-hidden="true"></i></a>
   </div>
-  <h3 class="cultivar-name">{1}<a href="#"<i class="fa fa-info info-link" aria-hidden="true"></i></a></h3>
+  <h3 class="cultivar-name">{1}<a href="/cultivar/{0}"<i class="fa fa-info info-link" aria-hidden="true"></i></a></h3>
   <span class="species-name">Species: {2}</span>
   <br>
-  <span>Managed By:{3}</span>
+  <span>Added By:{3}</span>
 
 """
 
@@ -56,6 +56,10 @@ no_record = """
 <li>No {0} Records Yet</li>
 """
 
+see_all_records = """
+<div><a href="/fruiting-plant/details/{0}">Details</a></div>
+"""
+
 
 class PlantMenuFactory
   __eventUrl = ''
@@ -83,7 +87,11 @@ class PlantMenuFactory
       text += @_create_record(events, type)
       text += '\n'
     text += endPreviousRecord
+
     return text
+
+  createDetailsLink:(fruitingPlant)=>
+    return see_all_records.format(fruitingPlant.fruiting_plant_id)
 
   _create_record: (events, type)=>
     count = @_countMatches(events, (plant)=>
@@ -110,7 +118,6 @@ class PlantMenuFactory
     count = 0
     while (i < array.length)
         if func(array[i])
-          console.log('match')
           count += 1
         i += 1
     return count

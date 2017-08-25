@@ -4,10 +4,14 @@ from django.db.models import Q
 from openfruit.settings import BASE_DIR
 from openfruit.taxonomy.models import Species, Genus, Cultivar, FruitingPlant
 from openfruit.geography.models import GeoCoordinate
+from openfruit.geography.utilities import BoundingBox, LatLon, GeoResolutionAlgorithm
 
 
 
 class TaxonomyDAL:
+
+    def get_fruiting_plants_created_by(self, user):
+        return FruitingPlant.objects.filter(created_by=user)
 
     def public_plants_query(self, user, queryArgs):
         qs = FruitingPlant.objects.filter(is_private=False)
@@ -84,7 +88,87 @@ class TaxonomyDAL:
     def get_cultivars_by_species(self, species):
         return Cultivar.objects.filter(species=species)
 
+    def get_cultivar_by_id(self, cultivar_id):
+        return Cultivar.objects.get(pk=cultivar_id)
+
+
     def get_species_by_name(self, name):
         return Species.objects.get(Q(name__iexact=name) | Q(latin_name__iexact=name))
+
+    def query_fruiting_plants(self, query_params):
+        north_east = query_params.get('north_east', None)
+        south_west = query_params.get('south_west', None)
+        if not north_east and not south_west:
+            raise Exception('Must have a bounding box.')
+        species = query_params.get('species', None)
+        ne = LatLon.parse_string(north_east)
+        sw = LatLon.parse_string(south_west)
+        bounding_box = BoundingBox(ne, sw)
+        nw = bounding_box.get_north_west()
+        alg = GeoResolutionAlgorithm(bounding_box)
+
+        query = FruitingPlant.objects.all()
+
+        lat_result = alg.lat_db_resolution()
+        kwargs = {
+        }
+        if lat_result:
+            # Macro Filtering for filtering the vast majority of non-matches.
+            args = [
+                'geocoordinate__lat_tens',
+                'geocoordinate__lat_ones',
+                'geocoordinate__lat_tenths',
+                'geocoordinate__lat_hundredths',
+                'geocoordinate__lat_thousands',
+                'geocoordinate__lat_ten_thousands',
+                'geocoordinate__lat_ten_hundred_thousands',
+            ]
+            # Is this negative?
+            if lat_result[0]:
+                kwargs['geocoordinate__lat_neg'] = True
+            else:
+                kwargs['geocoordinate__lat_neg'] = False
+            for i in range(1, len(lat_result)):
+                if lat_result[i] > -1:
+                    kwargs[args[i - 1]] = lat_result[i]
+        lon_result = alg.lon_db_resolution()
+        if lon_result:
+            args = [
+                'geocoordinate__lon_hundreds',
+                'geocoordinate__lon_tens',
+                'geocoordinate__lon_ones',
+                'geocoordinate__lon_tenths',
+                'geocoordinate__lon_hundredths',
+                'geocoordinate__lon_thousands',
+                'geocoordinate__lon_ten_thousands',
+                'geocoordinate__lon_hundred_thousands',
+            ]
+            # Is this negative?
+            if lon_result[0]:
+                kwargs['geocoordinate__lon_neg'] = True
+            else:
+                kwargs['geocoordinate__lon_neg'] = False
+            for i in range(1, len(lon_result)):
+                if lon_result[i] > -1:
+                    kwargs[args[i - 1]] = lon_result[i]
+
+        query = query.filter(**kwargs)
+        # Simple Query which cleans anything else out.
+        query = query.filter(geocoordinate__lat__lte=nw.lat, geocoordinate__lat__gte=sw.lat,
+                             geocoordinate__lon__lte=ne.lon, geocoordinate__lon__gte=nw.lon)
+
+        print(query.query)
+        print(query)
+        return query
+
+    def get_species_with_google_maps_images(self):
+        return Species.objects.filter(google_maps_image_url__isnull=False)
+
+
+
+
+
+
+
 
 TAXONOMY_DAL = TaxonomyDAL()

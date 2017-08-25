@@ -6,6 +6,7 @@ root.openfruit.taxonomy = root.openfruit.taxonomy ? {}
 class TaxonomyDAL
   __fruitingPlantsNotPublicURL = 'api/v1/plants/public'
   __moveFruitingPlantURL = '/api/v1/plants/move'
+  __fruitingPlants = '/api/v1/fruiting-plants/'
 
   constructor:(easyData)->
     @_easyData = easyData
@@ -19,8 +20,12 @@ class TaxonomyDAL
       queryParams += 'no-user&'
     if species
       queryParams += 'species=' + species + '&'
-    console.log(queryParams)
     return @_easyData.getManyResults(__fruitingPlantsNotPublicURL + queryParams, callback)
+
+  getBoundingBoxOfFruit:(callback, north_east, south_west)=>
+    queryParams = '?'
+    queryParams += 'north_east=' + north_east + '&south_west=' + south_west
+    return @_easyData.getManyResults(__fruitingPlants + queryParams, callback)
 
   movedFruitingObject:(fruitingPlantID, newCoordinate, successCallback=null, errorCallback=null)=>
     data = {

@@ -1,9 +1,9 @@
 from django.contrib import admin
-from openfruit.reports.review.models import FruitReviewReport
+from openfruit.reports.review.models import FruitReview
 from openfruit.common.admin import FilterUserAdmin
 
 
-class FruitReviewReportAdmin(FilterUserAdmin):
+class FruitReviewAdmin(FilterUserAdmin):
     pass
 
-admin.site.register(FruitReviewReport, FruitReviewReportAdmin)
+admin.site.register(FruitReview, FruitReviewAdmin)

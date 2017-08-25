@@ -49,13 +49,8 @@ class CultivarManager(models.Manager):
 class FruitingPlantManager(models.Manager):
 
     def get_plants_for_user(self, user):
-        return super(FruitingPlantManager, self).filter(user_manager=user)
+        return super(FruitingPlantManager, self).filter(user_creator=user)
 
-    def get_plants_for_user_that_are_living(self, user):
-        return self.get_plants_for_user(user).filter(date_died__isnull=True)
+    def get_plants_that_are_living(self):
+        return self.filter(date_died__isnull=True)
 
-    def get_public_plants(self):
-        return super(FruitingPlantManager, self).filter(is_private=False)
-
-    def get_public_plants_that_are_not_the_users(self, user):
-        return super(FruitingPlantManager, self).filter(is_private=False).exclude(user_manager=user)

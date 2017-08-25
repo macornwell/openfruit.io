@@ -19,6 +19,7 @@ from openfruit.taxonomy.forms import SpeciesForm, GenusForm, FruitingPlantQuickF
 from openfruit.taxonomy.models import Species, Cultivar, Genus, Kingdom, FruitingPlant
 from openfruit.taxonomy.services import TAXONOMY_DAL
 from openfruit.userdata.services import USER_DATA_DAL
+from openfruit.reports.event.services import EVENT_DAL
 
 
 class KingdomListView(ListView):
@@ -100,6 +101,15 @@ class CultivarDetailView(DetailView):
 
     def get(self, request, kingdom=None, genus=None, species=None, cultivar=None, *args, **kwargs):
         raise Exception('Not ready')
+
+
+
+def cultivar_detail_view_redirect(request, cultivar_id):
+    cultivar = TAXONOMY_DAL.get_cultivar_by_id(cultivar_id)
+    species = cultivar.species
+    genus = species.genus
+    kingdom = genus.kingdom
+    return redirect('cultivar-detail', kingdom.name, genus.name, species.name, cultivar.name)
 
 
 class GenusFormView(View):
@@ -237,12 +247,15 @@ class CultivarFormView(View):
 class FruitingPlantFormView(View):
     form_class = FruitingPlantQuickForm
     initial = {'key': 'value'}
-    template_name = 'taxonomy/fruiting_plant_detail.html'
+    template_name = 'taxonomy/fruiting_plant_form.html'
 
     def __get_data(self, form, requestDict):
         if 'lat' in requestDict and 'lon' in requestDict:
             centerLat = requestDict['lat']
             centerLon = requestDict['lon']
+        elif form.instance:
+            centerLat = str(form.instance.geocoordinate.lat)
+            centerLon = str(form.instance.geocoordinate.lon)
 
         data = {
             'form': form,
@@ -257,7 +270,12 @@ class FruitingPlantFormView(View):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         profile = USER_DATA_DAL.get_user_profile(request.user)
-        form = FruitingPlantQuickForm(initial={'user_manager':request.user, 'location': profile.location})
+        fruitingPlant = None
+        if 'id' in kwargs and kwargs['id']:
+            fruitingPlant = TAXONOMY_DAL.get_fruiting_plant_by_id(kwargs['id'])
+            form = FruitingPlantQuickForm(instance=fruitingPlant)
+        else:
+            form = FruitingPlantQuickForm(initial={'created_by':request.user, 'location': profile.location})
         centerLat = settings.GM_SETTINGS.lat
         centerLon = settings.GM_SETTINGS.lon
         data = self.__get_data(form, request.GET)
@@ -272,16 +290,39 @@ class FruitingPlantFormView(View):
         lat = postData['lat']
         lon = postData['lon']
         coordinate, created = GeoCoordinate.objects.get_or_create_by_lat_lon(lat, lon)
-        postData['user_manager'] = request.user.id
+        postData['created_by'] = request.user.id
+
         form = FruitingPlantQuickForm(postData)
         data = self.__get_data(form, request.POST)
         if form.is_valid():
             model = form.save(commit=False)
+            if 'id' in kwargs and kwargs['id']:
+                model.fruiting_plant_id = kwargs['id']
             model.geocoordinate = coordinate
             model.save()
             return redirect(nextUrl)
         return render(request, self.template_name, data)
 
+
+class FruitingPlantDetailsView(View):
+    initial = {'key': 'value'}
+    template_name = 'taxonomy/fruiting_plant_details.html'
+
+    def get(self, request, *args, **kwargs):
+        id = kwargs['id']
+        fruiting_plant = TAXONOMY_DAL.get_fruiting_plant_by_id(id)
+        all_events = EVENT_DAL.get_all_events_for_fruiting_plant(fruiting_plant)
+        leafs = EVENT_DAL.get_aggregate_event_summary_for_the_year(all_events, 'Leafing Out')
+        blooms = EVENT_DAL.get_aggregate_event_summary_for_the_year(all_events, 'Blooming')
+        ripenings = EVENT_DAL.get_aggregate_event_summary_for_the_year(all_events, 'Ripening')
+        data = {
+            'model': fruiting_plant,
+            'leafs': leafs,
+            'blooms': blooms,
+            'ripenings': ripenings,
+            'all_events': all_events,
+        }
+        return render(request, self.template_name, data)
 
 
 
@@ -333,13 +374,12 @@ class CultivarAutocomplete(NameAutocomplete):
 # Rest Framework
 ################
 
-"""
-@api_view(['GET'])
-def public_plants_without_user(request, userID):
-    plants = FruitingPlant.objects.get_public_plants_that_are_not_the_users(userID)
-    serializer = FruitingPlantSerializer(plants, many=True, context={'request': request})
-    return Response(serializer.data)
-    """
+class PlantsListView(generics.ListAPIView):
+    serializer_class = FruitingPlantSerializer
+
+    def get_queryset(self):
+        return TAXONOMY_DAL.query_fruiting_plants(self.request.query_params)
+
 
 class UsersPlantsListView(generics.ListAPIView):
     serializer_class = FruitingPlantSerializer

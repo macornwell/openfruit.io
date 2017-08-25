@@ -164,13 +164,12 @@ class FruitingPlant(models.Model):
     """
     objects = FruitingPlantManager()
     fruiting_plant_id = models.AutoField(primary_key=True)
-    user_manager = models.ForeignKey(User)
+    created_by = models.ForeignKey(User)
     location = models.ForeignKey(Location)
     geocoordinate = models.ForeignKey(GeoCoordinate)
     species = models.ForeignKey(Species, null=True, blank=True)
     cultivar = models.ForeignKey(Cultivar, null=True, blank=True)
-    planted = models.DateField(default=timezone.now)
-    is_private = models.BooleanField(default=False, help_text='If the exact location of this tree should be kept private. Only you can see its location.')
+    date_planted = models.DateField(default=timezone.now)
     date_died = models.DateField(null=True, blank=True)
 
     def get_name(self):
@@ -185,7 +184,25 @@ class FruitingPlant(models.Model):
             name = str(self.cultivar)
         else:
             name = str(self.species)
-        return '{0} - {1} @ {2}'.format(self.user_manager, name, self.location)
+        return '{0} - {1} @ {2}'.format(self.created_by, name, self.location)
+
+    def save(self, *args, **kwargs):
+        self.__clean_data()
+        self.__validate()
+        return super(FruitingPlant, self).save(*args, **kwargs)
+
+    def __clean_data(self):
+        if self.cultivar and not self.species:
+            self.species = self.cultivar.species
+        if self.cultivar and self.cultivar.species != self.species:
+            self.species = self.cultivar.species
+
+    def __validate(self):
+        if not self.cultivar and not self.species:
+            raise Exception('Must have a species or cultivar.')
+
+
+
 
 
 
