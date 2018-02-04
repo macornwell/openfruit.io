@@ -62,9 +62,9 @@ class CultivarSerializer(serializers.HyperlinkedModelSerializer):
             if location.city:
                 result['city'] = location.city.name
             if location.state:
-                result['state'] = location.state.name
+                result['state'] = location.state.abbreviation
             if location.country:
-                result['country'] = location.country.name
+                result['country'] = location.country.abbreviation
             if location.zipcode:
                 result['zipcode'] = location.zipcode.zipcode
             if location.geocoordinate:
