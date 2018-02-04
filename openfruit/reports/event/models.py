@@ -4,7 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from auditlog.registry import auditlog
 from sorl.thumbnail.fields import ImageField
-from openfruit.geography.models import Location
+from django_geo_db.models import Location
 from openfruit.taxonomy.models import FruitingPlant
 from openfruit.taxonomy.validators import CultivarSpeciesMixin
 

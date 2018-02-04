@@ -7,7 +7,7 @@ from dal.autocomplete import ModelSelect2
 from datetimewidget.widgets import DateWidget
 from openfruit.taxonomy.models import Species, Cultivar, Genus, FruitingPlant
 from openfruit.common.widgets import CustomRelatedFieldWidgetWrapper
-from openfruit.geography.models import Location
+from django_geo_db.models import Location
 
 class FruitingPlantForm(ModelForm):
     class Meta:
@@ -47,7 +47,7 @@ class FruitingPlantQuickForm(ModelForm):
         self.fields['species'].queryset = Species.objects.all()
         self.fields['location'].widget = CustomRelatedFieldWidgetWrapper(
             ModelSelect2(url='location-autocomplete'),
-            reverse('admin:geography_location_add') + "?_to_field=location_id&_popup=1",
+            reverse('admin:django_geo_db_location_add') + "?_to_field=location_id&_popup=1",
             True)
         self.fields['location'].queryset = Location.objects.all()
 

@@ -107,7 +107,7 @@
         var submitButton = $('#submit');
         var locations = null;
         var easyData = new openfruit.EasyRestData();
-        var geographyService = new openfruit.geography.GeographyService(easyData);
+        var geographyService = new django_geo_db.GeographyService(easyData);
 
         var isNewLocationChecked = function() {
             var checked = $('input[name=location]:checked').val();

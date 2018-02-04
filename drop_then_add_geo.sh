@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
-#cat openfruit/geography/processed_geo.sql | sqlite3 db.sqlite3
+# This makes for debugging geo data and adding default data in quickly.
+# It first drops precreated tables, then adds them all from the sql/ folder.
+#
+# Param 1: The directory to the sql table directory.
+# Param 2: The database file.
 
-database=$1
+sql_tables_directory=$1
+database=$2
 
-declare -a geotables=('geography_continent' 'geography_geocoordinate' 'geography_country' 'geography_zipcode' 'geography_state' 'geography_location' 'geography_city');
+declare -a geotables=('django_geo_db_continent' 'django_geo_db_geocoordinate' 'django_geo_db_country' 'django_geo_db_zipcode' 'django_geo_db_state' 'django_geo_db_location' 'django_geo_db_city');
 # Drop Geo Tables
 for table in "${geotables[@]}"
 do
@@ -15,6 +20,5 @@ done
 for table in "${geotables[@]}"
 do
     echo Inserting ${table};
-    cat "openfruit/geography/sql/${table}.sql" | sqlite3 ${database}
+    cat "${sql_tables_directory}/${table}.sql" | sqlite3 ${database}
 done
-#sqlite3 ./db.sqlite3 '.dump geography_continent' > 1.sql

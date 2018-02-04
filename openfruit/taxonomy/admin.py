@@ -6,7 +6,6 @@ from openfruit.taxonomy.forms import SpeciesForm, CultivarForm, FruitingPlantFor
 class SpeciesAdmin(admin.ModelAdmin):
     form = SpeciesForm
 
-
 class CultivarAdmin(admin.ModelAdmin):
     form = CultivarForm
 

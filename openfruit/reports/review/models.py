@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from auditlog.registry import auditlog
 from openfruit.common.models import IntegerRangeField
 from openfruit.taxonomy.models import FruitingPlant
-from openfruit.geography.models import Location
+from django_geo_db.models import Location
 from openfruit.taxonomy.validators import CultivarSpeciesMixin
 
 

@@ -17,7 +17,7 @@
         <label>Geocoordinate</label>
         <input id="id_lat" type="text" name="lat" hidden value="{{ center_lat }}">
         <input id="id_lon" type="text" name="lon" hidden value="{{ center_lon }}">
-        {% include 'geography/geocoordinate.html' %}
+        {% include 'django_geo_db/geocoordinate.html' %}
         {% if popup %}<input type="hidden" name="_popup" value="1">{% endif %}
         <input class="btn btn-primary btn-lg pull-right" type="submit" value="Save">
     </form>

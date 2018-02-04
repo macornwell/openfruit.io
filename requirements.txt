@@ -1,6 +1,6 @@
 appdirs
 dj-database-url
-Django
+Django==1.10
 django-admin-bootstrapped
 django-auditlog
 django-bootstrap3
@@ -20,3 +20,4 @@ requests
 sorl-thumbnail
 django-autocomplete-light
 django-colorful
+django_geo_db

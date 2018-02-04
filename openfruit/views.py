@@ -55,12 +55,6 @@ def home(request):
     return render(template_name='home.html', context=data, request=request)
 
 
-def explore_public(request):
-    data = {}
-    data['public_locations'] = None
-    data['species_list'] = TAXONOMY_DAL.get_all_species_with_fruiting_plants()
-    return render(template_name='explore.html', context=data, request=request)
-
 
 
 

@@ -20,10 +20,6 @@ from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify
 
 from openfruit import settings
 from openfruit.views import home, about, site_change, testing
-from openfruit.taxonomy.urls import urlpatterns as TaxonomyURLs
-from openfruit.geography.urls import urlpatterns as GeographyUrls
-from openfruit.reports.event.urls import urlpatterns as EventUrls
-from openfruit.userdata.urls import urlpatterns as UserDataUrls
 
 router = routers.DefaultRouter()
 
@@ -37,8 +33,9 @@ urlpatterns = [
     url(r'^api/v1/auth/token/verify/$', verify_jwt_token),
     url(r'^api/v1/auth/token/refresh/$', refresh_jwt_token),
 
+    url(r'^api/v1/', include('django_geo_db.urls')),
+    url(r'^api/v1/', include('django_geo_db.autocomplete_urls')),
     url(r'^', include('openfruit.common.urls')),
-    url(r'^', include('openfruit.geography.urls')),
     url(r'^', include('openfruit.taxonomy.urls')),
     url(r'^', include('openfruit.reports.event.urls')),
     url(r'^', include('openfruit.userdata.urls')),

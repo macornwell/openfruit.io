@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.shortcuts import render, Http404, HttpResponseRedirect, HttpResponse, reverse, get_object_or_404, redirect
 from django.http import HttpResponseServerError
 from django.views.generic import View, ListView, DetailView, CreateView
-from django.contrib.auth.decorators import permission_required, login_required
+from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from rest_framework.decorators import api_view, APIView
@@ -13,8 +13,8 @@ from rest_framework import generics
 from openfruit.taxonomy.serializers import SpeciesSerializer, CultivarSerializer, FruitingPlantSerializer
 
 from openfruit.common.views import NameAutocomplete, GeneratedNameAutocomplete, BaseAutocompleteQuerysetView
-from openfruit.geography.models import GeoCoordinate
-from openfruit.geography.utilities import get_lat_lon_from_string
+from django_geo_db.models import GeoCoordinate
+from django_geo_db.utilities import get_lat_lon_from_string
 from openfruit.taxonomy.forms import SpeciesForm, GenusForm, FruitingPlantQuickForm
 from openfruit.taxonomy.models import Species, Cultivar, Genus, Kingdom, FruitingPlant
 from openfruit.taxonomy.services import TAXONOMY_DAL

@@ -7,8 +7,8 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 from openfruit.taxonomy.services import TAXONOMY_DAL
 from openfruit.taxonomy.models import Species, Cultivar, FruitingPlant
-from openfruit.geography.models import GeoCoordinate, Location, City
-from openfruit.geography.utilities import BoundingBox, LatLon
+from django_geo_db.models import GeoCoordinate, Location, City
+from django_geo_db.utilities import BoundingBox, LatLon
 
 @transaction.atomic
 class Command(BaseCommand):

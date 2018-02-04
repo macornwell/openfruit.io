@@ -1,5 +1,5 @@
 # Custom To OpenFruit
-db.sqlite3
+old.db.sqlite3
 db.sqlite3-journal
 media/
 

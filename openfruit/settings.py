@@ -54,15 +54,17 @@ INSTALLED_APPS = (
     'crispy_forms',
     'colorful',
     'corsheaders',
+    'django_geo_db',
     'openfruit',
     'openfruit.common',
-    'openfruit.geography',
     'openfruit.taxonomy',
     'openfruit.reports.event',
     'openfruit.reports.review',
     'openfruit.reports.work',
     'openfruit.userdata',
     'openfruit.chat',
+    'openfruit.dashboard',
+    'openfruit.geography',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -93,8 +95,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.static',
-                'openfruit.geography.context_processors.google_maps_api_key',
-                'openfruit.geography.context_processors.google_maps_settings',
+                'django_geo_db.context_processors.google_maps_api_key',
+                'django_geo_db.context_processors.google_maps_settings',
                 'openfruit.userdata.context_processors.user_profile',
             ],
         },
@@ -113,8 +115,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
-
 
 
 # Internationalization
@@ -207,7 +207,7 @@ def get_user_models_for_permissions():
     from openfruit.reports.event.models import EventReport
     from openfruit.reports.review.models import FruitReview
     from openfruit.taxonomy.models import Cultivar, Species
-    from openfruit.geography.models import GeoCoordinate, Location
+    from django_geo_db.models import GeoCoordinate, Location
 
     return (
         EventReport, FruitReview,
@@ -218,7 +218,7 @@ def get_curator_models():
     from openfruit.reports.event.models import EventReport
     from openfruit.reports.review.models import FruitReview
     from openfruit.taxonomy.models import Cultivar, Kingdom, Species, Genus
-    from openfruit.geography.models import City, Continent, Country, GeoCoordinate, Location, State
+    from django_geo_db.models import City, Continent, Country, GeoCoordinate, Location, State
 
     return (
         EventReport, FruitReview,
@@ -241,7 +241,7 @@ LARGE_THUMBNAILS = (300, 300)
 #############
 # Geography
 #############
-from openfruit.geography.settings import GoogleMapsSettings
+from django_geo_db.settings import GoogleMapsSettings
 GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')
 GM_SETTINGS = GoogleMapsSettings(lat=33.16025, lon=-87.6104341, zoom=4)
 DEFAULT_MAP_CENTER = (39.77476, -97.11914)

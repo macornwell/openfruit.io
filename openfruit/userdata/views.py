@@ -7,9 +7,9 @@ from django.shortcuts import render, reverse
 from django.utils import timezone
 
 from openfruit.common.services import setup_user_permissions_and_groups
-from openfruit.geography.models import GeoCoordinate, UserLocation
-from openfruit.geography.services import GEO_DAL
-from openfruit.geography.utilities import get_standardized_coordinate
+from django_geo_db.models import GeoCoordinate, UserLocation
+from django_geo_db.services import GEO_DAL
+from django_geo_db.utilities import get_standardized_coordinate
 from openfruit.userdata.models import UserProfile
 from openfruit.userdata.forms import SignupForm
 

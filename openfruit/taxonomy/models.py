@@ -1,12 +1,12 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
-from auditlog.registry import auditlog
 from colorful.fields import RGBColorField
 from sorl.thumbnail.fields import ImageField
 from openfruit.common.models import IntegerRangeField
-from openfruit.geography.models import Location, GeoCoordinate
+from django_geo_db.models import Location, GeoCoordinate
 from openfruit.taxonomy.managers import GenusManager, KingdomManager, SpeciesManager, CultivarManager, FruitingPlantManager
+from openfruit.taxonomy.mixins import UrlNameMixin
 
 PLANT_KINGDOM_NAMES = (
     'Plants', 'Plantae',
@@ -20,14 +20,6 @@ CHROMOSOME_CHOICES = (
     ('6', 'Hexaploid x6'),
     ('8', 'Octoploid x8'),
 )
-
-class UrlNameMixin:
-
-    def url_latin_name(self):
-        return self.latin_name.replace(' ', '-')
-
-    def url_name(self):
-        return self.name.replace(' ', '-')
 
 
 class Kingdom(models.Model, UrlNameMixin):
@@ -201,18 +193,3 @@ class FruitingPlant(models.Model):
         if not self.cultivar and not self.species:
             raise Exception('Must have a species or cultivar.')
 
-
-
-
-
-
-
-
-
-auditlog.register(Kingdom)
-auditlog.register(Genus)
-auditlog.register(Species)
-auditlog.register(Cultivar)
-auditlog.register(GenusImage)
-auditlog.register(SpeciesImage)
-auditlog.register(FruitingPlant)

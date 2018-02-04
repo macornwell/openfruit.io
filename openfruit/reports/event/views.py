@@ -14,7 +14,7 @@ from openfruit.reports.event.forms import EventReportForm
 from openfruit.reports.event.services import EVENT_DAL
 from openfruit.reports.event.serializers import EventReportSerializer
 from openfruit.taxonomy.services import TAXONOMY_DAL
-from openfruit.geography.services import GEO_DAL
+from django_geo_db.services import GEO_DAL
 
 
 class DistinctEventView(View):

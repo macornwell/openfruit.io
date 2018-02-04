@@ -1,7 +1,7 @@
 from django.db import models
 from django.forms import ValidationError
 from django.contrib.auth.models import User
-from openfruit.geography.models import Zipcode, Location
+from django_geo_db.models import Zipcode, Location
 
 
 class Signup(models.Model):

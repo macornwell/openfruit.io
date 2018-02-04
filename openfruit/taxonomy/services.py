@@ -3,8 +3,8 @@ import csv
 from django.db.models import Q
 from openfruit.settings import BASE_DIR
 from openfruit.taxonomy.models import Species, Genus, Cultivar, FruitingPlant
-from openfruit.geography.models import GeoCoordinate
-from openfruit.geography.utilities import BoundingBox, LatLon, GeoResolutionAlgorithm
+from django_geo_db.models import GeoCoordinate
+from django_geo_db.utilities import BoundingBox, LatLon, GeoResolutionAlgorithm
 
 
 

@@ -7,6 +7,7 @@ class FruitingPlantSerializer(serializers.ModelSerializer):
     species_name = serializers.SerializerMethodField()
     coordinate = serializers.SerializerMethodField()
     details_url = serializers.SerializerMethodField()
+    created_by_name = serializers.SerializerMethodField()
 
     def get_cultivar_name(self, obj):
         return str(obj.cultivar)
@@ -22,13 +23,12 @@ class FruitingPlantSerializer(serializers.ModelSerializer):
             pass
         url = ''
 
+    def get_created_by_name(self, obj):
+        return obj.created_by.username
+
     class Meta:
         model = FruitingPlant
-        fields = ('fruiting_plant_id', 'cultivar', 'cultivar_name', 'species', 'species_name', 'date_planted', 'coordinate', 'created_by', 'date_died', 'details_url')
-
-
-
-
+        fields = ('fruiting_plant_id', 'cultivar', 'cultivar_name', 'species', 'species_name', 'date_planted', 'coordinate', 'created_by', 'created_by_name', 'date_died', 'details_url')
 
 
 class SpeciesSerializer(serializers.HyperlinkedModelSerializer):

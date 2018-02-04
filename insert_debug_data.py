@@ -4,8 +4,9 @@ import django
 django.setup()
 
 from django.contrib.auth.models import User
-from openfruit.geography.models import UserGeographySettings, Location, City, GeoCoordinate, Country
+from django_geo_db.models import Location, City, GeoCoordinate, Country
 from openfruit.taxonomy.models import Species, Cultivar, Genus
+from openfruit.userdata.models import UserProfile
 
 def script_print(message):
     print('insert_debug_data: {0} '.format(message))
@@ -16,8 +17,9 @@ def setup_users():
 
 def setup_settings():
     script_print('Setting up Geo Settings')
-    settings = UserGeographySettings()
-    settings.user = User.objects.get(username='admin')
+    settings = UserProfile()
+    settings.user = User.objects\
+        .get(username='admin')
     settings.location = Location.objects.get(generated_name='Covington, LA 70433')
     settings.save()
 
