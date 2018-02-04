@@ -114,6 +114,9 @@ HOME
 .homepage {
   text-align: center;
 }
+.information-list {
+  text-align: left;
+}
 /*
 Reusable Components
 */
