@@ -273,6 +273,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100
 }
 JWT_ALLOW_REFRESH = True
 JWT_EXPIRATION_DELTA = datetime.timedelta(hours=1)
