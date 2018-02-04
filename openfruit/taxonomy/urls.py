@@ -3,7 +3,8 @@ from openfruit.taxonomy import views
 from openfruit.taxonomy.views import GenusListView, KingdomListView, \
     GenusDetailView, SpeciesDetailView, CultivarDetailView, SpeciesAutocomplete, \
     CultivarAutocomplete, GenusAutocomplete, GenusFormView, PublicPlantsView, FruitingPlantAutocomplete, \
-    move_fruiting_plant, FruitingPlantFormView, Cultivar, SpeciesFormView, cultivar_detail_view_redirect, FruitingPlantDetailsView
+    move_fruiting_plant, FruitingPlantFormView, Cultivar, SpeciesFormView, cultivar_detail_view_redirect, \
+    FruitingPlantDetailsView, FruitUsageTypeDetailView
 
 
 urlpatterns = [
@@ -28,6 +29,7 @@ urlpatterns = [
     url('^api/v1/plants/move$', move_fruiting_plant, name='move_fruiting_plant'),
     url('^api/v1/plants/public/$', PublicPlantsView.as_view(), name='public_plants_without_user'),
     url(r'^api/v1/species/(?P<pk>[0-9]+)/$', views.SpeciesDetail.as_view(), name='species-detail'),
+    url(r'^api/v1/fruit-usage-type/$', views.FruitUsageTypeDetailView.as_view(), name='fruitusagetype-detail'),
     url(r'^api/v1/cultivars/$', views.CultivarListView.as_view(), name='cultivar-list'),
     url(r'^api/v1/cultivar/(?P<pk>[0-9]+)/$', views.CultivarDetail.as_view(), name='cultivar-detail'),
     url(r'^api/v1/fruiting-plants/(?P<query>.+)?$', views.PlantsListView.as_view(), name='users-fruiting-plants'),

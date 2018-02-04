@@ -10,8 +10,9 @@ from django.utils.decorators import method_decorator
 from rest_framework.decorators import api_view, APIView
 from rest_framework.response import Response
 from rest_framework import generics
-from rest_framework.generics import ListAPIView
-from openfruit.taxonomy.serializers import SpeciesSerializer, CultivarSerializer, FruitingPlantSerializer
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from openfruit.taxonomy.serializers import SpeciesSerializer, CultivarSerializer, \
+    FruitingPlantSerializer, FruitUsageTypeSerializer
 
 from openfruit.common.views import NameAutocomplete, GeneratedNameAutocomplete, BaseAutocompleteQuerysetView
 from django_geo_db.models import GeoCoordinate
@@ -421,6 +422,10 @@ class SpeciesDetail(APIView):
         snippet = self.get_object(pk)
         serializer = SpeciesSerializer(snippet)
         return Response(serializer.data)
+
+
+class FruitUsageTypeDetailView(APIView):
+    serializer_class = FruitUsageTypeSerializer
 
 
 class SpeciesListView(ListAPIView):

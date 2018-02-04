@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from openfruit.taxonomy.models import FruitingPlant, Species, Cultivar
+from openfruit.taxonomy.models import FruitingPlant, Species, Cultivar, FruitUsageType
 
 
 class FruitingPlantSerializer(serializers.ModelSerializer):
@@ -38,7 +38,22 @@ class SpeciesSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CultivarSerializer(serializers.HyperlinkedModelSerializer):
+    uses = serializers.SerializerMethodField()
+
+    def get_uses(self, obj):
+        use_list = []
+        if obj.uses:
+            for use in obj.uses.all():
+                use_list.append(use.type)
+        return use_list
 
     class Meta:
         model = Cultivar
         fields = ('name', 'species', 'generated_name', 'origin_location', 'origin_year', 'uses', 'chromosome_count')
+
+
+class FruitUsageTypeSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = FruitUsageType
+        fields = ('type',)

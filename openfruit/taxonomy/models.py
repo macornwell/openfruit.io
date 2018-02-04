@@ -92,7 +92,7 @@ class Species(models.Model, UrlNameMixin):
 
 
 class FruitUsageType(models.Model):
-    cultivar_usage_type = models.AutoField(primary_key=True)
+    cultivar_usage_type_id = models.AutoField(primary_key=True)
     type = models.CharField(max_length=40, unique=True)
 
     def __str__(self):
