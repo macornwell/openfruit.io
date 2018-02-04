@@ -113,7 +113,7 @@ class Cultivar(models.Model, UrlNameMixin):
     color_tertiary_hex = RGBColorField(blank=True, null=True)
     featured_image = ImageField(upload_to='featured-images', blank=True, null=True)
     generated_name = models.CharField(max_length=60, unique=True, blank=True, null=True)
-    uses = models.ManyToManyRel(FruitUsageType)
+    uses = models.ManyToManyField(FruitUsageType)
 
 
     # Breeding Information
