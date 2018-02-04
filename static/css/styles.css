@@ -14,11 +14,10 @@ h6,
 .h5,
 .h6,
 label {
-  font-family: 'Lora';
   color: #000000;
 }
 #bootstrap-body {
-  background-color: #e2e2e2;
+  background-color: #eeeeee;
   color: #777;
 }
 /*
@@ -106,11 +105,33 @@ nav .dropdown-menu > li > a span {
   margin-bottom: 10px;
 }
 /*
+HOME
+ */
+.body-container {
+  background: #f8f8f8;
+  padding: 10px 10px 50px 10px;
+}
+.homepage {
+  text-align: center;
+}
+/*
 Reusable Components
 */
+.section-padding {
+  padding-top: 5.5rem;
+  padding-bottom: 2rem;
+}
+.main-background-banner {
+  background-color: #eeeeee;
+  color: black;
+}
+.banner-block {
+  padding: 10px;
+}
 .contrast-banner {
   padding: 10px;
   background-color: #9E9E9E;
+  color: white;
 }
 .list-thumbnail {
   height: 50px;

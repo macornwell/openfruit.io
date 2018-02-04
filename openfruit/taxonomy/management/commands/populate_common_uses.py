@@ -19,4 +19,4 @@ class Command(BaseCommand):
         for use in COMMON_USES:
             obj, made = FruitUsageType.objects.get_or_create(type=use)
             if made:
-                print('Created {0}'.format(made))
+                print('Created {0}'.format(use))
