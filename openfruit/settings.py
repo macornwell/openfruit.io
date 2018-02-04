@@ -80,6 +80,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
     'auditlog.middleware.AuditlogMiddleware',
     'django.middleware.gzip.GZipMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 )
 
 ROOT_URLCONF = 'openfruit.urls'
@@ -191,7 +192,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
-#STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = '/home/trjg/code/openfruit.io/media/'
