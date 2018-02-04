@@ -463,4 +463,7 @@ class CultivarListView(ListAPIView):
             use_list = uses.split(',')
             use_objs = FruitUsageType.objects.filter(type__in__iexact=use_list)
             queryset = queryset.filter(uses__in=use_objs)
+        chromosomes = self.request.query_params.get('chromosomes', None)
+        if chromosomes:
+            queryset = queryset.filter(chromosome_count__iexact=chromosomes)
         return queryset

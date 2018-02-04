@@ -8,28 +8,58 @@
 
 {% block  body %}
 <div class="homepage">
-    <h1>Fruit Meets Big Data</h1>
+    <h1>Information on Fruiting Plants Should be Dependable.</h1>
     <div class="section-padding">
-        OpenFruit is a platform for developing applications that use information about fruiting plants. Researchers,
-        enthusiasts, farmers, and agricultural businesses who are looking for a one stop shop for
-        comprehensive information about fruit varieties will find OpenFruit is the place.
+        We rely on it to feed our families and have something to share with our communities. We plan our
+        lives around when we'll be able to harvest the fruits, often waiting years. Which plants should
+        I try? What does this taste like? These are the questions we sought to fix.
+    </div>
+    <h3>Made with Dependable Information</h3>
+    <div>
+        By it's design OpenFruit was created to have dependable information. Who populates the database?
     </div>
     <div class="bg-primary section-padding">
         <div>
-            <h3 class="bg-primary">Primary Features</h3>
+            <h3 class="bg-primary">Who Uses OpenFruit?</h3>
         </div>
+        <b>
         <div class="row">
             <div class="col-xs-4 ">
-                Database of Fruit Cultivars <br>
-                (Current Count: {{ cultivar_count }})
+                Researchers
             </div>
             <div class="col-xs-4">
-                API for Programmatic Use <br>
-                (REST API for Development)
+                Plant Nurseries
             </div>
             <div class="col-xs-4">
-                Geo-Location Enabled <br>
-                (Locations: {{ location_count }})
+                Enthusiasts
+            </div>
+        </div></b>
+    </div>
+    <div class="information-list">
+        <h3>What Information is Collected?</h3>
+        Historical and Modern observations are fused together by:
+        <ul class="information-list">
+        <li>Cultivar Name</li>
+        <li>Time and Date</li>
+        <li>Geographic Location</li>
+        <li>Photos</li>
+        <li>Scientific Markings</li>
+        </ul>
+    </div>
+    <ul>
+    </ul>
+    <div class="bg-primary section-padding">
+        <div>
+            <h3 class="bg-primary">A Few Stats</h3>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 ">
+                Total Fruit Cultivars<br>
+                ({{ cultivar_count }})
+            </div>
+            <div class="col-xs-6">
+                Total Geo-Located Sites<br>
+                ({{ location_count }})
             </div>
         </div>
     </div>
@@ -38,7 +68,7 @@
         <p>The OpenFruit API is open for use. Inquire below for access.</p>
         <div class="col-sm-4"></div>
         <div class="col-sm-5">
-            <a class="btn btn-lg btn-primary" href="mailto:service@gnutech.io?subject=OpenFruit Access&body=Hello%20OpenFruit%2C%0D%0AI%20would%20like%20to%20gain%20access%20to%20the%20OpenFruit%20database.%0D%0ASincerely%2C%0D%0A%28YOUR%20NAME%29">
+            <a class="btn btn-lg btn-danger" href="mailto:service@gnutech.io?subject=OpenFruit Access&body=Hello%20OpenFruit%2C%0D%0AI%20would%20like%20to%20gain%20access%20to%20the%20OpenFruit%20database.%0D%0ASincerely%2C%0D%0A%28YOUR%20NAME%29">
                 Click Here to Get Access</a>
         </div>
     </div>
