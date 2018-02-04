@@ -38,6 +38,7 @@ class SpeciesSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CultivarSerializer(serializers.HyperlinkedModelSerializer):
+
     class Meta:
         model = Cultivar
-        fields = ('name', 'species', 'generated_name')
+        fields = ('name', 'species', 'generated_name', 'origin_location', 'origin_year', 'uses', 'chromosome_count')

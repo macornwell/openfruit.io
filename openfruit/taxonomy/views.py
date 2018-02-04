@@ -10,13 +10,14 @@ from django.utils.decorators import method_decorator
 from rest_framework.decorators import api_view, APIView
 from rest_framework.response import Response
 from rest_framework import generics
+from rest_framework.generics import ListAPIView
 from openfruit.taxonomy.serializers import SpeciesSerializer, CultivarSerializer, FruitingPlantSerializer
 
 from openfruit.common.views import NameAutocomplete, GeneratedNameAutocomplete, BaseAutocompleteQuerysetView
 from django_geo_db.models import GeoCoordinate
 from django_geo_db.utilities import get_lat_lon_from_string
 from openfruit.taxonomy.forms import SpeciesForm, GenusForm, FruitingPlantQuickForm
-from openfruit.taxonomy.models import Species, Cultivar, Genus, Kingdom, FruitingPlant
+from openfruit.taxonomy.models import Species, Cultivar, Genus, Kingdom, FruitingPlant, FruitUsageType
 from openfruit.taxonomy.services import TAXONOMY_DAL
 from openfruit.userdata.services import USER_DATA_DAL
 from openfruit.reports.event.services import EVENT_DAL
@@ -420,3 +421,46 @@ class SpeciesDetail(APIView):
         snippet = self.get_object(pk)
         serializer = SpeciesSerializer(snippet)
         return Response(serializer.data)
+
+
+class SpeciesListView(ListAPIView):
+    queryset = Species.objects.all()
+    serializer_class = SpeciesSerializer
+
+
+class CultivarListView(ListAPIView):
+    queryset = Cultivar.objects.all()
+    serializer_class = CultivarSerializer
+
+    def get_queryset(self):
+        queryset = Cultivar.objects.all()
+        species = self.request.query_params.get('species', None)
+        if species:
+            queryset = queryset.filter(species=species)
+        name = self.request.query_params.get('name', None)
+        if name:
+            queryset = queryset.filter(name__iexact=name)
+        country = self.request.query_params.get('country', None)
+        if country:
+            queryset = queryset.filter(origin_location__county__name__iexact=country)
+        state = self.request.query_params.get('state', None)
+        if state:
+            queryset = queryset.filter(origin_location__state__name__iexact=state)
+        city = self.request.query_params.get('city', None)
+        if city:
+            queryset = queryset.filter(origin_location__city__name__iexact=city)
+        county = self.request.query_params.get('county', None)
+        if county:
+            queryset = queryset.filter(origin_location__county__name__iexact=county)
+        year_low = self.request.query_params.get('year_low', None)
+        if year_low:
+            queryset = queryset.filter(origin_year__gte=year_low)
+        year_high = self.request.query_params.get('year_high', None)
+        if year_high:
+            queryset = queryset.filter(origin_year__lte=year_high)
+        uses = self.request.query_params.get('uses', None)
+        if uses:
+            use_list = uses.split(',')
+            use_objs = FruitUsageType.objects.filter(type__in__iexact=use_list)
+            queryset = queryset.filter(uses__in=use_objs)
+        return queryset
