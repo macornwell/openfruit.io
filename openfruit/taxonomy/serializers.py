@@ -50,14 +50,25 @@ class CultivarSerializer(serializers.HyperlinkedModelSerializer):
         return obj.species.latin_name
 
     def get_origin_location(self, obj):
-        result = {}
+        result = {
+            'city': None,
+            'state': None,
+            'country': None,
+            'zipcode': None,
+            'geocoordinate': None,
+        }
         location = obj.origin_location
         if location:
-            result['city'] = location.city.name
-            result['state'] = location.state.name
-            result['country'] = location.country.name
-            result['zipcode'] = location.zipcode.zipcode
-            result['geocoordinate'] = '{0} {1}'.format(location.geocoordinate.lat, location.geocoordinate.lon)
+            if location.city:
+                result['city'] = location.city.name
+            if location.state:
+                result['state'] = location.state.name
+            if location.country:
+                result['country'] = location.country.name
+            if location.zipcode:
+                result['zipcode'] = location.zipcode.zipcode
+            if location.geocoordinate:
+                result['geocoordinate'] = '{0} {1}'.format(location.geocoordinate.lat, location.geocoordinate.lon)
         return result
 
     def get_uses(self, obj):
