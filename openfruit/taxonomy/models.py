@@ -91,6 +91,11 @@ class Species(models.Model, UrlNameMixin):
         return '{0} ({1})'.format(self.name, self.latin_name)
 
 
+class FruitUsageType(models.Model):
+    cultivar_usage_type = models.AutoField(primary_key=True)
+    type = models.CharField(max_length=40, unique=True)
+
+
 class Cultivar(models.Model, UrlNameMixin):
     """
     Metadata information related to a specific clonally propagated piece of fruit.
@@ -108,6 +113,7 @@ class Cultivar(models.Model, UrlNameMixin):
     color_tertiary_hex = RGBColorField(blank=True, null=True)
     featured_image = ImageField(upload_to='featured-images', blank=True, null=True)
     generated_name = models.CharField(max_length=60, unique=True, blank=True, null=True)
+    uses = models.ManyToManyRel(FruitUsageType)
 
 
     # Breeding Information

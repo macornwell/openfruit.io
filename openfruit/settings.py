@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 import datetime
 from django.contrib import messages
+import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -109,12 +110,23 @@ WSGI_APPLICATION = 'openfruit.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+default = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
+
+DATABASES = {}
+DATABASES['default'] = dj_database_url.config(default=default)
+dbUsername = os.environ.get('OPENFRUIT_DB_USERNAME', '')
+dbPassword = os.environ.get('OPENFRUIT_DB_PASSWORD', '')
+dbHost = os.environ.get('OPENFRUIT_DB_HOST', '')
+
+if dbHost:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.mysql',
+        'USER': dbUsername,
+        'PASSWORD': dbPassword,
+        'PORT': '3306',
+        'HOST': dbHost,
+        'NAME': 'openfruit'
     }
-}
 
 
 # Internationalization
@@ -182,7 +194,7 @@ STATICFILES_DIRS = [
 #STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = '/home/mcornwell/dev/openfruit/media/'
+MEDIA_ROOT = '/home/trjg/code/openfruit.io/media/'
 
 LOGIN_URL = '/api-auth/login/'
 LOGIN_REDIRECT_URL = '/'
