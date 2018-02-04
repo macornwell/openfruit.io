@@ -10,6 +10,9 @@ from django_geo_db.utilities import BoundingBox, LatLon, GeoResolutionAlgorithm
 
 class TaxonomyDAL:
 
+    def get_cultivar_count(self):
+        return Cultivar.objects.count()
+
     def get_fruiting_plants_created_by(self, user):
         return FruitingPlant.objects.filter(created_by=user)
 

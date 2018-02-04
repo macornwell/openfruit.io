@@ -7,6 +7,7 @@ from openfruit.dashboard.views import dashboard
 from openfruit.reports.event.forms import EventReportForm
 from openfruit.taxonomy.models import FruitingPlant
 from openfruit.taxonomy.services import TAXONOMY_DAL
+from openfruit.geography.services import GEOGRAPHY_DAL
 
 
 def testing(request):
@@ -45,21 +46,25 @@ def get_add_model_form(request, templatePath, modelType, modelTypeFriendlyName, 
     return render(request, templatePath, data)
 
 
+def _collect_stats():
+    data = {
+        'cultivar_count': TAXONOMY_DAL.get_cultivar_count(),
+        'location_count': GEOGRAPHY_DAL.get_unique_location_count()
+    }
+    return data
+
+
 def home(request):
     if request.user.is_authenticated():
         return dashboard(request)
-    data = {}
+    data = _collect_stats()
     loginUrl = reverse('admin:login')
     loginNextUrl = escape(request.path)
     data['loginUrl'] = '{0}?next={1}'.format(loginUrl, loginNextUrl)
     return render(template_name='home.html', context=data, request=request)
 
-
-
-
-
 def about(request):
-    pass
+    return render(template_name='about.html', context={}, request=request)
 
 
 def site_change(request):
