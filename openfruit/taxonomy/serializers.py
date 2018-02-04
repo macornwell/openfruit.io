@@ -38,7 +38,27 @@ class SpeciesSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CultivarSerializer(serializers.HyperlinkedModelSerializer):
+    species = serializers.SerializerMethodField()
+    species_latin = serializers.SerializerMethodField()
     uses = serializers.SerializerMethodField()
+    origin_location = serializers.SerializerMethodField()
+
+    def get_species(self, obj):
+        return obj.species.name
+
+    def get_species_latin(self, obj):
+        return obj.species.latin_name
+
+    def get_origin_location(self, obj):
+        result = {}
+        location = obj.origin_location
+        if location:
+            result['city'] = location.city.name
+            result['state'] = location.state.name
+            result['country'] = location.country.name
+            result['zipcode'] = location.zipcode.zipcode
+            result['geocoordinate'] = '{0} {1}'.format(location.geocoordinate.lat, location.geocoordinate.lon)
+        return result
 
     def get_uses(self, obj):
         use_list = []
@@ -49,7 +69,8 @@ class CultivarSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Cultivar
-        fields = ('name', 'species', 'generated_name', 'origin_location', 'origin_year', 'uses', 'chromosome_count')
+        fields = ('name', 'species', 'species_latin', 'generated_name', 'origin_location',
+                  'origin_year', 'uses', 'chromosome_count')
 
 
 class FruitUsageTypeSerializer(serializers.HyperlinkedModelSerializer):
