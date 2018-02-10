@@ -445,6 +445,9 @@ class CultivarListView(ListAPIView):
         name = self.request.query_params.get('name', None)
         if name:
             queryset = queryset.filter(name__iexact=name)
+        name__contains = self.request.query_params.get('name__contains', None)
+        if name__contains:
+            queryset = queryset.filter(name__icontains=name)
         country = self.request.query_params.get('country', None)
         if country:
             queryset = queryset.filter(origin_location__county__name__iexact=country)
@@ -471,4 +474,5 @@ class CultivarListView(ListAPIView):
         chromosomes = self.request.query_params.get('chromosomes', None)
         if chromosomes:
             queryset = queryset.filter(chromosome_count__iexact=chromosomes)
+        queryset = queryset.order('name')
         return queryset
