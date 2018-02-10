@@ -283,3 +283,4 @@ JWT_EXPIRATION_DELTA = datetime.timedelta(hours=1)
 # MISC
 ############
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
