@@ -447,7 +447,7 @@ class CultivarListView(ListAPIView):
             queryset = queryset.filter(name__iexact=name)
         name_contains = self.request.query_params.get('name_contains', None)
         if name_contains:
-            queryset = queryset.filter(name__icontains=name)
+            queryset = queryset.filter(name__icontains=name_contains)
         country = self.request.query_params.get('country', None)
         if country:
             queryset = queryset.filter(origin_location__county__name__iexact=country)
