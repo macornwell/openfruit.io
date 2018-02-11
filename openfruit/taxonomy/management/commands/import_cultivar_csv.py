@@ -40,7 +40,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Format of CSV:
-        # species_latin, cultivar name, origin, origin_year, uses, ripens_early, ripens_late
 
         plants_kingdom = Kingdom.objects.get(name='Plants')
 
