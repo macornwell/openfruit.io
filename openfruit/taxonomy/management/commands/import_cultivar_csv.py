@@ -147,7 +147,10 @@ class Command(BaseCommand):
                 if county:
                     county_obj = GeoModels.County.objects.get(state=state_obj, name=county)
                 if city:
-                    city_obj = GeoModels.City.objects.get(state=state_obj, county=county_obj, name=city)
+                    cities = GeoModels.City.objects.filter(state=state_obj, name=city)
+                    if len(cities) > 1:
+                        cities = cities.filter(county=county_obj)
+                    city_obj = cities.first()
             location = GeoModels.Location.objects.filter(country=country_obj, state=state_obj, county=county_obj, city=city_obj).first()
             if not location:
                 print('Creating Location: ')
