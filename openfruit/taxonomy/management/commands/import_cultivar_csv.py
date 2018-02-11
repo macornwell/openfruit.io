@@ -130,10 +130,6 @@ class Command(BaseCommand):
             return None
         if country == 'United States' or country == 'US':
             country = 'United States of America'
-        if country == 'England' or 'United Kingdom':
-            country = 'United Kingdom of Great Britain and Northern Ireland'
-        if country == 'Russia':
-            country = 'Russian Federation'
         try:
             country_obj = GeoModels.Country.objects.get(name=country)
             state_obj = None
