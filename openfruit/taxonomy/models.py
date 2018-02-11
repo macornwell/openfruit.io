@@ -58,6 +58,7 @@ RIPENING_MONTH_CHOICES = (
     ('ede', 'Early December'),
     ('mde', 'December'),
     ('lde', 'Late December'),
+    ('Unk', 'Unknown'),
 )
 
 
@@ -117,7 +118,7 @@ class Species(models.Model, UrlNameMixin):
 
     class Meta:
         ordering = ('generated_name',)
-        unique_together = (('genus', 'name'))
+        unique_together = (('genus', 'latin_name'))
 
     def save(self, *args, **kwargs):
         self.generated_name = self.__get_generated_name()
@@ -156,8 +157,8 @@ class Cultivar(models.Model, UrlNameMixin):
     featured_image = ImageField(upload_to='featured-images', blank=True, null=True)
     generated_name = models.CharField(max_length=60, unique=True, blank=True, null=True)
     uses = models.ManyToManyField(FruitUsageType)
-    ripens_early = models.CharField(max_length=3, blank=True, null=True, choices=RIPENING_MONTH_CHOICES)
-    ripens_late = models.CharField(max_length=3, blank=True, null=True, choices=RIPENING_MONTH_CHOICES)
+    ripens_early = models.CharField(max_length=3, blank=True, null=True, choices=RIPENING_MONTH_CHOICES, default='Unk')
+    ripens_late = models.CharField(max_length=3, blank=True, null=True, choices=RIPENING_MONTH_CHOICES, default='Unk')
 
     # Breeding Information
     chromosome_count = models.CharField(max_length=1, choices=CHROMOSOME_CHOICES, default='2', blank=True, null=True)
