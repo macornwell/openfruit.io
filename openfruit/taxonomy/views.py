@@ -24,6 +24,10 @@ from openfruit.userdata.services import USER_DATA_DAL
 from openfruit.reports.event.services import EVENT_DAL
 
 
+def search(request):
+    return render(request, template_name='taxonomy/search.html')
+
+
 class KingdomListView(ListView):
     model = Kingdom
     template_name = 'taxonomy/kingdom-list.html'
