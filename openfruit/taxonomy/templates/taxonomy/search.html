@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body %}
+<div class="search-bar">
+<input id="cultivar-search" class="form-control typeahead" type="text" placeholder="Type Cultivar Here">
+</div>
+<hr>
+<div class="detail">
+<ul>
+    <li><b>Cultivar: </b><span id="cultivar-name"></span></li>
+    <li><b>Species: </b><span id="cultivar-species"></span></li>
+    <li><b>Origin: </b><span id="cultivar-origin"></span></li>
+    <li><b>Year Originated: </b><span id="cultivar-year"></span></li>
+    <li><b>Uses: </b><span id="cultivar-uses"></span></li>
+    <li><b>Ripening Window:</b><span id="cultivar-ripens-early"></span> - <span id="cultivar-ripens-late"></span></li>
+    <li><b>Brief Description: </b><span id="cultivar-description"></span></li>
+    <li><b>History: </b><span id="cultivar-history"></span></li>
+    <li><b>Chromosomes: </b><span id="cultivar-chromosome"></span></li>
+    <li><b>Parent A: </b><span id="cultivar-parent-a"></span></li>
+    <li><b>Parent B: </b><span id="cultivar-parent-b"></span></li>
+</ul>
+</div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'js/typeahead.bundle.js' %}"></script>
+    <script>
+    $(document).ready(function(){
+        var process_cultivars = function(asyncResults, data, status){
+            $('body').css('cursor', "default");
+            var cultivars = data['results'];
+            suggestion_key_to_obj = {};
+            cultivars = Object.keys(cultivars).map(function(k) {
+                var cultivar = cultivars[k];
+                var key = cultivar['name'] + ' (' + cultivar['species'] + ')';
+                suggestion_key_to_obj[key] = cultivar;
+                return key
+            });
+            asyncResults(cultivars);
+        };
+        var search_for_cultivar = function(asyncResult, data, status){
+            var token = 'JWT ' + data['token'];
+            var cultivar = $('#cultivar-search').val();
+            $.ajax({
+                url: 'https://www.openfruit.io/api/v1/cultivars/?name_contains=' + cultivar,
+                data: {},
+                type: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': token,
+                  },
+                success: function(data, status) { process_cultivars(asyncResult, data, status) },
+                error: function(something){
+                    console.log(status);
+                }
+            });
+        };
+
+        $('#cultivar-search').typeahead({minLength: 3,}, {
+            minLength: 3,
+            order: "asc",
+            offset: true,
+            hint: true,
+            source:
+                function(query, syncResults, asyncResults) {
+                    // Get Token Then Conduct Query
+                    $('body').css('cursor', "progress");
+                    $.ajax({
+                        url: 'https://www.openfruit.io/api/v1/auth/token/',
+                        data: {username:'dfnurseryapi', password:'dfnurseryapi'},
+                        type: 'POST',
+                        success: function(data, status){ search_for_cultivar(asyncResults, data, status) }
+                    });
+                }
+        }).bind('typeahead:selected', function(event, suggestion){
+            //console.log(suggestion);
+        }).bind('keypress', function(){
+            //console.log('Pressed: ' + $(this).val());
+        });
+        $('#search-add-button').click(function(){
+            var cultivar_search = $('#cultivar-search');
+            var key = cultivar_search.val();
+            var cultivar = suggestion_key_to_obj[key];
+            cultivar['display_key'] = key;
+            cultivar_search.val('');
+        });
+    });
+    </script>
+{% endblock %}
