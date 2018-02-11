@@ -8,8 +8,6 @@ class FruitingPlantSerializer(serializers.ModelSerializer):
     coordinate = serializers.SerializerMethodField()
     details_url = serializers.SerializerMethodField()
     created_by_name = serializers.SerializerMethodField()
-    ripens_early = serializers.SerializerMethodField()
-    ripens_late = serializers.SerializerMethodField()
 
     def get_cultivar_name(self, obj):
         return str(obj.cultivar)
@@ -19,12 +17,6 @@ class FruitingPlantSerializer(serializers.ModelSerializer):
 
     def get_coordinate(self, obj):
         return str(obj.geocoordinate)
-
-    def get_ripens_early(self, obj):
-        return obj.get_ripens_early_display()
-
-    def get_ripens_late(self, obj):
-        return obj.get_ripens_late_display()
 
     def get_details_url(self, obj):
         if obj.cultivar:
@@ -50,12 +42,20 @@ class CultivarSerializer(serializers.HyperlinkedModelSerializer):
     species_latin = serializers.SerializerMethodField()
     uses = serializers.SerializerMethodField()
     origin_location = serializers.SerializerMethodField()
+    ripens_early = serializers.SerializerMethodField()
+    ripens_late = serializers.SerializerMethodField()
 
     def get_species(self, obj):
         return obj.species.name
 
     def get_species_latin(self, obj):
         return obj.species.latin_name
+
+    def get_ripens_early(self, obj):
+        return obj.get_ripens_early_display()
+
+    def get_ripens_late(self, obj):
+        return obj.get_ripens_late_display()
 
     def get_origin_location(self, obj):
         result = {
