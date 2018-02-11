@@ -89,7 +89,7 @@ class CultivarSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Cultivar
         fields = ('name', 'species', 'species_latin', 'generated_name', 'origin_location',
-                  'origin_year', 'uses', 'chromosome_count')
+                  'origin_year', 'uses', 'chromosome_count', 'ripens_early', 'ripens_late')
 
 
 class FruitUsageTypeSerializer(serializers.HyperlinkedModelSerializer):
