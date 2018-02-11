@@ -9,6 +9,7 @@ COMMON_USES = [
     'Fresh Eating',
     'Juice',
     'Preserves',
+    'Storage',
 ]
 
 
