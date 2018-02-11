@@ -21,6 +21,45 @@ CHROMOSOME_CHOICES = (
     ('8', 'Octoploid x8'),
 )
 
+RIPENING_MONTH_CHOICES = (
+    ('ej', 'Early January'),
+    ('mj', 'January'),
+    ('lj', 'Late January'),
+    ('efe', 'Early February'),
+    ('mfe', 'February'),
+    ('lfe', 'Late February'),
+    ('ema', 'Early March'),
+    ('mma', 'March'),
+    ('lma', 'Late March'),
+    ('eap', 'Early April'),
+    ('map', 'April'),
+    ('lap', 'Late April'),
+    ('emy', 'Early May'),
+    ('mmy', 'May'),
+    ('lmy', 'Late May'),
+    ('eju', 'Early June'),
+    ('mju', 'June'),
+    ('lju', 'Late June'),
+    ('ejy', 'Early July'),
+    ('mjy', 'July'),
+    ('ljy', 'Late July'),
+    ('eau', 'Early August'),
+    ('mau', 'August'),
+    ('lau', 'Late August'),
+    ('ese', 'Early September'),
+    ('mse', 'September'),
+    ('lse', 'Late September'),
+    ('eoc', 'Early October'),
+    ('moc', 'October'),
+    ('loc', 'Late October'),
+    ('eno', 'Early November'),
+    ('mno', 'November'),
+    ('lno', 'Late November'),
+    ('ede', 'Early December'),
+    ('mde', 'December'),
+    ('lde', 'Late December'),
+)
+
 
 class Kingdom(models.Model, UrlNameMixin):
     objects = KingdomManager()
@@ -117,7 +156,8 @@ class Cultivar(models.Model, UrlNameMixin):
     featured_image = ImageField(upload_to='featured-images', blank=True, null=True)
     generated_name = models.CharField(max_length=60, unique=True, blank=True, null=True)
     uses = models.ManyToManyField(FruitUsageType)
-
+    ripens_early = models.CharField(max_length=3, blank=True, null=True, choices=RIPENING_MONTH_CHOICES)
+    ripens_late = models.CharField(max_length=3, blank=True, null=True, choices=RIPENING_MONTH_CHOICES)
 
     # Breeding Information
     chromosome_count = models.CharField(max_length=1, choices=CHROMOSOME_CHOICES, default='2', blank=True, null=True)

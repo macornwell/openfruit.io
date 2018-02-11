@@ -8,6 +8,8 @@ class FruitingPlantSerializer(serializers.ModelSerializer):
     coordinate = serializers.SerializerMethodField()
     details_url = serializers.SerializerMethodField()
     created_by_name = serializers.SerializerMethodField()
+    ripens_early = serializers.SerializerMethodField()
+    ripens_late = serializers.SerializerMethodField()
 
     def get_cultivar_name(self, obj):
         return str(obj.cultivar)
@@ -17,6 +19,12 @@ class FruitingPlantSerializer(serializers.ModelSerializer):
 
     def get_coordinate(self, obj):
         return str(obj.geocoordinate)
+
+    def get_ripens_early(self, obj):
+        return obj.get_ripens_early_display()
+
+    def get_ripens_late(self, obj):
+        return obj.get_ripens_late_display()
 
     def get_details_url(self, obj):
         if obj.cultivar:
