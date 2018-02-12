@@ -7,10 +7,19 @@ from django.views.generic import View, ListView, DetailView, CreateView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from rest_framework.decorators import api_view, APIView
+from rest_framework.decorators import api_view, APIView, permission_classes
 from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_jwt.settings import api_settings
+
+jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
+
+
 from openfruit.taxonomy.serializers import SpeciesSerializer, CultivarSerializer, \
     FruitingPlantSerializer, FruitUsageTypeSerializer
 
@@ -24,8 +33,14 @@ from openfruit.userdata.services import USER_DATA_DAL
 from openfruit.reports.event.services import EVENT_DAL
 
 
+@permission_classes((IsAuthenticated,))
 def search(request):
-    return render(request, template_name='taxonomy/search.html')
+    payload = jwt_payload_handler(request.user)
+    token = jwt_encode_handler(payload)
+    data = {
+        'token': token,
+    }
+    return render(request, template_name='taxonomy/search.html', context=data)
 
 
 class KingdomListView(ListView):

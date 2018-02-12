@@ -26,6 +26,7 @@
     <script src="{% static 'js/typeahead.bundle.js' %}"></script>
     <script>
     $(document).ready(function(){
+        var suggestion_key_to_obj = {};
         var process_cultivars = function(asyncResults, data, status){
             $('body').css('cursor', "default");
             var cultivars = data['results'];
@@ -38,11 +39,12 @@
             });
             asyncResults(cultivars);
         };
-        var search_for_cultivar = function(asyncResult, data, status){
-            var token = 'JWT ' + data['token'];
+        var search_for_cultivar = function(asyncResults){
+            var token = 'JWT ' + '{{ token }}';
+            console.log(token);
             var cultivar = $('#cultivar-search').val();
             $.ajax({
-                url: 'https://www.openfruit.io/api/v1/cultivars/?name_contains=' + cultivar,
+                url: '/api/v1/cultivars/?name_contains=' + cultivar,
                 data: {},
                 type: 'GET',
                 headers: {
@@ -50,9 +52,10 @@
                     'Content-Type': 'application/json',
                     'Authorization': token,
                   },
-                success: function(data, status) { process_cultivars(asyncResult, data, status) },
+                success: function(data, status) { process_cultivars(asyncResults, data, status) },
                 error: function(something){
                     console.log(status);
+                    //console.log(something);
                 }
             });
         };
@@ -66,25 +69,34 @@
                 function(query, syncResults, asyncResults) {
                     // Get Token Then Conduct Query
                     $('body').css('cursor', "progress");
+                    search_for_cultivar(asyncResults);
+                    /*
                     $.ajax({
                         url: 'https://www.openfruit.io/api/v1/auth/token/',
                         data: {username:'dfnurseryapi', password:'dfnurseryapi'},
                         type: 'POST',
                         success: function(data, status){ search_for_cultivar(asyncResults, data, status) }
                     });
+                    */
                 }
         }).bind('typeahead:selected', function(event, suggestion){
-            //console.log(suggestion);
+          set_cultivar(suggestion);
         }).bind('keypress', function(){
             //console.log('Pressed: ' + $(this).val());
         });
-        $('#search-add-button').click(function(){
-            var cultivar_search = $('#cultivar-search');
-            var key = cultivar_search.val();
-            var cultivar = suggestion_key_to_obj[key];
-            cultivar['display_key'] = key;
-            cultivar_search.val('');
-        });
+
+        var set_cultivar = function(cultivar_key){
+          var cultivar = suggestion_key_to_obj[cultivar_key];
+          console.log(cultivar);
+          $('#cultivar-name').text(cultivar['name']);
+          $('#cultivar-species').text(cultivar['species']);
+          $('#cultivar-origin').text(cultivar['origin_location']);
+          $('#cultivar-year').text(cultivar['origin_year']);
+          $('#cultivar-ripens-early').text(cultivar['ripens_early']);
+          $('#cultivar-ripens-late').text(cultivar['ripens_late']);
+          $('#cultivar-chromosome').text(cultivar['chromosome_count']);
+
+        };
     });
     </script>
 {% endblock %}
