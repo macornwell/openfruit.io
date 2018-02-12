@@ -50,7 +50,8 @@ class Command(BaseCommand):
                 if first:
                     first = False
                     continue
-                genus, species_latin = row[0].split(' ')
+                genus, species_latin_end = row[0].split(' ')
+                species_latin = row[0]
                 species_name = row[1]
                 genus = self.__get_genus(plants_kingdom, genus)
                 species = self.__get_species(genus, species_latin, species_name)
@@ -103,6 +104,7 @@ class Command(BaseCommand):
             obj.name = species_name
             obj.latin_name = species_latin
             print('Creating Species: ' + species_name)
+            print(obj)
             obj.save()
         return obj
 
