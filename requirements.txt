@@ -10,7 +10,7 @@ django-colorful==1.2
 django-cors-headers==2.1.0
 django-crispy-forms==1.6.1
 django-datetime-widget==0.9.3
-django-geo-db==0.1.19
+django-geo-db==0.1.20
 django-jsonfield==1.0.1
 djangorestframework==3.6.4
 djangorestframework-jwt==1.10.0
