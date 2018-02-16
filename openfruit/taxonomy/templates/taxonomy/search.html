@@ -107,18 +107,23 @@
             var county = location['county'];
             var zip = location['zipcode'];
             if (zip !== null){
+              console.log('Zip');
               location_value += zip;
             }
             else if (city !== null){
+              console.log('city');
               location_value += city;
             }
             else if (county !== null){
+              console.log('County');
               location_value += county;
             }
             else if (state !== null){
+              console.log('State');
               location_value += state;
             }
             else if (country !== null){
+              console.log('Country');
               location_value += country;
             }
             var geocoordinate = location['geocoordinate'];
