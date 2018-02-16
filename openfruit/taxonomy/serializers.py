@@ -72,7 +72,7 @@ class CultivarSerializer(serializers.HyperlinkedModelSerializer):
             if location.state:
                 result['state'] = location.state.generated_name
             if location.country:
-                result['country'] = location.country.generated_name
+                result['country'] = location.country.name
             if location.county:
                 result['county'] = location.county.generated_name
             if location.zipcode:
