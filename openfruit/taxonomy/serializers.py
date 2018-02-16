@@ -68,15 +68,16 @@ class CultivarSerializer(serializers.HyperlinkedModelSerializer):
         location = obj.origin_location
         if location:
             if location.city:
-                result['city'] = location.city.name
+                result['city'] = location.city.generated_name
             if location.state:
-                result['state'] = location.state.abbreviation
+                result['state'] = location.state.generated_name
             if location.country:
-                result['country'] = location.country.abbreviation
+                result['country'] = location.country.generated_name
+            if location.county:
+                result['county'] = location.county.generated_name
             if location.zipcode:
                 result['zipcode'] = location.zipcode.zipcode
-            if location.geocoordinate:
-                result['geocoordinate'] = '{0} {1}'.format(location.geocoordinate.lat, location.geocoordinate.lon)
+            result['geocoordinate'] = location.get_geocoordinate().generated_name
         return result
 
     def get_uses(self, obj):
