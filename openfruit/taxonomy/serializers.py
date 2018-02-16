@@ -62,6 +62,7 @@ class CultivarSerializer(serializers.HyperlinkedModelSerializer):
             'city': None,
             'state': None,
             'country': None,
+            'county': None,
             'zipcode': None,
             'geocoordinate': None,
         }
