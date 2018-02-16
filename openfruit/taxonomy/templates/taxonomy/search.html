@@ -88,9 +88,46 @@
         var set_cultivar = function(cultivar_key){
           var cultivar = suggestion_key_to_obj[cultivar_key];
           console.log(cultivar);
+          var location = cultivar['origin_location'];
+          $('#cultivar-origin').text(location);
+          /*
+           result = {
+            'city': None,
+            'state': None,
+            'country': None,
+            'zipcode': None,
+            'geocoordinate': None,
+        }
+           */
+          if (location !== null){
+            var location_value = '';
+            var city = location['city'];
+            var state = location['state'];
+            var country = location['country'];
+            var county = location['county'];
+            var zip = location['zipcode'];
+            if (zip !== null){
+              location_value += zip;
+            }
+            else if (city !== null){
+              location_value += city;
+            }
+            else if (county !== null){
+              location_value += county;
+            }
+            else if (state !== null){
+              location_value += state;
+            }
+            else if (country !== null){
+              location_value += country;
+            }
+            var geocoordinate = location['geocoordinate'];
+            location_value += '(' + geocoordinate + ')';
+            $('#cultivar-origin').text(location_value);
+          }
+
           $('#cultivar-name').text(cultivar['name']);
           $('#cultivar-species').text(cultivar['species']);
-          $('#cultivar-origin').text(cultivar['origin_location']);
           $('#cultivar-year').text(cultivar['origin_year']);
           $('#cultivar-ripens-early').text(cultivar['ripens_early']);
           $('#cultivar-ripens-late').text(cultivar['ripens_late']);
