@@ -182,7 +182,6 @@
 
         var setupMarkers = function(plants){
             console.log('Returned ' + plants.length + ' plants.');
-            console.log(plants);
             initializeMarkersAndCluster(map);
             for (var index in plants){
                 var fruit = plants[index];
@@ -277,7 +276,6 @@
         };
 
         var setupMarker = function(fruitingPlant, map) {
-          console.log(fruitingPlant);
             var coord = utilities.textCoordinateToGMapsDict(fruitingPlant.coordinate);
 
             var cultivar = fruitingPlant.cultivar_name;

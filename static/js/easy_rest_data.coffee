@@ -33,7 +33,7 @@ class EasyRestData
   getManyResultsWithData: (url, toSendData, callback) =>
     objs = []
     $.get(url, toSendData, (data)=>
-      _.each(data, (obj)->
+      _.each(data['results'], (obj)->
         objs.push(obj)
       )
       callback(objs)
