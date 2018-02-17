@@ -10,7 +10,6 @@
 <ul>
     <li><b>Cultivar: </b><span id="cultivar-name"></span></li>
     <li><b>Species: </b><span id="cultivar-species"></span></li>
-    <li><b>Origin: </b><span id="cultivar-origin"></span></li>
     <li><b>Year Originated: </b><span id="cultivar-year"></span></li>
     <li><b>Uses: </b><span id="cultivar-uses"></span></li>
     <li><b>Ripening Window:</b><span id="cultivar-ripens-early"></span> - <span id="cultivar-ripens-late"></span></li>
@@ -19,8 +18,14 @@
     <li><b>Chromosomes: </b><span id="cultivar-chromosome"></span></li>
     <li><b>Parent A: </b><span id="cultivar-parent-a"></span></li>
     <li><b>Parent B: </b><span id="cultivar-parent-b"></span></li>
+    <li>
+        <span><b>Uses:</b></span>
+        <ul id="uses-list"></ul>
+    </li>
 </ul>
 </div>
+    <h3>Location: <span id="cultivar-origin"></span></h3>
+    <div id="map" class="google-map"></div>
 {% endblock %}
 {% block scripts %}
     <script src="{% static 'js/typeahead.bundle.js' %}"></script>
@@ -41,10 +46,10 @@
         };
         var search_for_cultivar = function(asyncResults){
             var token = 'JWT ' + '{{ token }}';
-            console.log(token);
             var cultivar = $('#cultivar-search').val();
+            var url = '/api/v1/cultivars/?name_contains=' + cultivar;
             $.ajax({
-                url: '/api/v1/cultivars/?name_contains=' + cultivar,
+                url: url,
                 data: {},
                 type: 'GET',
                 headers: {
@@ -54,14 +59,14 @@
                   },
                 success: function(data, status) { process_cultivars(asyncResults, data, status) },
                 error: function(something){
-                    console.log(status);
-                    //console.log(something);
+                    console.log(something);
                 }
             });
         };
 
-        $('#cultivar-search').typeahead({minLength: 3,}, {
+        $('#cultivar-search').typeahead({minLength:3}, {
             minLength: 3,
+            limit: 10,
             order: "asc",
             offset: true,
             hint: true,
@@ -82,23 +87,23 @@
         }).bind('typeahead:selected', function(event, suggestion){
           set_cultivar(suggestion);
         }).bind('keypress', function(){
-            //console.log('Pressed: ' + $(this).val());
         });
+
+        var process_value = function(value) {
+          if (value === undefined){
+            value = '';
+          }
+          else if (value === null){
+            value = '';
+          }
+          return value;
+        };
+
 
         var set_cultivar = function(cultivar_key){
           var cultivar = suggestion_key_to_obj[cultivar_key];
-          console.log(cultivar);
           var location = cultivar['origin_location'];
           $('#cultivar-origin').text(location);
-          /*
-           result = {
-            'city': None,
-            'state': None,
-            'country': None,
-            'zipcode': None,
-            'geocoordinate': None,
-        }
-           */
           if (location !== null){
             var location_value = '';
             var city = location['city'];
@@ -107,38 +112,72 @@
             var county = location['county'];
             var zip = location['zipcode'];
             if (zip !== null){
-              console.log('Zip');
               location_value += zip;
             }
             else if (city !== null){
-              console.log('city');
               location_value += city;
             }
             else if (county !== null){
-              console.log('County');
               location_value += county;
             }
             else if (state !== null){
-              console.log('State');
               location_value += state;
             }
             else if (country !== null){
-              console.log('Country');
               location_value += country;
             }
             var geocoordinate = location['geocoordinate'];
+            update_map(geocoordinate);
             location_value += ' (' + geocoordinate + ')';
             $('#cultivar-origin').text(location_value);
           }
 
-          $('#cultivar-name').text(cultivar['name']);
-          $('#cultivar-species').text(cultivar['species']);
-          $('#cultivar-year').text(cultivar['origin_year']);
-          $('#cultivar-ripens-early').text(cultivar['ripens_early']);
-          $('#cultivar-ripens-late').text(cultivar['ripens_late']);
-          $('#cultivar-chromosome').text(cultivar['chromosome_count']);
-
+          $('#cultivar-name').text(process_value(cultivar['name']));
+          $('#cultivar-species').text(process_value(cultivar['species']));
+          $('#cultivar-year').text(process_value(cultivar['origin_year']));
+          $('#cultivar-ripens-early').text(process_value(cultivar['ripens_early']));
+          $('#cultivar-ripens-late').text(process_value(cultivar['ripens_late']));
+          $('#cultivar-chromosome').text(process_value(cultivar['chromosome_count']));
+          var uses_list = $('#uses-list');
+          uses_list.empty();
+          var uses = cultivar['uses'];
+          for (var use of uses){
+            uses_list.append('<li>' + use + '</li>');
+          }
         };
-    });
+
+      var map = null;
+      var marker = null;
+
+      function update_map(geocoordinate) {
+        var lat, lon;
+        var results = geocoordinate.split(" ");
+        lat = results[0];
+        lon = results[1];
+        var latLon = new google.maps.LatLng( lat, lon);
+        map.setCenter(latLon);
+        marker.setMap(null);
+        marker = new google.maps.Marker({
+          position: latLon,
+          map: map
+        });
+      }
+
+      function initMap() {
+        var uluru = {lat: {{ GM_SETTINGS.lat }}, lng: {{ GM_SETTINGS.lon }}};
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 6,
+          center: uluru
+        });
+        marker = new google.maps.Marker({
+          position: uluru,
+          map: map
+        });
+      }
+      initMap();
+      setTimeout(function(){
+            google.maps.event.trigger(map, 'resize');
+        }, 1000);
+    })
     </script>
 {% endblock %}
