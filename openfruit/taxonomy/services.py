@@ -160,8 +160,6 @@ class TaxonomyDAL:
         query = query.filter(geocoordinate__lat__lte=nw.lat, geocoordinate__lat__gte=sw.lat,
                              geocoordinate__lon__lte=ne.lon, geocoordinate__lon__gte=nw.lon)
 
-        print(query.query)
-        print(query)
         return query
 
     def get_species_with_google_maps_images(self):

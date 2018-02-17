@@ -51,6 +51,7 @@
       objs = [];
       return $.get(url, (function(_this) {
         return function(data) {
+            console.log(data);
           _.each(data, function(obj) {
             console.log(obj);
             return objs.push(obj);
