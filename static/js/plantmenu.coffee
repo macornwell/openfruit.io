@@ -94,7 +94,9 @@ class PlantMenuFactory
     return see_all_records.format(fruitingPlant.fruiting_plant_id)
 
   _create_record: (events, type)=>
+    console.log(events);
     count = @_countMatches(events, (plant)=>
+      console.log(plant);
       return plant.event_type_text == type
     )
     if count == 0
