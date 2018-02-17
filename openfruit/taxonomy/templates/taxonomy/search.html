@@ -75,14 +75,6 @@
                     // Get Token Then Conduct Query
                     $('body').css('cursor', "progress");
                     search_for_cultivar(asyncResults);
-                    /*
-                    $.ajax({
-                        url: 'https://www.openfruit.io/api/v1/auth/token/',
-                        data: {username:'dfnurseryapi', password:'dfnurseryapi'},
-                        type: 'POST',
-                        success: function(data, status){ search_for_cultivar(asyncResults, data, status) }
-                    });
-                    */
                 }
         }).bind('typeahead:selected', function(event, suggestion){
           set_cultivar(suggestion);
