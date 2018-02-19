@@ -148,7 +148,7 @@ class Cultivar(models.Model, UrlNameMixin):
     color_tertiary_hex = RGBColorField(blank=True, null=True)
     featured_image = ImageField(upload_to='featured-images', blank=True, null=True)
     generated_name = models.CharField(max_length=60, unique=True, blank=True, null=True)
-    uses = models.ManyToManyField(FruitUsageType)
+    uses = models.ManyToManyField(FruitUsageType, blank=True, null=True)
     ripens_early_mod = models.CharField(max_length=1, default='m', choices=RIPENING_MODIFIER)
     ripens_early = models.IntegerField(blank=True, null=True, choices=RIPENING_MONTH_CHOICES, default=-1)
     ripens_late_mod = models.CharField(max_length=1, default='m', choices=RIPENING_MODIFIER)
