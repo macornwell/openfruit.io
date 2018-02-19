@@ -52,10 +52,20 @@ class CultivarSerializer(serializers.HyperlinkedModelSerializer):
         return obj.species.latin_name
 
     def get_ripens_early(self, obj):
-        return obj.get_ripens_early_display()
+        mod = obj.ripens_early_mod
+        ripens = obj.get_ripens_early_display()
+        if ripens is not 'Unknown':
+            if mod != 'm':
+                ripens = obj.get_ripens_early_mod_display() + '-' + ripens
+        return ripens
 
     def get_ripens_late(self, obj):
-        return obj.get_ripens_late_display()
+        mod = obj.ripens_late_mod
+        ripens = obj.get_ripens_late_display()
+        if ripens is not 'Unknown':
+            if mod != 'm':
+                ripens = obj.get_ripens_late_mod_display() + '-' + ripens
+        return ripens
 
     def get_origin_location(self, obj):
         result = {
