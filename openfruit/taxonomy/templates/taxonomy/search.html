@@ -46,6 +46,7 @@
             asyncResults(cultivars);
         };
         var search_for_cultivar = function(cultivar, asyncResults){
+            $('body').css('cursor', "progress");
             var token = 'JWT ' + '{{ token }}';
             var url = '/api/v1/cultivars/?limit=10&name_contains=' + cultivar;
             $.ajax({
@@ -153,7 +154,6 @@
             google.maps.event.trigger(map, 'resize');
         }, 1000);
 
-      var tags = [ "c++", "java", "php", "coldfusion", "javascript", "asp", "ruby" ];
       $( "#autocomplete" ).autocomplete({
         minLength: 3,
         select: function( event, ui ) {
@@ -162,7 +162,6 @@
         },
         source: function(value, response_callback ) {
           // Get Token Then Conduct Query
-          $('body').css('cursor', "progress");
           search_for_cultivar(value['term'], response_callback);
         }
       });

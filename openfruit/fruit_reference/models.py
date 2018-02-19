@@ -14,6 +14,7 @@ class FruitReference(models.Model):
     fruit_reference_id = models.AutoField(primary_key=True)
     species_list = models.ManyToManyField(Species)
     cultivar_list = models.ManyToManyField(Cultivar)
+    title = models.CharField(max_length=100)
     reference = models.TextField()
     type = models.ForeignKey(FruitReferenceType)
     author = models.CharField(max_length=50, null=True, blank=True)

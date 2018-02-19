@@ -68,6 +68,7 @@ INSTALLED_APPS = (
     'openfruit.dashboard',
     'openfruit.geography',
     'openfruit.fruit_reference',
+    'openfruit.fruit_search',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -262,7 +263,6 @@ GM_SETTINGS = GoogleMapsSettings(lat=33.16025, lon=-87.6104341, zoom=4)
 DEFAULT_MAP_CENTER = (39.77476, -97.11914)
 
 
-
 ################
 # REST FRAMEWORK
 ################
@@ -276,7 +276,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 100
+    'PAGE_SIZE': 20
 }
 JWT_ALLOW_REFRESH = True
 JWT_EXPIRATION_DELTA = datetime.timedelta(hours=1)

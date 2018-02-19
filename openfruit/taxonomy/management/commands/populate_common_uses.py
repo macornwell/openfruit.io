@@ -1,16 +1,5 @@
 from django.core.management.base import BaseCommand
-from openfruit.taxonomy.models import FruitUsageType
-
-COMMON_USES = [
-    'Baking',
-    'Cooking',
-    'Cider',
-    'Drying',
-    'Fresh Eating',
-    'Juice',
-    'Preserves',
-    'Storage',
-]
+from openfruit.taxonomy.models import FruitUsageType, COMMON_USES
 
 
 class Command(BaseCommand):

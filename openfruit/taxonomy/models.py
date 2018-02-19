@@ -43,6 +43,16 @@ RIPENING_MONTH_CHOICES = (
     (-1, 'Unknown'),
 )
 
+COMMON_USES = [
+    'Baking',
+    'Cooking',
+    'Cider',
+    'Drying',
+    'Fresh Eating',
+    'Preserves',
+    'Storage',
+]
+
 
 class Kingdom(models.Model, UrlNameMixin):
     objects = KingdomManager()

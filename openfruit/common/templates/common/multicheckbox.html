@@ -1,0 +1,17 @@
+{% load openfruit_common_tags %}
+<div class="row">
+    {% with obj_list|create_tuple_pairs as pairs %}
+        {% for a, b in pairs %}
+        <div class="col-xs-6">
+            <label>{{ a }}</label>
+            <input class="{{ class_name }} form-control" name="{{ box_name }}" type="checkbox" value="{{ a }}">
+        </div>
+        <div class="col-xs-6">
+            {% if b %}
+                <label>{{ b }}</label>
+                <input class="{{ class_name }} form-control" name="{{ box_name }}" type="checkbox" value="{{ b }}">
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% endwith %}
+</div>

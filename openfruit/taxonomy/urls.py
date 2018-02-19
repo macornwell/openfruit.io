@@ -31,6 +31,7 @@ urlpatterns = [
     url('^api/v1/plants/move$', move_fruiting_plant, name='move_fruiting_plant'),
     url('^api/v1/plants/public/$', PublicPlantsView.as_view(), name='public_plants_without_user'),
     url(r'^api/v1/species/(?P<pk>[0-9]+)/$', views.SpeciesDetail.as_view(), name='species-detail'),
+    url(r'^api/v1/species_list/$', views.SpeciesListView.as_view(), name='species-list'),
     url(r'^api/v1/fruit-usage-type/$', views.FruitUsageTypeDetailView.as_view(), name='fruitusagetype-detail'),
     url(r'^api/v1/cultivars/$', views.CultivarListView.as_view(), name='cultivar-list'),
     url(r'^api/v1/cultivar/(?P<pk>[0-9]+)/$', views.CultivarDetail.as_view(), name='cultivar-detail'),
