@@ -61,7 +61,7 @@
       });
     };
 
-    TaxonomyDAL.prototype.searchCultivars = function(species, ripening_high, ripening_low, year_high, year_low, state, uses, books, callback) {
+    TaxonomyDAL.prototype.searchCultivars = function(species, ripening_high, ripening_low, year_high, year_low, state, uses, books, chromosome, callback) {
       var url;
       url = '/api/v1/fruit-search/?';
       if (species) {
@@ -88,6 +88,10 @@
       if (books) {
         url += 'books=' + books + '&';
       }
+      if (chromosome) {
+        url += 'chromosomes=' + chromosome + '&';
+      }
+      console.log(url);
       return this._easyData.getManyResults(url, callback);
     };
 

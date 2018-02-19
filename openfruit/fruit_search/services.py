@@ -5,7 +5,7 @@ from django_geo_db import models as GeoModels
 class FruitSearchService:
 
     def filter(self, species, state, use_list, year_low, year_high, ripening_low,
-               ripening_high, reference_id):
+               ripening_high, reference_id, chromosomes):
         """
         species
         state
@@ -20,7 +20,7 @@ class FruitSearchService:
         """
         results = Cultivar.objects.all()
         if species:
-            results.filter(species__latin_name=species)
+            results = results.filter(species__latin_name=species)
         if state:
             state = GeoModels.State.objects.get(name=state)
             results = results.filter(origin_location__state_id=state.state_id)
@@ -39,6 +39,8 @@ class FruitSearchService:
         if reference_id:
             cultivar_list = FruitReference.objects.get(pk=reference_id).cultivar_list.values_list('cultivar_id')
             results = results.filter(cultivar_id__in=cultivar_list)
+        if chromosomes:
+            results = results.filter(chromosome_count=chromosomes)
         results = results.order_by('name')
         return results
 
