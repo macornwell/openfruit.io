@@ -3,7 +3,8 @@
 
 {% block body %}
 <div class="search-bar">
-<input id="cultivar-search" class="form-control typeahead" type="text" placeholder="Type Cultivar Here">
+<label>Cultivar Search</label>
+<input id="autocomplete" PLACEHOLDER="Type Cultivar Here" class="form-control">
 </div>
 <hr>
 <div class="detail">
@@ -28,7 +29,7 @@
     <div id="map" class="google-map"></div>
 {% endblock %}
 {% block scripts %}
-    <script src="{% static 'js/typeahead.bundle.js' %}"></script>
+    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
     $(document).ready(function(){
         var suggestion_key_to_obj = {};
@@ -44,10 +45,9 @@
             });
             asyncResults(cultivars);
         };
-        var search_for_cultivar = function(asyncResults){
+        var search_for_cultivar = function(cultivar, asyncResults){
             var token = 'JWT ' + '{{ token }}';
-            var cultivar = $('#cultivar-search').val();
-            var url = '/api/v1/cultivars/?name_contains=' + cultivar;
+            var url = '/api/v1/cultivars/?limit=10&name_contains=' + cultivar;
             $.ajax({
                 url: url,
                 data: {},
@@ -59,27 +59,9 @@
                   },
                 success: function(data, status) { process_cultivars(asyncResults, data, status) },
                 error: function(something){
-                    console.log(something);
                 }
             });
         };
-
-        $('#cultivar-search').typeahead({minLength:3}, {
-            minLength: 3,
-            limit: 10,
-            order: "asc",
-            offset: true,
-            hint: true,
-            source:
-                function(query, syncResults, asyncResults) {
-                    // Get Token Then Conduct Query
-                    $('body').css('cursor', "progress");
-                    search_for_cultivar(asyncResults);
-                }
-        }).bind('typeahead:selected', function(event, suggestion){
-          set_cultivar(suggestion);
-        }).bind('keypress', function(){
-        });
 
         var process_value = function(value) {
           if (value === undefined){
@@ -170,6 +152,20 @@
       setTimeout(function(){
             google.maps.event.trigger(map, 'resize');
         }, 1000);
+
+      var tags = [ "c++", "java", "php", "coldfusion", "javascript", "asp", "ruby" ];
+      $( "#autocomplete" ).autocomplete({
+        minLength: 3,
+        select: function( event, ui ) {
+          var suggestion = ui['item']['value'];
+          set_cultivar(suggestion);
+        },
+        source: function(value, response_callback ) {
+          // Get Token Then Conduct Query
+          $('body').css('cursor', "progress");
+          search_for_cultivar(value['term'], response_callback);
+        }
+      });
     })
     </script>
 {% endblock %}
