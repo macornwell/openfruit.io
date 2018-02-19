@@ -18,8 +18,6 @@ from rest_framework_jwt.settings import api_settings
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
-
-
 from openfruit.taxonomy.serializers import SpeciesSerializer, CultivarSerializer, \
     FruitingPlantSerializer, FruitUsageTypeSerializer
 
@@ -450,6 +448,17 @@ class FruitUsageTypeDetailView(APIView):
 class SpeciesListView(ListAPIView):
     queryset = Species.objects.all()
     serializer_class = SpeciesSerializer
+
+    def get_queryset(self):
+        queryset = Species.objects.all()
+        generated_name = self.request.query_params.get('generated_name', None)
+        if generated_name:
+            queryset = queryset.filter(generated_name__icontains=generated_name)
+        limit = self.request.query_params.get('limit', 10)
+        if limit:
+            queryset = queryset[:int(limit)]
+        return queryset
+
 
 
 class CultivarListView(ListAPIView):

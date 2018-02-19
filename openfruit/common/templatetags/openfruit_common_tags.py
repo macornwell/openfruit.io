@@ -44,3 +44,38 @@ def openfruit_logout(request, user):
 def get_item(dictionary, key):
     return dictionary.get(key)
 
+
+@register.filter
+def is_even(list_of_items):
+    if len(list_of_items) % 2 == 0:
+        return True
+    return False
+
+
+@register.filter
+def create_tuple_pairs(list_of_items):
+    data = list(list_of_items)
+    length = len(data)
+    if length == 1:
+        return [(data[0], None)]
+    if length == 2:
+        return [(data[0], data[1])]
+    evens = data[::2]
+    odds = data[1::2]
+    results = []
+    length = len(evens)
+    for idx in range(length):
+        obj = evens[idx]
+        obj_2 = None
+        if len(odds) > idx:
+            obj_2 = odds[idx]
+        results.append((obj, obj_2))
+    return results
+
+
+@register.inclusion_tag('common/multicheckbox.html')
+def multi_checkbox(class_name, box_name, obj_list):
+    return {'class_name': class_name,
+            'box_name': box_name,
+            'obj_list': obj_list
+            }

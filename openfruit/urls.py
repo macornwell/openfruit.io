@@ -39,6 +39,7 @@ urlpatterns = [
     url(r'^', include('openfruit.taxonomy.urls')),
     url(r'^', include('openfruit.reports.event.urls')),
     url(r'^', include('openfruit.userdata.urls')),
+    url(r'^', include('openfruit.fruit_search.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += router.urls
