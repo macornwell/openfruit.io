@@ -493,5 +493,8 @@ class CultivarListView(ListAPIView):
         chromosomes = self.request.query_params.get('chromosomes', None)
         if chromosomes:
             queryset = queryset.filter(chromosome_count__iexact=chromosomes)
+        limit = self.request.query_params.get('limit', 10)
         queryset = queryset.order_by('name')
+        if limit:
+            queryset = queryset[:int(limit)]
         return queryset
