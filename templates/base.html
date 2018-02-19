@@ -11,19 +11,18 @@
     <link rel="stylesheet" href="/static/css/styles.css">
     <link href=' http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
 
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.16/r-2.2.1/datatables.min.css"/>
 
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script src='https://www.google.com/recaptcha/api.js'></script>
-    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}"></script>
     <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-datetimepicker.css">
     <link rel="stylesheet" href="{{ STATIC_URL }}css/datetimepicker.css">
     <script src="{{ STATIC_URL }}js/bootstrap-datetimepicker.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -64,6 +63,11 @@
             {% endcomment %}
                 <li><a data-toggle="tooltip" title="Browse" class=" btn btn-default btn-lg nav-btn" href="{% url 'browse' %}">
                     <i class="fa fa-book" aria-hidden="true"></i></a>
+                </li>
+                <li><a data-toggle="tooltip" title="Search" class="btn btn-default btn-lg nav-btn"
+                       href="{% url 'fruit-search' %}"
+                >
+                    <i class="fa fa-search" aria-hidden="true"></i></a>
                 </li>
                 <li><a data-toggle="tooltip" title="This fruit tastes like..." class=" btn btn-default btn-lg nav-btn">
                     <i class="fa fa-star" aria-hidden="true"></i></a>
