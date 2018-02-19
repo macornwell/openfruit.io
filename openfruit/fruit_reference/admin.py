@@ -1,3 +1,5 @@
 from django.contrib import admin
+from openfruit.fruit_reference.models import FruitReference, FruitReferenceType
 
-# Register your models here.
+admin.site.register(FruitReference)
+admin.site.register(FruitReferenceType)

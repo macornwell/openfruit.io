@@ -22,7 +22,6 @@ class EasyRestData
       return
     objs = []
     $.get(url, (data)=>
-      console.log(data)
       _.each(data, (obj)->
         objs.push(obj)
       )
