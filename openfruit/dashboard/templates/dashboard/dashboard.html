@@ -180,16 +180,16 @@
             taxonomyService.getBoundingBoxOfFruit(setupMarkers, ne, sw);
         };
 
-        var setupMarkers = function(plants){
-            console.log('Returned ' + plants.length + ' plants.');
-            initializeMarkersAndCluster(map);
-            for (var index in plants){
-                var fruit = plants[index];
-                (function(fruitingPlant){
-                    if (fruitsToDisplay === 'ALL' || fruitingPlant.species == fruitsToDisplay){
-                      setupMarker(fruitingPlant, map);
-                    }
-                })(fruit);
+        var setupMarkers = function(results){
+          plants = results[3]
+          initializeMarkersAndCluster(map);
+          for (var index in plants){
+            var fruit = plants[index];
+            (function(fruitingPlant){
+                if (fruitsToDisplay === 'ALL' || fruitingPlant.species == fruitsToDisplay){
+                    setupMarker(fruitingPlant, map);
+                }
+            })(fruit);
             }
         };
 

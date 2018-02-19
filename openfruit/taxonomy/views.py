@@ -397,7 +397,8 @@ class PlantsListView(generics.ListAPIView):
     serializer_class = FruitingPlantSerializer
 
     def get_queryset(self):
-        return TAXONOMY_DAL.query_fruiting_plants(self.request.query_params)
+        query_results = TAXONOMY_DAL.query_fruiting_plants(self.request.query_params)
+        return query_results
 
 
 class UsersPlantsListView(generics.ListAPIView):
