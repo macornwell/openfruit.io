@@ -1,7 +1,7 @@
 appdirs==1.4.3
 dj-database-url==0.4.2
 Django==1.10
-django-admin-bootstrapped==2.5.7
+-e git+https://github.com/django-admin-bootstrapped/django-admin-bootstrapped#egg=django-admin-bootstrapped
 django-auditlog==0.4.3
 django-autocomplete-light==3.2.9
 django-bootstrap3==8.2.2
