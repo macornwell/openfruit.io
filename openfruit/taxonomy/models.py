@@ -21,44 +21,26 @@ CHROMOSOME_CHOICES = (
     ('8', 'Octoploid x8'),
 )
 
+RIPENING_MODIFIER = (
+    ('e', 'Early'),
+    ('m', 'Mid'),
+    ('l', 'Late'),
+)
+
 RIPENING_MONTH_CHOICES = (
-    ('ej', 'Early January'),
-    ('mj', 'January'),
-    ('lj', 'Late January'),
-    ('efe', 'Early February'),
-    ('mfe', 'February'),
-    ('lfe', 'Late February'),
-    ('ema', 'Early March'),
-    ('mma', 'March'),
-    ('lma', 'Late March'),
-    ('eap', 'Early April'),
-    ('map', 'April'),
-    ('lap', 'Late April'),
-    ('emy', 'Early May'),
-    ('mmy', 'May'),
-    ('lmy', 'Late May'),
-    ('eju', 'Early June'),
-    ('mju', 'June'),
-    ('lju', 'Late June'),
-    ('ejy', 'Early July'),
-    ('mjy', 'July'),
-    ('ljy', 'Late July'),
-    ('eau', 'Early August'),
-    ('mau', 'August'),
-    ('lau', 'Late August'),
-    ('ese', 'Early September'),
-    ('mse', 'September'),
-    ('lse', 'Late September'),
-    ('eoc', 'Early October'),
-    ('moc', 'October'),
-    ('loc', 'Late October'),
-    ('eno', 'Early November'),
-    ('mno', 'November'),
-    ('lno', 'Late November'),
-    ('ede', 'Early December'),
-    ('mde', 'December'),
-    ('lde', 'Late December'),
-    ('Unk', 'Unknown'),
+    (1, 'January'),
+    (2, 'February'),
+    (3, 'March'),
+    (4, 'April'),
+    (5, 'May'),
+    (6, 'June'),
+    (7, 'July'),
+    (8, 'August'),
+    (9, 'September'),
+    (10, 'October'),
+    (11, 'November'),
+    (12, 'December'),
+    (-1, 'Unknown'),
 )
 
 
@@ -157,8 +139,10 @@ class Cultivar(models.Model, UrlNameMixin):
     featured_image = ImageField(upload_to='featured-images', blank=True, null=True)
     generated_name = models.CharField(max_length=60, unique=True, blank=True, null=True)
     uses = models.ManyToManyField(FruitUsageType)
-    ripens_early = models.CharField(max_length=3, blank=True, null=True, choices=RIPENING_MONTH_CHOICES, default='Unk')
-    ripens_late = models.CharField(max_length=3, blank=True, null=True, choices=RIPENING_MONTH_CHOICES, default='Unk')
+    ripens_early_mod = models.CharField(max_length=1, default='m', choices=RIPENING_MODIFIER)
+    ripens_early = models.IntegerField(blank=True, null=True, choices=RIPENING_MONTH_CHOICES, default=-1)
+    ripens_late_mod = models.CharField(max_length=1, default='m', choices=RIPENING_MODIFIER)
+    ripens_late = models.IntegerField(blank=True, null=True, choices=RIPENING_MONTH_CHOICES, default=-1)
 
     # Breeding Information
     chromosome_count = models.CharField(max_length=1, choices=CHROMOSOME_CHOICES, default='2', blank=True, null=True)

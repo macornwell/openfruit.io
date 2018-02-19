@@ -67,6 +67,7 @@ INSTALLED_APPS = (
     'openfruit.chat',
     'openfruit.dashboard',
     'openfruit.geography',
+    'openfruit.fruit_reference',
 )
 
 MIDDLEWARE_CLASSES = (
