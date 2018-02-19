@@ -88,7 +88,6 @@
       if (books) {
         url += 'books=' + books + '&';
       }
-      console.log(url);
       return this._easyData.getManyResults(url, callback);
     };
 

@@ -56,7 +56,6 @@ class TaxonomyDAL
       url += 'uses=' + uses + '&'
     if books
       url += 'books=' + books + '&'
-    console.log(url)
     @_easyData.getManyResults(url, callback)
 
 

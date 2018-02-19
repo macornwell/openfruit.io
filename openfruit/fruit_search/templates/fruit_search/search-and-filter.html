@@ -1,6 +1,27 @@
 {% extends "base.html" %}
 {% load static openfruit_common_tags %}
 {% block body %}
+    <!-- Trigger the modal with a button -->
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body">
+          <div id="map" class="google-map"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 <h1>Cultivar Filter and Search</h1>
 <div id="search">
     <label>Species</label>
@@ -38,7 +59,7 @@
         <label>Year To</label>
         <input id="year-high" type="number" class="form-control">
     </div>
-    <label>Use</label>
+    <h3>Use</h3>
     {% multi_checkbox 'use' 'use' USES %}
 
     <label>Book References</label>
@@ -47,10 +68,11 @@
             <option value="{{ book.book_id }}">{{ book.title }}</option>
         {% endfor %}
     </select>
-    <a id="submit" href="#" class="btn btn-default btn-primary">Submit</a>
 </div>
 <hr>
 <div id="results">
+<h2>Results (<span id="found-count"></span> found)</h2>
+<div class="table-responsive">
 <table id="results-table" class="table table-striped table-bordered">
     <thead>
         <tr>
@@ -63,6 +85,7 @@
     </tbody>
 </table>
 </div>
+</div>
 {% endblock %}
 {% block scripts %}
 <script src="{% static 'js/taxonomy/taxonomy-service.js' %}"></script>
@@ -71,6 +94,8 @@
 <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
     $(document).ready(function(){
+      $('#found-count').text(0);
+
       var search = function(){
         var ripening_high = $('#ripening-high').val();
         if (ripening_high === '---'){
@@ -96,7 +121,6 @@
         if (uses.length > 1){
           uses = uses.slice(0, uses.length - 1);
         }
-        console.log(uses);
         var books = $('#books').val();
 
         var species = $('#species').val();
@@ -121,8 +145,8 @@
       };
 
       var process_results = function(data){
-        console.log(data);
         var totalCount = data[0];
+        $('#found-count').text(totalCount);
         var nextUrl = data[1];
         var items = data[3];
         fill_table(items);
@@ -137,10 +161,10 @@
         var county = location_data['county'];
         var city = location_data['city'];
         if (city !== null){
-          locationValue += city + ', ' + state;
+          locationValue += city;
         }
         else if (county !== null){
-          locationValue += county + ' County, ' + state;
+          locationValue += county;
         }
         else if (state !== null){
           locationValue += state;
@@ -153,15 +177,25 @@
         var use_string = '';
         for (idx in use_list){
           obj = use_list[idx];
-          console.log(obj);
           use_string += obj + ', ';
         }
         if (use_string.length > 1){
           use_string = use_string.slice(0, use_string.length -1);
         }
-        console.log(use_string);
 
         return use_string;
+      };
+
+      var create_gmaps_button = function(obj, location_string){
+        if (location_string === ''){
+          return '';
+        }
+
+        var html = '<a href="#" data-toggle="modal" data-target="#myModal" ';
+        html += ' data-coordinate="' + obj.origin_location.geocoordinate +'"';
+        html += ' data-title="' + location_string +'"';
+        html += ' class="map-button btn btn-xs btn-warning">map</a>';
+        return html;
       };
 
       var fill_table = function(data){
@@ -170,12 +204,22 @@
         for (idx in data){
           obj = data[idx];
           var row = '<tr>';
+
           row += '<td>' + obj.name + '</td>';
-          row += '<td>' + read_location(obj.origin_location) + '</td>';
+          var location = read_location(obj.origin_location);
+          row += '<td>' + location + " " + create_gmaps_button(obj, location) + '</td>';
           row += '<td>' + read_uses(obj.uses) + '</td>';
           row += '</tr>';
           tableBody.append(row);
         }
+        $('.map-button').click(function(){
+          var title = $(this).data('title');
+          var coordinate = $(this).data('coordinate');
+          var modalTitle = title + ' (' + coordinate + ')';
+          $(".modal-title").text(modalTitle);
+          $(".modal-body coordinate").text(coordinate);
+          update_map(coordinate);
+        });
       };
 
       $('#results-table').DataTable();
@@ -198,7 +242,41 @@
         }
       });
 
-      $('#submit').click(search);
+      $('input, select').change(function(){
+        search();
+      });
+
+      var map = null;
+      function update_map(geocoordinate) {
+        var lat, lon;
+        var results = geocoordinate.split(" ");
+        lat = results[0];
+        lon = results[1];
+        var latLon = new google.maps.LatLng( lat, lon);
+        map.setCenter(latLon);
+        marker.setMap(null);
+        marker = new google.maps.Marker({
+          position: latLon,
+          map: map
+        });
+      }
+
+      function initMap() {
+        var uluru = {lat: {{ GM_SETTINGS.lat }}, lng: {{ GM_SETTINGS.lon }}};
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 6,
+          center: uluru
+        });
+        marker = new google.maps.Marker({
+          position: uluru,
+          map: map
+        });
+      }
+      initMap();
+      setTimeout(function(){
+            google.maps.event.trigger(map, 'resize');
+        }, 1000);
+
     });
 </script>
 {% endblock %}
