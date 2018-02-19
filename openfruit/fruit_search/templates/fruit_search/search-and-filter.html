@@ -66,6 +66,13 @@
     <h3>Use</h3>
     {% multi_checkbox 'use' 'use' USES %}
 
+    <label>Chromosomes</label>
+    <select id="chromosome" class="form-control">
+    {% for c in CHROMOSOMES %}
+        <option value="{{ c }}">{{ c }}</option>
+    {% endfor %}
+    </select>
+
     <label>Book References</label>
     <select id="books" multiple class="form-control">
         {% for book in BOOK_REFERENCES %}
@@ -135,9 +142,10 @@
         else{
           species = null;
         }
+        var chromosomes = $('#chromosome').val();
 
         taxonomy_service.searchCultivars(species, ripening_high, ripening_low,
-          year_high, year_low, state, uses, books, process_results)
+          year_high, year_low, state, uses, books, chromosomes, process_results)
       };
 
       var process_results = function(data){
