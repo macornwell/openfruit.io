@@ -76,7 +76,7 @@
     <label>Book References</label>
     <select id="books" multiple class="form-control">
         {% for book in BOOK_REFERENCES %}
-            <option value="{{ book.book_id }}">{{ book.title }}</option>
+            <option value="{{ book.fruit_reference_id }}">{{ book.title }}</option>
         {% endfor %}
     </select>
     <a id="books_clear" class="btn btn-xs btn-warning">clear</a>
@@ -146,6 +146,7 @@
           uses = uses.slice(0, uses.length - 1);
         }
         var books = $('#books').val();
+        console.log(books);
 
         var species = $('#species').val();
         if (species !== null && species !== undefined && species !== ""){

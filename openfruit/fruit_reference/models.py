@@ -4,13 +4,19 @@ from openfruit.taxonomy.models import Cultivar, Species
 
 class FruitReferenceType(models.Model):
     fruit_reference_type_id = models.AutoField(primary_key=True)
-    type = models.CharField(max_length=20)
+    type = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return self.type
 
 
 class Author(models.Model):
     author_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     website_url = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
 
 
 class FruitReference(models.Model):
@@ -28,5 +34,8 @@ class FruitReference(models.Model):
     publish_date = models.DateField(null=True, blank=True)
 
     class Meta:
-        unique_together = (('reference', 'type'))
+        unique_together = (('title', 'type', 'author'),)
+
+    def __str__(self):
+        return self.title
 
