@@ -53,7 +53,7 @@ class FruitSearchListView(ListAPIView):
                 resistance_list.append(r)
         reference_id = []
         if books:
-            for book in books:
+            for book in books.split(','):
                 reference_id.append(book)
         results = FRUIT_SEARCH_SERVICE.filter(
             species=species, state=state, use_list=use_list,

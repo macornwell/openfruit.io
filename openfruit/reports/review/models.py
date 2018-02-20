@@ -13,6 +13,9 @@ class FruitReviewImage(models.Model):
     name = models.CharField(max_length=20)
     description = models.CharField(max_length=300, blank=True, null=True)
 
+    def __str__(self):
+        return self.name
+
 
 class FruitReview(models.Model, CultivarSpeciesMixin):
     fruit_review_report_id = models.AutoField(primary_key=True)

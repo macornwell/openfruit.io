@@ -28,8 +28,9 @@ class FruitSearchService:
         if ripening_high:
             results = results.filter(ripens_late__lte=ripening_high)
         if reference_id:
-            cultivar_list = FruitReference.objects.get(pk=reference_id).cultivar_list.values_list('cultivar_id')
-            results = results.filter(cultivar_id__in=cultivar_list)
+            for r in reference_id:
+                cultivar_list = FruitReference.objects.get(pk=r).cultivar_list.values_list('cultivar_id')
+                results = results.filter(cultivar_id__in=cultivar_list)
         if chromosomes:
             results = results.filter(chromosome_count=chromosomes)
         if resistances:

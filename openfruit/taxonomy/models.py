@@ -184,6 +184,9 @@ class GenusImage(models.Model):
     name = models.CharField(max_length=20)
     description = models.CharField(max_length=300, blank=True, null=True)
 
+    def __str__(self):
+        return self.name
+
 
 class SpeciesImage(models.Model):
     species_image_id = models.AutoField(primary_key=True)
@@ -191,6 +194,9 @@ class SpeciesImage(models.Model):
     image = ImageField(upload_to='species-images')
     name = models.CharField(max_length=20)
     description = models.CharField(max_length=300, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
 
 
 class FruitingPlant(models.Model):
