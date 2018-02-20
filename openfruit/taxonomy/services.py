@@ -41,7 +41,7 @@ class TaxonomyDAL:
         return Species.objects.filter(species_id__in=speciesUsed)
 
     def get_all_species_with_fruiting_plants_of_user(self, user):
-        speciesUsed = FruitingPlant.objects.filter(user_manager=user).order_by('species').values('species').distinct()
+        speciesUsed = FruitingPlant.objects.filter(created_by=user).order_by('species').values('species').distinct()
         return Species.objects.filter(species_id__in=speciesUsed)
 
     def get_fruiting_plant_by_id(self, id):
@@ -93,7 +93,6 @@ class TaxonomyDAL:
 
     def get_cultivar_by_id(self, cultivar_id):
         return Cultivar.objects.get(pk=cultivar_id)
-
 
     def get_species_by_name(self, name):
         return Species.objects.get(Q(name__iexact=name) | Q(latin_name__iexact=name))
