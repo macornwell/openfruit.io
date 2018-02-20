@@ -35,11 +35,8 @@ class SpeciesManager(models.Manager):
 
 class CultivarManager(models.Manager):
 
-    def get_cultivar_by_name(self, name):
-        name = name.replace('-', ' ')
-        filtered = super(CultivarManager, self).filter(latin_name__iexact=name).first()
-        if not filtered:
-            filtered = super(CultivarManager, self).filter(name__iexact=name).first()
+    def get_cultivar_by_name(self, species, name):
+        filtered = super(CultivarManager, self).filter(species=species).filter(name__iexact=name).first()
         return filtered
 
     def get_cultivars_from_species(self, species):

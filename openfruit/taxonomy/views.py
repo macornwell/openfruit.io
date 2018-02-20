@@ -119,8 +119,25 @@ class CultivarDetailView(DetailView):
     template_name = 'taxonomy/cultivar-detail.html'
 
     def get(self, request, kingdom=None, genus=None, species=None, cultivar=None, *args, **kwargs):
-        raise Exception('Not ready')
-
+        kingdom = Kingdom.objects.get_kingdom_by_name(kingdom)
+        if not kingdom:
+            raise Http404(request)
+        genus = Genus.objects.get_genus_by_name(genus)
+        if not genus:
+            raise Http404(request)
+        species = Species.objects.get_species_by_name(species)
+        if not species:
+            raise Http404(request)
+        cultivar = Cultivar.objects.get_cultivar_by_name(species, cultivar)
+        if not cultivar:
+            raise Http404(request)
+        data = {
+            'kingdom': kingdom,
+            'genus': genus,
+            'species': species,
+            'cultivar': cultivar,
+        }
+        return render(request, self.template_name, data)
 
 
 def cultivar_detail_view_redirect(request, cultivar_id):

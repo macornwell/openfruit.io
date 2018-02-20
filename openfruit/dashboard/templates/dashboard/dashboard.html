@@ -186,7 +186,7 @@
           for (var index in plants){
             var fruit = plants[index];
             (function(fruitingPlant){
-                if (fruitsToDisplay === 'ALL' || fruitingPlant.species == fruitsToDisplay){
+                if (fruitsToDisplay === 'ALL' || fruitingPlant.species_id == fruitsToDisplay){
                     setupMarker(fruitingPlant, map);
                 }
             })(fruit);
