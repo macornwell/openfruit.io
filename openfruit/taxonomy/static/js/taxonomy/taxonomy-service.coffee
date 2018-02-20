@@ -38,7 +38,7 @@ class TaxonomyDAL
     })
 
   searchCultivars: (species, ripening_high, ripening_low, year_high
-                    year_low, state, uses, books, chromosome, callback) =>
+                    year_low, state, uses, books, chromosome, resistances, callback) =>
     url = '/api/v1/fruit-search/?'
     if species
       url += 'species=' + species + '&'
@@ -58,6 +58,8 @@ class TaxonomyDAL
       url += 'books=' + books + '&'
     if chromosome
       url += 'chromosomes=' + chromosome + '&'
+    if resistances
+      url += 'resistances=' + resistances + '&'
     console.log(url)
     @_easyData.getManyResults(url, callback)
 

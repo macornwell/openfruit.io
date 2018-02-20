@@ -79,6 +79,15 @@
             <option value="{{ book.book_id }}">{{ book.title }}</option>
         {% endfor %}
     </select>
+    <a id="books_clear" class="btn btn-xs btn-warning">clear</a>
+    <br>
+    <label>Disease Resistance</label>
+    <select id="disease" multiple class="form-control">
+        {% for type in DISEASE_TYPES %}
+            <option value="{{ type }}">{{ type }}</option>
+        {% endfor %}
+    </select>
+    <a id="disease_clear" class="btn btn-xs btn-warning">clear</a>
 </div>
 <hr>
 <div id="results">
@@ -96,6 +105,8 @@
     </tbody>
 </table>
 </div>
+<a disabled id="back-btn" class="btn btn-primary col-xs-6">Back</a>
+<a disabled id="forward-btn" class="btn btn-primary col-xs-6">Forward</a>
 </div>
 {% endblock %}
 {% block scripts %}
@@ -106,6 +117,8 @@
 <script>
     $(document).ready(function(){
       $('#found-count').text(0);
+      var back_url = null;
+      var forward_url = null;
 
       var search = function(){
         var ripening_high = $('#ripening-high').val();
@@ -143,17 +156,36 @@
           species = null;
         }
         var chromosomes = $('#chromosome').val();
+        var resistances = $('#disease').val();
+        console.log(resistances);
 
         taxonomy_service.searchCultivars(species, ripening_high, ripening_low,
-          year_high, year_low, state, uses, books, chromosomes, process_results)
+          year_high, year_low, state, uses, books, chromosomes, resistances, process_results)
       };
 
       var process_results = function(data){
         var totalCount = data[0];
         $('#found-count').text(totalCount);
-        var nextUrl = data[1];
+        forward_url = data[1];
+        back_url = data[2];
+        update_forward_and_back_btn();
         var items = data[3];
         fill_table(items);
+      };
+
+      var update_forward_and_back_btn = function(){
+        if (forward_url === null){
+          $('#forward-btn').attr("disabled", true);
+        }
+        else {
+          $('#forward-btn').attr('disabled', false);
+        }
+        if (back_url === null){
+          $('#back-btn').attr('disabled', true);
+        }
+        else {
+          $('#back-btn').attr('disabled', false);
+        }
       };
 
       var read_location = function(location_data){
@@ -226,7 +258,6 @@
         });
       };
 
-      //$('#results-table').DataTable();
       var easy_data = new openfruit.EasyRestData();
       var taxonomy_service = new openfruit.taxonomy.TaxonomyService(easy_data);
       var species_key_to_species = {};
@@ -276,11 +307,46 @@
           map: map
         });
       }
+
+
+      var forward = function(){
+        $.get(forward_url, function(data){
+          objs = [];
+          _.each(data, function(obj){
+            objs.push(obj);
+          });
+          process_results(objs);
+        });
+      };
+
+      var back = function(){
+        $.get(back_url, function(data){
+          objs = [];
+          _.each(data, function(obj){
+            objs.push(obj);
+          });
+          process_results(objs);
+        });
+      };
+
       initMap();
       setTimeout(function(){
             google.maps.event.trigger(map, 'resize');
         }, 1000);
-
+      $('#disease_clear').click(function(){
+        $('#disease option:selected').removeAttr("selected");
+        search();
+      });
+      $('#books_clear').click(function(){
+        $('#books option:selected').removeAttr("selected");
+        search();
+      });
+      $('#forward-btn').click(function(){
+        forward();
+      });
+      $('#back-btn').click(function () {
+        back();
+      });
     });
 </script>
 {% endblock %}
