@@ -1,23 +1,14 @@
+from django_geo_db import models as GeoModels
 from openfruit.taxonomy.models import Cultivar, FruitUsageType
 from openfruit.fruit_reference.models import FruitReference
-from django_geo_db import models as GeoModels
+from openfruit.reports.disease.models import DiseaseResistanceReport, DiseaseType
+
+
 
 class FruitSearchService:
 
     def filter(self, species, state, use_list, year_low, year_high, ripening_low,
-               ripening_high, reference_id, chromosomes):
-        """
-        species
-        state
-        use_list
-        year_low
-        year_high
-        ripening_low
-        ripening_high
-        reference_id
-        :param query_params:
-        :return:
-        """
+               ripening_high, reference_id, chromosomes, resistances):
         results = Cultivar.objects.all()
         if species:
             results = results.filter(species__latin_name=species)
@@ -41,6 +32,15 @@ class FruitSearchService:
             results = results.filter(cultivar_id__in=cultivar_list)
         if chromosomes:
             results = results.filter(chromosome_count=chromosomes)
+        if resistances:
+            resistances = DiseaseType.objects.filter(type__in=resistances)
+            reports = DiseaseResistanceReport.objects.filter(resistance_level='e', disease_type__in=resistances)
+            all_resistant_cultivars = []
+            for r in reports:
+                if r.cultivar not in all_resistant_cultivars:
+                    all_resistant_cultivars.append(r.cultivar.cultivar_id)
+            results = results.filter(cultivar_id__in=all_resistant_cultivars)
+
         results = results.order_by('name')
         return results
 

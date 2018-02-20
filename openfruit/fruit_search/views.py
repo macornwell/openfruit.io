@@ -1,17 +1,17 @@
 from django.shortcuts import render
 from rest_framework_jwt.settings import api_settings
+from rest_framework.generics import ListAPIView
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
-
+from django_geo_db.services import GEO_DAL
 from openfruit.taxonomy.serializers import CultivarSerializer
 from openfruit.fruit_search.services import FRUIT_SEARCH_SERVICE
 from openfruit.taxonomy.models import COMMON_USES, RIPENING_MONTH_CHOICES, CHROMOSOME_CHOICES
-from django_geo_db.services import GEO_DAL
 from openfruit.fruit_reference.services import FRUIT_REFERENCE_SERVICE
+from openfruit.reports.disease.services import DISEASE_SERVICE
 
-from rest_framework.generics import ListAPIView
 
 def fruit_search(request):
     payload = jwt_payload_handler(request.user)
@@ -22,9 +22,11 @@ def fruit_search(request):
         'RIPENINGS': RIPENING_MONTH_CHOICES,
         'STATES': GEO_DAL.get_us_states(),
         'TOKEN': token,
-        'CHROMOSOMES': [c[0] for c in CHROMOSOME_CHOICES]
+        'CHROMOSOMES': [c[0] for c in CHROMOSOME_CHOICES],
+        'DISEASE_TYPES': DISEASE_SERVICE.get_disease_types(),
     }
     return render(request, template_name='fruit_search/search-and-filter.html', context=data)
+
 
 class FruitSearchListView(ListAPIView):
     serializer_class = CultivarSerializer
@@ -44,6 +46,11 @@ class FruitSearchListView(ListAPIView):
         ripening_high = params.get('ripening_high', None)
         books = params.get('books', None)
         chromosomes = params.get('chromosomes', None)
+        resistances = params.get('resistances', [])
+        resistance_list = []
+        if resistances:
+            for r in resistances.split(','):
+                resistance_list.append(r)
         reference_id = []
         if books:
             for book in books:
@@ -51,7 +58,8 @@ class FruitSearchListView(ListAPIView):
         results = FRUIT_SEARCH_SERVICE.filter(
             species=species, state=state, use_list=use_list,
             year_low=year_low, year_high=year_high, ripening_low=ripening_low,
-            ripening_high=ripening_high, reference_id=reference_id, chromosomes=chromosomes
+            ripening_high=ripening_high, reference_id=reference_id, chromosomes=chromosomes,
+            resistances=resistance_list,
         )
         return results
 

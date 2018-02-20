@@ -69,6 +69,7 @@ INSTALLED_APPS = (
     'openfruit.geography',
     'openfruit.fruit_reference',
     'openfruit.fruit_search',
+    'openfruit.reports.disease',
 )
 
 MIDDLEWARE_CLASSES = (
