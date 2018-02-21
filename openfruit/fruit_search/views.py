@@ -6,9 +6,11 @@ jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
 from django_geo_db.services import GEO_DAL
+from openfruit.geography.services import GEOGRAPHY_DAL
 from openfruit.taxonomy.serializers import CultivarSerializer
 from openfruit.fruit_search.services import FRUIT_SEARCH_SERVICE
 from openfruit.taxonomy.models import COMMON_USES, RIPENING_MONTH_CHOICES, CHROMOSOME_CHOICES
+from openfruit.taxonomy.services import TAXONOMY_DAL
 from openfruit.fruit_reference.services import FRUIT_REFERENCE_SERVICE
 from openfruit.reports.disease.services import DISEASE_SERVICE
 
@@ -16,14 +18,17 @@ from openfruit.reports.disease.services import DISEASE_SERVICE
 def fruit_search(request):
     payload = jwt_payload_handler(request.user)
     token = jwt_encode_handler(payload)
+    uses = [a for a in COMMON_USES]
+    uses.append('Other')
     data = {
-        'USES': COMMON_USES,
+        'USES': uses,
         'BOOK_REFERENCES': FRUIT_REFERENCE_SERVICE.get_book_references(),
         'RIPENINGS': RIPENING_MONTH_CHOICES,
-        'STATES': GEO_DAL.get_us_states(),
+        'STATES': GEOGRAPHY_DAL.get_states_with_fruits(),
         'TOKEN': token,
         'CHROMOSOMES': [c[0] for c in CHROMOSOME_CHOICES],
         'DISEASE_TYPES': DISEASE_SERVICE.get_disease_types(),
+        'SPECIES': TAXONOMY_DAL.get_all_species_with_cultivars(),
     }
     return render(request, template_name='fruit_search/search-and-filter.html', context=data)
 
