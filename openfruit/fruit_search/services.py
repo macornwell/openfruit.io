@@ -16,9 +16,12 @@ class FruitSearchService:
             state = GeoModels.State.objects.get(name=state)
             results = results.filter(origin_location__state_id=state.state_id)
         if use_list:
-            uses = FruitUsageType.objects.filter(type__in=use_list)
-            for use in uses:
-                results = results.filter(uses=use)
+            if 'Other' in use_list:
+                results = results.filter(uses=None)
+            else:
+                uses = FruitUsageType.objects.filter(type__in=use_list)
+                for use in uses:
+                    results = results.filter(uses=use)
         if year_low:
             results = results.filter(origin_year__gte=year_low)
         if year_high:

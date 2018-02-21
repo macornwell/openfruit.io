@@ -25,7 +25,13 @@
 <h1>Cultivar Filter and Search</h1>
 <div id="search">
     <label>Species</label>
-    <input id="species" placeholder="Apple" class="form-control">
+    <!--<input id="species" placeholder="Apple" class="form-control">-->
+    <select id="species" class="form-control">
+        <option value="---">---</option>
+        {% for species in SPECIES %}
+        <option value="{{ species.latin_name }}">{{ species }}</option>
+        {% endfor %}
+    </select>
     <div class="row">
         <div class="col-xs-6">
             <label>Ripening Low</label>
@@ -68,6 +74,7 @@
 
     <label>Chromosomes</label>
     <select id="chromosome" class="form-control">
+    <option value="---">---</option>
     {% for c in CHROMOSOMES %}
         <option value="{{ c }}">{{ c }}</option>
     {% endfor %}
@@ -76,7 +83,7 @@
     <label>Book References</label>
     <select id="books" multiple class="form-control">
         {% for book in BOOK_REFERENCES %}
-            <option value="{{ book.fruit_reference_id }}">{{ book.title }}</option>
+            <option value="{{ book.fruit_reference_id }}">{{ book.title }} - {{ book.author }}</option>
         {% endfor %}
     </select>
     <a id="books_clear" class="btn btn-xs btn-warning">clear</a>
@@ -146,19 +153,18 @@
           uses = uses.slice(0, uses.length - 1);
         }
         var books = $('#books').val();
-        console.log(books);
 
         var species = $('#species').val();
-        if (species !== null && species !== undefined && species !== ""){
-          species = species_key_to_species[species];
-          species = species['latin_name']
-        }
-        else{
+        if (species === '---'){
           species = null;
+          //species = species_key_to_species[species];
+          //species = species['latin_name']
         }
         var chromosomes = $('#chromosome').val();
+        if (chromosomes === '---'){
+          chromosomes = null;
+        }
         var resistances = $('#disease').val();
-        console.log(resistances);
 
         taxonomy_service.searchCultivars(species, ripening_high, ripening_low,
           year_high, year_low, state, uses, books, chromosomes, resistances, process_results)
@@ -263,6 +269,7 @@
       var taxonomy_service = new openfruit.taxonomy.TaxonomyService(easy_data);
       var species_key_to_species = {};
       var selected_species = null;
+      /*
       $( "#species" ).autocomplete({
         minLength: 3,
         select: function( event, ui ) {
@@ -277,6 +284,7 @@
           });
         }
       });
+      */
 
       $('input, select').change(function(){
         search();
