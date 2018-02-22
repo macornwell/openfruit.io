@@ -20,6 +20,9 @@ label {
   background-color: #eeeeee;
   color: #777;
 }
+select {
+  resize: both;
+}
 /*
 Navigation
 */
