@@ -37,5 +37,5 @@ class FruitReference(models.Model):
         unique_together = (('title', 'type', 'author'),)
 
     def __str__(self):
-        return self.title
+        return '{0} - {1}'.format(self.title, self.author)
 
