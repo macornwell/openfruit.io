@@ -167,7 +167,7 @@ class TaxonomyDAL:
         return query
 
     def get_species_with_google_maps_images(self):
-        return Species.objects.filter(google_maps_image_url__isnull=False)
+        return Species.objects.filter(Q(google_maps_image_url__isnull=False) & ~Q(google_maps_image_url=''))
 
 
 

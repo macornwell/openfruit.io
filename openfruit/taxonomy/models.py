@@ -105,7 +105,7 @@ class Species(models.Model, UrlNameMixin):
     years_till_first_production = IntegerRangeField(min_value=1, max_value=30, blank=True, null=True)
     years_till_full_production = IntegerRangeField(min_value=1, max_value=100, blank=True, null=True)
     featured_image = ImageField(upload_to='featured-images', blank=True, null=True)
-    google_maps_image_url = models.CharField(max_length=100, blank=True, null=True)
+    google_maps_image_url = models.CharField(max_length=100, blank=True, null=True, default=None)
     generated_name = models.CharField(max_length=60, unique=True, blank=True, null=True)
 
     class Meta:

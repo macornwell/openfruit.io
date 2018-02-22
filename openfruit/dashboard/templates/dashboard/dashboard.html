@@ -180,8 +180,7 @@
             taxonomyService.getBoundingBoxOfFruit(setupMarkers, ne, sw);
         };
 
-        var setupMarkers = function(results){
-          plants = results[3]
+        var setupMarkers = function(plants){
           initializeMarkersAndCluster(map);
           for (var index in plants){
             var fruit = plants[index];

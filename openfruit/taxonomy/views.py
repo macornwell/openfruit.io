@@ -412,6 +412,7 @@ class CultivarAutocomplete(NameAutocomplete):
 
 class PlantsListView(generics.ListAPIView):
     serializer_class = FruitingPlantSerializer
+    pagination_class = None
 
     def get_queryset(self):
         query_results = TAXONOMY_DAL.query_fruiting_plants(self.request.query_params)
