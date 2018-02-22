@@ -5,7 +5,17 @@ root.openfruit = root.openfruit ? {}
 
 menuHTML = """
 <div>
-    <h3>{0}</h3><i class="fa fa-info" aria-hidden="true"></i>
+  <div class="button-group">
+    <a title="Leafing Out" data-toggle="modal" data-record-id="{0}" data-event-type="Leafing Out" data-plant="{1}" data-target="#confirm" class="btn btn-default btn-lg" href="#">
+      <i class="fa fa-leaf" aria-hidden="true"></i></a>
+    <a title="Blooming" data-toggle="modal" data-record-id="{0}" data-event-type="Blooming" data-plant="{1}" data-target="#confirm" class="unicode-icon btn btn-default btn-lg" href="#">
+        <span>&#x273F</span></a>
+    <a title="Ripening" data-toggle="modal" data-record-id="{0}" data-event-type="Ripening" data-plant="{1}" data-target="#confirm" class="btn btn-default btn-lg" href="#">
+        <i class="fa fa-apple" aria-hidden="true"></i></a>
+    <a title="Died" data-toggle="modal" data-record-id="{0}" data-event-type="Died" data-plant="{1}" data-target="#confirm" class="btn btn-default btn-lg" href="#">
+        <i class="fa fa-times" aria-hidden="true"></i></a>
+  </div>
+    <h3>{1}<a href="/species/{2}"<i class="fa fa-info info-link" aria-hidden="true"></i></a></i></h3>
 </div>
 """
 
@@ -21,10 +31,10 @@ cultivarHTML = """
     <a title="Died" data-toggle="modal" data-record-id="{0}" data-event-type="Died" data-plant="{1}" data-target="#confirm" class="btn btn-default btn-lg" href="#">
         <i class="fa fa-times" aria-hidden="true"></i></a>
   </div>
-  <h3 class="cultivar-name">{1}<a href="/cultivar/{0}"<i class="fa fa-info info-link" aria-hidden="true"></i></a></h3>
-  <span class="species-name">Species: {2}</span>
+  <h3 class="cultivar-name">{1}<a href="/cultivar/{2}"<i class="fa fa-info info-link" aria-hidden="true"></i></a></h3>
+  <span class="species-name">Species: {3}</span>
   <br>
-  <span>Added By:{3}</span>
+  <span>Added By:{4}</span>
 
 """
 
@@ -70,11 +80,11 @@ class PlantMenuFactory
     if fruitingPlant.cultivar
       return @createMenuForCultivar(fruitingPlant)
     else
-      result = menuHTML.format(fruitingPlant.species_name)
+      result = menuHTML.format(fruitingPlant.fruiting_plant_id, fruitingPlant.species_name, fruitingPlant.species_id)
     return result
 
   createMenuForCultivar:(fruitingPlant)=>
-    result = cultivarHTML.format(fruitingPlant.fruiting_plant_id, fruitingPlant.cultivar_name, fruitingPlant.species_name, fruitingPlant.created_by_name)
+    result = cultivarHTML.format(fruitingPlant.fruiting_plant_id, fruitingPlant.cultivar_name, fruitingPlant.cultivar_id, fruitingPlant.species_name, fruitingPlant.created_by_name)
     return result
 
   createAddMenu:()=>

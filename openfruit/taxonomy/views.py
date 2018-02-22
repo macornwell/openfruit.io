@@ -148,6 +148,13 @@ def cultivar_detail_view_redirect(request, cultivar_id):
     return redirect('cultivar-detail', kingdom.name, genus.name, species.name, cultivar.name)
 
 
+def species_detail_view_redirect(request, species_id):
+    species = TAXONOMY_DAL.get_species_by_id(species_id)
+    genus = species.genus
+    kingdom = genus.kingdom
+    return redirect('species-detail', kingdom.name, genus.name, species.name)
+
+
 class GenusFormView(View):
     form_class = GenusForm
     initial = {'key': 'value'}

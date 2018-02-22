@@ -102,6 +102,9 @@ class TaxonomyDAL:
     def get_species_by_name(self, name):
         return Species.objects.get(Q(name__iexact=name) | Q(latin_name__iexact=name))
 
+    def get_species_by_id(self, species_id):
+        return Species.objects.get(pk=species_id)
+
     def query_fruiting_plants(self, query_params):
         north_east = query_params.get('north_east', None)
         south_west = query_params.get('south_west', None)

@@ -28,7 +28,7 @@ class FruitingPlantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FruitingPlant
-        fields = ('fruiting_plant_id', 'cultivar', 'cultivar_name', 'species_id', 'species', 'species_name', 'date_planted', 'coordinate', 'created_by', 'created_by_name', 'date_died', 'details_url')
+        fields = ('fruiting_plant_id', 'cultivar', 'cultivar_name', 'cultivar_id', 'species_id', 'species', 'species_name', 'date_planted', 'coordinate', 'created_by', 'created_by_name', 'date_died', 'details_url')
 
 
 class SpeciesSerializer(serializers.HyperlinkedModelSerializer):
