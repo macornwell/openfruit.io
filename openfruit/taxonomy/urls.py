@@ -4,7 +4,7 @@ from openfruit.taxonomy.views import GenusListView, KingdomListView, \
     GenusDetailView, SpeciesDetailView, CultivarDetailView, SpeciesAutocomplete, \
     CultivarAutocomplete, GenusAutocomplete, GenusFormView, PublicPlantsView, FruitingPlantAutocomplete, \
     move_fruiting_plant, FruitingPlantFormView, Cultivar, SpeciesFormView, cultivar_detail_view_redirect, \
-    FruitingPlantDetailsView, FruitUsageTypeDetailView, search
+    FruitingPlantDetailsView, FruitUsageTypeDetailView, search, species_detail_view_redirect
 
 
 urlpatterns = [
@@ -19,6 +19,8 @@ urlpatterns = [
     url(r'^genus/(?P<id>\d+)?$', GenusFormView.as_view(), name='genus'),
     url(r'^genus/(?P<genusID>\d+)/species/(?P<id>\d+)?$', SpeciesFormView.as_view(), name='species'),
     url(r'^cultivar/(?P<cultivar_id>\d+)', cultivar_detail_view_redirect, name='cultivar-detail-redirect'),
+    url(r'^species/(?P<species_id>\d+)', species_detail_view_redirect, name='species-detail-redirect'),
+
     url(r'^fruiting-plant/(?P<id>\d+)?$', FruitingPlantFormView.as_view(), name='fruiting-plant'),
     url(r'^fruiting-plant/details/(?P<id>\d+)?$', FruitingPlantDetailsView.as_view(), name='fruiting-plant-details'),
 
