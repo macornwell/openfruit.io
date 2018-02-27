@@ -10,6 +10,7 @@ from django.utils.decorators import method_decorator
 from rest_framework.decorators import api_view, APIView, permission_classes
 from rest_framework.response import Response
 from rest_framework import generics
+from rest_framework import status
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework_jwt.views import obtain_jwt_token
 from rest_framework.permissions import IsAuthenticated
@@ -25,7 +26,8 @@ from openfruit.common.views import NameAutocomplete, GeneratedNameAutocomplete, 
 from django_geo_db.models import GeoCoordinate
 from django_geo_db.utilities import get_lat_lon_from_string
 from openfruit.taxonomy.forms import SpeciesForm, GenusForm, FruitingPlantQuickForm
-from openfruit.taxonomy.models import Species, Cultivar, Genus, Kingdom, FruitingPlant, FruitUsageType
+from openfruit.taxonomy.models import Species, Cultivar, Genus, Kingdom, FruitingPlant, \
+    FruitUsageType, RIPENING_MONTH_CHOICES, CHROMOSOME_CHOICES
 from openfruit.taxonomy.services import TAXONOMY_DAL
 from openfruit.userdata.services import USER_DATA_DAL
 from openfruit.reports.event.services import EVENT_DAL
@@ -454,6 +456,19 @@ class CultivarDetail(APIView):
         return Response(serializer.data)
 
 
+class CultivarDetailByName(APIView):
+    def get_object(self, name, species):
+        try:
+            return Cultivar.objects.get(name__iexact=name, species__name__iexact=species)
+        except Cultivar.DoesNotExist:
+            raise Http404
+
+    def get(self, request, name, species, format=None):
+        obj = self.get_object(name, species)
+        serializer = CultivarSerializer(obj, context={'request': request})
+        return Response(serializer.data)
+
+
 class SpeciesDetail(APIView):
     def get_object(self, pk):
         try:
@@ -476,7 +491,15 @@ class SpeciesListView(ListAPIView):
     serializer_class = SpeciesSerializer
 
     def get_queryset(self):
-        queryset = Species.objects.all()
+        cultivars__is_null = self.request.query_params.get('cultivars__is_null', None)
+        if cultivars__is_null is not None:
+            cultivars__is_null = bool(cultivars__is_null)
+            if cultivars__is_null:
+                raise Exception('Not implemented')
+            else:
+                queryset = TAXONOMY_DAL.get_all_species_with_cultivars()
+        else:
+            queryset = Species.objects.all()
         generated_name = self.request.query_params.get('generated_name', None)
         if generated_name:
             queryset = queryset.filter(generated_name__icontains=generated_name)
@@ -528,8 +551,19 @@ class CultivarListView(ListAPIView):
         chromosomes = self.request.query_params.get('chromosomes', None)
         if chromosomes:
             queryset = queryset.filter(chromosome_count__iexact=chromosomes)
-        limit = self.request.query_params.get('limit', 10)
         queryset = queryset.order_by('name')
-        if limit:
-            queryset = queryset[:int(limit)]
         return queryset
+
+
+class RipeningListView(APIView):
+
+    def get(self, request, *args, **kw):
+        response = Response(RIPENING_MONTH_CHOICES, status=status.HTTP_200_OK)
+        return response
+
+
+class ChromosomesListView(APIView):
+
+    def get(self, request, *args, **kw):
+        response = Response(CHROMOSOME_CHOICES, status=status.HTTP_200_OK)
+        return response

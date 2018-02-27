@@ -1,9 +1,42 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
-from rest_framework import generics
+from rest_framework import generics, views
 from dal import autocomplete
 from openfruit.common.services import is_curator
 from openfruit.common.serializers import UserSerializer
+
+class EasyRestMixin:
+    """
+    Provides mixin's for common rest operations.
+    """
+
+    def query_filter(self, request, queryset, parameter, filter_word=None, default_value=None):
+        value = request.query_params.get(parameter, default_value)
+        if value:
+            if not filter_word:
+                filter_word = parameter
+            kwargs = {
+                filter_word: value
+            }
+            queryset = queryset.filter(**kwargs)
+        return queryset
+
+
+class EasyRestDetailAPIView(views.APIView):
+
+    model_type = None
+    serializer_type = None
+
+    def get_object(self, pk):
+        try:
+            return self.model_type.objects.get(pk=pk)
+        except self.serializer_type.DoesNotExist:
+            raise views.Http404
+
+    def get(self, request, pk, format=None):
+        model = self.get_object(pk)
+        serializer = self.serializer_type(model, context={'request': request})
+        return views.Response(serializer.data)
 
 
 class BaseAutocompleteQuerysetView(autocomplete.Select2QuerySetView):

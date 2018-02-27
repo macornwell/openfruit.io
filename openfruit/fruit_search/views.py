@@ -1,4 +1,7 @@
 from django.shortcuts import render
+from django.db import connection
+from django.core.cache import cache
+
 from rest_framework_jwt.settings import api_settings
 from rest_framework.generics import ListAPIView
 
@@ -36,7 +39,40 @@ def fruit_search(request):
 class FruitSearchListView(ListAPIView):
     serializer_class = CultivarSerializer
 
+    def _unpack_query(self, query_list):
+        data = query_list.split('$')
+        queries = {}
+        for d in data:
+            key, value = d.split('=')
+            if ',' in value:
+                values = value.split(',')
+                queries[key] = values
+            else:
+                queries[key] = value
+        return queries
+
     def get_queryset(self):
+        params = self.request.query_params
+        all_queries = []
+        for key in params:
+            if key.startswith('query'):
+                queries = self._unpack_query(params[key])
+                all_queries.append(queries)
+        print('Queries Before: ', len(connection.queries))
+        url = self.request.build_absolute_uri
+        print(url)
+        result = cache.get(url)
+        if result:
+            print('Cached')
+        else:
+            print('New')
+            result = FRUIT_SEARCH_SERVICE.filter_multiple_queries(all_queries)
+            cache.set(url, result)
+        print('Queries After: ', len(connection.queries))
+        return result
+
+
+    def old_get_queryset(self):
         params = self.request.query_params
         species = params.get('species', None)
         state = params.get('state', None)
@@ -61,9 +97,9 @@ class FruitSearchListView(ListAPIView):
             for book in books.split(','):
                 reference_id.append(book)
         results = FRUIT_SEARCH_SERVICE.filter(
-            species=species, state=state, use_list=use_list,
+            species=species, state=[state,], use_list=use_list,
             year_low=year_low, year_high=year_high, ripening_low=ripening_low,
-            ripening_high=ripening_high, reference_id=reference_id, chromosomes=chromosomes,
+            ripening_high=ripening_high, references=reference_id, chromosomes=chromosomes,
             resistances=resistance_list,
         )
         return results

@@ -34,7 +34,7 @@ class FruitingPlantSerializer(serializers.ModelSerializer):
 class SpeciesSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Species
-        fields = ('name', 'latin_name', 'generated_name')
+        fields = ('species_id', 'name', 'latin_name', 'generated_name')
 
 
 class CultivarSerializer(serializers.HyperlinkedModelSerializer):
@@ -100,7 +100,7 @@ class CultivarSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Cultivar
-        fields = ('name', 'species', 'species_latin', 'generated_name', 'origin_location',
+        fields = ('cultivar_id', 'name', 'species', 'species_latin', 'generated_name', 'origin_location',
                   'origin_year', 'uses', 'chromosome_count', 'ripens_early', 'ripens_late')
 
 

@@ -4,9 +4,20 @@ from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+
+from rest_framework.generics import ListAPIView
+
 from django_geo_db.models import GeoCoordinate
 from django_geo_db.services import GEO_DAL
 from django_geo_db.forms import LocationForm
+from django_geo_db.serializers import StateSerializer
+
+from openfruit.geography.services import GEOGRAPHY_DAL
+
+
+class StateWithCultivarsListView(ListAPIView):
+    queryset = GEOGRAPHY_DAL.get_states_with_fruits()
+    serializer_class = StateSerializer
 
 
 class LocationDetailView(View):

@@ -283,19 +283,16 @@
                 name = cultivar;
             }
             if (fruitingPlant.species in speciesIDToIcon){
-                console.log('Found icon');
-                console.log(speciesIDToIcon[fruitingPlant.species]);
                 iconUrl = speciesIDToIcon[fruitingPlant.species];
             }
             else {
-                console.log('No icon');
                 iconUrl = treeIcon;
             }
             var data = {
+                title: name,
                 position: coord,
                 draggable: canMoveObjects,
                 map: map,
-                title: userLocation,
                 icon: iconUrl
             };
             var marker = new google.maps.Marker(data);
