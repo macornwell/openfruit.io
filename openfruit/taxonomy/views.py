@@ -414,6 +414,7 @@ class SpeciesAutocomplete(GeneratedNameAutocomplete):
 
 class CultivarAutocomplete(NameAutocomplete):
     model_type = Cultivar
+    is_contains = True
 
 ################
 # Rest Framework
