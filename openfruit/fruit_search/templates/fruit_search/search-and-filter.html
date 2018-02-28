@@ -155,7 +155,6 @@
           uses.push(use.val());
         });
         var books = $('#books').val();
-        console.log(books);
 
         var species = $('#species').val();
         if (species === '---'){
@@ -168,7 +167,6 @@
           chromosomes = null;
         }
         var resistances = $('#disease').val();
-        console.log(resistances);
 
         var query = new openfruit.FruitSearchQuery(species, states, uses, year_low, year_high,
             ripening_low, ripening_high, books, chromosomes, resistances);
