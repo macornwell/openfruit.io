@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 from rest_framework.generics import ListAPIView
 
@@ -51,9 +50,3 @@ class AuthorListView(EasyRestMixin, ListAPIView):
 class AuthorDetailView(EasyRestDetailAPIView):
     model_type = Author
     serializer_type = AuthorSerializer
-
-=======
-from django.shortcuts import render
-
-# Create your views here.
->>>>>>> 89983d2da810c54c65f4fba8252075799ca95cba

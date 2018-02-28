@@ -132,7 +132,7 @@ class TaxonomyDAL:
                 'geocoordinate__lat_tenths',
                 'geocoordinate__lat_hundredths',
                 'geocoordinate__lat_thousands',
-                #'geocoordinate__lat_ten_thousands',
+                'geocoordinate__lat_ten_thousands',
                 #'geocoordinate__lat_ten_hundred_thousands',
             ]
             # Is this negative?
@@ -152,7 +152,7 @@ class TaxonomyDAL:
                 'geocoordinate__lon_tenths',
                 'geocoordinate__lon_hundredths',
                 'geocoordinate__lon_thousands',
-                #'geocoordinate__lon_ten_thousands',
+                'geocoordinate__lon_ten_thousands',
                 #'geocoordinate__lon_hundred_thousands',
             ]
             # Is this negative?

@@ -35,8 +35,4 @@ class Migration(migrations.Migration):
             name='type',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fruit_reference.FruitReferenceType'),
         ),
-        migrations.AlterUniqueTogether(
-            name='fruitreference',
-            unique_together=set([('reference', 'type')]),
-        ),
     ]

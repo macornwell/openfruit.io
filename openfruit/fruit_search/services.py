@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 89983d2da810c54c65f4fba8252075799ca95cba
 from django_geo_db import models as GeoModels
 from openfruit.taxonomy.models import Cultivar, FruitUsageType
 from openfruit.fruit_reference.models import FruitReference
@@ -12,7 +7,6 @@ from openfruit.reports.disease.models import DiseaseResistanceReport, DiseaseTyp
 
 class FruitSearchService:
 
-<<<<<<< HEAD
     def filter_multiple_queries(self, queries_list):
         queryset = None
         for l in queries_list:
@@ -49,16 +43,6 @@ class FruitSearchService:
         if states:
             states = GeoModels.State.objects.filter(name__in=states).values_list('state_id', flat=True)
             results = results.filter(origin_location__state_id__in=states)
-=======
-    def filter(self, species, state, use_list, year_low, year_high, ripening_low,
-               ripening_high, reference_id, chromosomes, resistances):
-        results = Cultivar.objects.all()
-        if species:
-            results = results.filter(species__latin_name=species)
-        if state:
-            state = GeoModels.State.objects.get(name=state)
-            results = results.filter(origin_location__state_id=state.state_id)
->>>>>>> 89983d2da810c54c65f4fba8252075799ca95cba
         if use_list:
             if 'Other' in use_list:
                 results = results.filter(uses=None)
@@ -74,13 +58,8 @@ class FruitSearchService:
             results = results.filter(ripens_early__gte=ripening_low)
         if ripening_high:
             results = results.filter(ripens_late__lte=ripening_high)
-<<<<<<< HEAD
         if references:
             for r in references:
-=======
-        if reference_id:
-            for r in reference_id:
->>>>>>> 89983d2da810c54c65f4fba8252075799ca95cba
                 cultivar_list = FruitReference.objects.get(pk=r).cultivar_list.values_list('cultivar_id')
                 results = results.filter(cultivar_id__in=cultivar_list)
         if chromosomes:

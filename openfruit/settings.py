@@ -276,11 +276,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
-<<<<<<< HEAD
     'DEFAULT_PAGINATION_CLASS': 'openfruit.common.serializers.StandardResultsSetPagination',
-=======
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
->>>>>>> 89983d2da810c54c65f4fba8252075799ca95cba
     'PAGE_SIZE': 20
 }
 JWT_ALLOW_REFRESH = True

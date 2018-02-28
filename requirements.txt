@@ -3,11 +3,7 @@ certifi==2018.1.18
 chardet==3.0.4
 dj-database-url==0.4.2
 Django==1.10
-<<<<<<< HEAD
 -e git+https://github.com/django-admin-bootstrapped/django-admin-bootstrapped@30380f20cc82e898754e94b5d12cacafabca01bd#egg=django_admin_bootstrapped
-=======
--e git+https://github.com/django-admin-bootstrapped/django-admin-bootstrapped#egg=django-admin-bootstrapped
->>>>>>> 89983d2da810c54c65f4fba8252075799ca95cba
 django-auditlog==0.4.3
 django-autocomplete-light==3.2.9
 django-bootstrap3==8.2.2
@@ -16,11 +12,8 @@ django-colorful==1.2
 django-cors-headers==2.1.0
 django-crispy-forms==1.6.1
 django-datetime-widget==0.9.3
-<<<<<<< HEAD
--e git+https://github.com/macornwell/django-geo-db@60551e2310e35500b9920dddfb6716935073090e#egg=django_geo_db
-=======
--e git+https://github.com/macornwell/django-geo-db#egg=django-geo-db
->>>>>>> 89983d2da810c54c65f4fba8252075799ca95cba
+#-e git+https://github.com/macornwell/django-geo-db@60551e2310e35500b9920dddfb6716935073090e#egg=django_geo_db
+-e /home/trjg/code/django-geo-db
 django-jsonfield==1.0.1
 djangorestframework==3.6.4
 djangorestframework-jwt==1.10.0
