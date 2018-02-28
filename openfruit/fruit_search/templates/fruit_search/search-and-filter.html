@@ -128,7 +128,6 @@
       $('#found-count').text(0);
       var back_url = null;
       var forward_url = null;
-      openfruit.OpenFruitAPI.__url_prefix = 'http://localhost:8000/api/v1';
       var of_api = new openfruit.OpenFruitAPI('{{ OF_API_USERNAME }}', '{{ OF_API_PASSWORD }}');
 
       var search = function(){
