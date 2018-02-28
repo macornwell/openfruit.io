@@ -12,8 +12,7 @@ django-colorful==1.2
 django-cors-headers==2.1.0
 django-crispy-forms==1.6.1
 django-datetime-widget==0.9.3
-#-e git+https://github.com/macornwell/django-geo-db@60551e2310e35500b9920dddfb6716935073090e#egg=django_geo_db
--e /home/trjg/code/django-geo-db
+-e git+https://github.com/macornwell/django-geo-db#egg=django_geo_db
 django-jsonfield==1.0.1
 djangorestframework==3.6.4
 djangorestframework-jwt==1.10.0

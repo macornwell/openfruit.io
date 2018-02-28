@@ -9,6 +9,8 @@ class FruitSearchService:
 
     def filter_multiple_queries(self, queries_list):
         queryset = None
+        if not queries_list:
+            return Cultivar.objects.all()
         for l in queries_list:
             inner_query = self.filter(
                 l.get('species', None),

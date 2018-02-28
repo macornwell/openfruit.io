@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.core.cache import cache
+from django.conf import settings
 
 from rest_framework_jwt.settings import api_settings
 from rest_framework.generics import ListAPIView
@@ -30,6 +31,8 @@ def fruit_search(request):
         'CHROMOSOMES': [c[0] for c in CHROMOSOME_CHOICES],
         'DISEASE_TYPES': DISEASE_SERVICE.get_disease_types(),
         'SPECIES': TAXONOMY_DAL.get_all_species_with_cultivars(),
+        'OF_API_USERNAME': settings.OF_API_USERNAME,
+        'OF_API_PASSWORD': settings.OF_API_PASSWORD,
     }
     return render(request, template_name='fruit_search/search-and-filter.html', context=data)
 
@@ -40,11 +43,20 @@ class FruitSearchListView(ListAPIView):
     def _unpack_query(self, query_list):
         data = query_list.split('$')
         queries = {}
+        if not data:
+            return queries
         for d in data:
+            if not d:
+                continue
             key, value = d.split('=')
             if ',' in value:
                 values = value.split(',')
-                queries[key] = values
+                value_list = []
+                for v in values:
+                    if not v:
+                        continue
+                    value_list.append(v)
+                queries[key] = value_list
             else:
                 queries[key] = value
         return queries

@@ -282,6 +282,11 @@ REST_FRAMEWORK = {
 JWT_ALLOW_REFRESH = True
 JWT_EXPIRATION_DELTA = datetime.timedelta(hours=1)
 
+OF_API_USERNAME = os.environ.get('OF_API_USERNAME', '')
+OF_API_PASSWORD = os.environ.get('OF_API_PASSWORD', '')
+
+
+
 ############
 # MISC
 ############

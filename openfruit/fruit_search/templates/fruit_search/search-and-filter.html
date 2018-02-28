@@ -121,11 +121,15 @@
 <script src="{% static 'js/easy_rest_data.js' %}"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.16/r-2.2.1/datatables.min.js"></script>
 <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="{% static 'js/js.cookie.js' %}"></script>
+<script src="{% static 'js/of_api_js/v1/api.js' %}"></script>
 <script>
     $(document).ready(function(){
       $('#found-count').text(0);
       var back_url = null;
       var forward_url = null;
+      openfruit.OpenFruitAPI.__url_prefix = 'http://localhost:8000/api/v1';
+      var of_api = new openfruit.OpenFruitAPI('{{ OF_API_USERNAME }}', '{{ OF_API_PASSWORD }}');
 
       var search = function(){
         var ripening_high = $('#ripening-high').val();
@@ -138,21 +142,21 @@
         }
         var year_low = $('#year-low').val();
         var year_high = $('#year-high').val();
-        var state = $('#state').val();
-        if (state === '---'){
-          state = null;
+        var states = $('#state').val();
+        if (states === '---'){
+          states = [];
+        }
+        else {
+          states = [states]
         }
         var use_list = $('.use:checked');
-        var uses = '';
+        var uses = [];
         use_list.each(function(x){
           var use = $(use_list[x]);
-          uses += use.val();
-          uses += ',';
+          uses.push(use.val());
         });
-        if (uses.length > 1){
-          uses = uses.slice(0, uses.length - 1);
-        }
         var books = $('#books').val();
+        console.log(books);
 
         var species = $('#species').val();
         if (species === '---'){
@@ -165,18 +169,24 @@
           chromosomes = null;
         }
         var resistances = $('#disease').val();
+        console.log(resistances);
 
-        taxonomy_service.searchCultivars(species, ripening_high, ripening_low,
-          year_high, year_low, state, uses, books, chromosomes, resistances, process_results)
+        var query = new openfruit.FruitSearchQuery(species, states, uses, year_low, year_high,
+            ripening_low, ripening_high, books, chromosomes, resistances);
+
+        of_api.fruit_search(process_results, [query]);
+
+        //taxonomy_service.searchCultivars(species, ripening_high, ripening_low,
+        //  year_high, year_low, state, uses, books, chromosomes, resistances, process_results)
       };
 
       var process_results = function(data){
-        var totalCount = data[0];
+        var totalCount = data['count'];
         $('#found-count').text(totalCount);
-        forward_url = data[1];
-        back_url = data[2];
+        forward_url = data['next'];
+        back_url = data['previous'];
         update_forward_and_back_btn();
-        var items = data[3];
+        var items = data['results'];
         fill_table(items);
       };
 
@@ -267,24 +277,6 @@
 
       var easy_data = new openfruit.EasyRestData();
       var taxonomy_service = new openfruit.taxonomy.TaxonomyService(easy_data);
-      var species_key_to_species = {};
-      var selected_species = null;
-      /*
-      $( "#species" ).autocomplete({
-        minLength: 3,
-        select: function( event, ui ) {
-          var suggestion = ui['item']['value'];
-          selected_species = species_key_to_species[suggestion];
-        },
-        source: function(value, response_callback ) {
-          var species = value['term'];
-          taxonomy_service.searchSpecies("{{ TOKEN }}", species, function(species_list, key_to_species){
-            species_key_to_species = key_to_species;
-            response_callback(species_list)
-          });
-        }
-      });
-      */
 
       $('input, select').change(function(){
         search();

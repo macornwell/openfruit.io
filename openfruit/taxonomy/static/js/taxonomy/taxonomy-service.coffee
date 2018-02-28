@@ -39,7 +39,7 @@ class TaxonomyDAL
 
   searchCultivars: (species, ripening_high, ripening_low, year_high
                     year_low, state, uses, books, chromosome, resistances, callback) =>
-    url = '/api/v1/fruit-search/?'
+    url = '/api/v1/fruit-search/?query='
     if species
       url += 'species=' + species + '&'
     if ripening_high
@@ -51,7 +51,7 @@ class TaxonomyDAL
     if year_low
       url += 'year_low=' + year_low + '&'
     if state
-      url += 'state=' + state + '&'
+      url += 'state=' + state + ',&'
     if uses
       url += 'uses=' + uses + '&'
     if books

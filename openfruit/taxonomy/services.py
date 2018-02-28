@@ -122,8 +122,6 @@ class TaxonomyDAL:
         lat_result = alg.lat_db_resolution()
         kwargs = {
         }
-        if len(lat_result) > 7:
-            lat_result = lat_result[0:6]
         if lat_result:
             # Macro Filtering for filtering the vast majority of non-matches.
             args = [
