@@ -122,6 +122,8 @@ class TaxonomyDAL:
         lat_result = alg.lat_db_resolution()
         kwargs = {
         }
+        if len(lat_result) > 7:
+            lat_result = lat_result[0:6]
         if lat_result:
             # Macro Filtering for filtering the vast majority of non-matches.
             args = [
@@ -130,8 +132,8 @@ class TaxonomyDAL:
                 'geocoordinate__lat_tenths',
                 'geocoordinate__lat_hundredths',
                 'geocoordinate__lat_thousands',
-                'geocoordinate__lat_ten_thousands',
-                'geocoordinate__lat_ten_hundred_thousands',
+                #'geocoordinate__lat_ten_thousands',
+                #'geocoordinate__lat_ten_hundred_thousands',
             ]
             # Is this negative?
             if lat_result[0]:
@@ -150,8 +152,8 @@ class TaxonomyDAL:
                 'geocoordinate__lon_tenths',
                 'geocoordinate__lon_hundredths',
                 'geocoordinate__lon_thousands',
-                'geocoordinate__lon_ten_thousands',
-                'geocoordinate__lon_hundred_thousands',
+                #'geocoordinate__lon_ten_thousands',
+                #'geocoordinate__lon_hundred_thousands',
             ]
             # Is this negative?
             if lon_result[0]:

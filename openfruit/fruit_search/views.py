@@ -58,17 +58,13 @@ class FruitSearchListView(ListAPIView):
             if key.startswith('query'):
                 queries = self._unpack_query(params[key])
                 all_queries.append(queries)
-        print('Queries Before: ', len(connection.queries))
         url = self.request.build_absolute_uri
-        print(url)
         result = cache.get(url)
         if result:
-            print('Cached')
+            pass
         else:
-            print('New')
             result = FRUIT_SEARCH_SERVICE.filter_multiple_queries(all_queries)
             cache.set(url, result)
-        print('Queries After: ', len(connection.queries))
         return result
 
 

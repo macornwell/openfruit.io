@@ -174,13 +174,16 @@
         var requestMarkers = function(){
             var bounds = map.getBounds();
             var ne = "" + bounds.getNorthEast();
+            console.log(ne);
             ne = ne.replace(/[\(\),]+/g, '');
             var sw = "" + bounds.getSouthWest();
+            console.log(sw);
             sw = sw.replace(/[\(\),]+/g, '');
             taxonomyService.getBoundingBoxOfFruit(setupMarkers, ne, sw);
         };
 
         var setupMarkers = function(plants){
+          console.log(plants);
           initializeMarkersAndCluster(map);
           for (var index in plants){
             var fruit = plants[index];
