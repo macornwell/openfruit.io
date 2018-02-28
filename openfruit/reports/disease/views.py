@@ -1,5 +1,6 @@
 from django.shortcuts import render
 
+<<<<<<< HEAD
 from rest_framework.generics import ListAPIView
 
 from openfruit.common.views import EasyRestMixin
@@ -14,3 +15,6 @@ class DiseaseTypeListView(EasyRestMixin, ListAPIView):
     def get_queryset(self):
         return DiseaseType.objects.all()
 
+=======
+# Create your views here.
+>>>>>>> 89983d2da810c54c65f4fba8252075799ca95cba

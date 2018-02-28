@@ -36,7 +36,11 @@ urlpatterns = [
     url(r'^api/v1/species_list/$', views.SpeciesListView.as_view(), name='species-list'),
     url(r'^api/v1/fruit-usage-type/$', views.FruitUsageTypeDetailView.as_view(), name='fruitusagetype-detail'),
     url(r'^api/v1/cultivars/$', views.CultivarListView.as_view(), name='cultivar-list'),
+<<<<<<< HEAD
     url(r'^api/v1/cultivars/(?P<pk>[0-9]+)/$', views.CultivarDetail.as_view(), name='cultivar-detail'),
+=======
+    url(r'^api/v1/cultivar/(?P<pk>[0-9]+)/$', views.CultivarDetail.as_view(), name='cultivar-detail'),
+>>>>>>> 89983d2da810c54c65f4fba8252075799ca95cba
     url(r'^api/v1/fruiting-plants/(?P<query>.+)?$', views.PlantsListView.as_view(), name='users-fruiting-plants'),
     url(r'^api/v1/ripenings/$', views.RipeningListView.as_view(), name='ripenings-list'),
     url(r'^api/v1/chromosomes/$', views.ChromosomesListView.as_view(), name='chromosomes-list'),

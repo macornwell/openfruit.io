@@ -31,7 +31,11 @@ cultivarHTML = """
     <a title="Died" data-toggle="modal" data-record-id="{0}" data-event-type="Died" data-plant="{1}" data-target="#confirm" class="btn btn-default btn-lg" href="#">
         <i class="fa fa-times" aria-hidden="true"></i></a>
   </div>
+<<<<<<< HEAD
   <h3 class="cultivar-name">{1}<a href="/cultivars/{2}"<i class="fa fa-info info-link" aria-hidden="true"></i></a></h3>
+=======
+  <h3 class="cultivar-name">{1}<a href="/cultivar/{2}"<i class="fa fa-info info-link" aria-hidden="true"></i></a></h3>
+>>>>>>> 89983d2da810c54c65f4fba8252075799ca95cba
   <span class="species-name">Species: {3}</span>
   <br>
   <span>Added By:{4}</span>

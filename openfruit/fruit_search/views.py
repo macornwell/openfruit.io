@@ -1,7 +1,10 @@
 from django.shortcuts import render
+<<<<<<< HEAD
 from django.db import connection
 from django.core.cache import cache
 
+=======
+>>>>>>> 89983d2da810c54c65f4fba8252075799ca95cba
 from rest_framework_jwt.settings import api_settings
 from rest_framework.generics import ListAPIView
 
@@ -39,6 +42,7 @@ def fruit_search(request):
 class FruitSearchListView(ListAPIView):
     serializer_class = CultivarSerializer
 
+<<<<<<< HEAD
     def _unpack_query(self, query_list):
         data = query_list.split('$')
         queries = {}
@@ -70,6 +74,10 @@ class FruitSearchListView(ListAPIView):
 
     def old_get_queryset(self):
         params = self.request.query_params
+=======
+    def get_queryset(self):
+        params = self.request.query_params
+>>>>>>> 89983d2da810c54c65f4fba8252075799ca95cba
         species = params.get('species', None)
         state = params.get('state', None)
         uses = params.get('uses', [])
@@ -93,9 +101,15 @@ class FruitSearchListView(ListAPIView):
             for book in books.split(','):
                 reference_id.append(book)
         results = FRUIT_SEARCH_SERVICE.filter(
+<<<<<<< HEAD
             species=species, state=[state,], use_list=use_list,
             year_low=year_low, year_high=year_high, ripening_low=ripening_low,
             ripening_high=ripening_high, references=reference_id, chromosomes=chromosomes,
+=======
+            species=species, state=state, use_list=use_list,
+            year_low=year_low, year_high=year_high, ripening_low=ripening_low,
+            ripening_high=ripening_high, reference_id=reference_id, chromosomes=chromosomes,
+>>>>>>> 89983d2da810c54c65f4fba8252075799ca95cba
             resistances=resistance_list,
         )
         return results
