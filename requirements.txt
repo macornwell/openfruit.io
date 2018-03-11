@@ -7,11 +7,13 @@ chardet==3.0.4
 dj-database-url==0.4.2
 Django==1.10
 -e git+https://github.com/django-admin-bootstrapped/django-admin-bootstrapped@30380f20cc82e898754e94b5d12cacafabca01bd#egg=django_admin_bootstrapped
+django-appconf==1.0.2
 django-auditlog==0.4.3
 django-autocomplete-light==3.2.9
 django-bootstrap3==8.2.2
 django-classy-tags==0.8.0
 django-colorful==1.2
+django-compressor==2.2
 django-cors-headers==2.1.0
 django-crispy-forms==1.6.1
 django-datetime-widget==0.9.3
@@ -34,7 +36,9 @@ PyJWT==1.5.0
 pyparsing==2.2.0
 python-dateutil==2.6.0
 pytz==2017.2
+rcssmin==1.0.6
 requests==2.13.0
+rjsmin==1.0.12
 s3transfer==0.1.13
 six==1.10.0
 sorl-thumbnail==12.3
