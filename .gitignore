@@ -3,6 +3,7 @@ old.db.sqlite3
 db.sqlite3-journal
 media/
 staticfiles/
+local_settings.py
 
 .idea
 node_modules

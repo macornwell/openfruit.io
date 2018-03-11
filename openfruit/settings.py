@@ -190,16 +190,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = '/home/trjg/code/openfruit.io/media/'
 
 LOGIN_URL = '/api-auth/login/'
 LOGIN_REDIRECT_URL = '/'
@@ -294,3 +285,35 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
 
+
+CLOUDFRONT_DOMAIN = os.environ.get('CLOUDFRONT_DOMAIN', '')
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME', '')
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
+AWS_PRELOAD_METADATA = os.environ.get('AWS_PRELOAD_METADATA', '')
+AWS_QUERYSTRING_AUTH = os.environ.get('AWS_QUERYSTRING_AUTH', '')
+AWS_S3_SECURE_URLS = os.environ.get('AWS_S3_SECURE_URLS', '')
+AWS_S3_ENCRYPTION = os.environ.get('AWS_S3_ENCRYPTION', '')
+AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN', '')
+STATICFILES_LOCATION = os.environ.get('STATICFILES_LOCATION', '')
+STATICFILES_STORAGE = os.environ.get('STATICFILES_STORAGE', 'whitenoise.storage.CompressedManifestStaticFilesStorage')
+STATIC_ROOT = os.environ.get('STATIC_ROOT', os.path.join(BASE_DIR, 'staticfiles'))
+STATIC_URL = os.environ.get('STATIC_URL', '/static/')
+MEDIAFILES_LOCATION = os.environ.get('MEDIAFILES_LOCATION', '')
+MEDIA_URL = os.environ.get('MEDIA_URL', '/media/')
+MEDIA_ROOT = os.environ.get('MEDIA_ROOT', '')
+DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE', '')
+URL_FILEBROWSER_MEDIA = os.environ.get('URL_FILEBROWSER_MEDIA', '')
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+############
+# Local Settings
+############
+try:
+    #from openfruit.local_settings import *
+    pass
+except:
+    pass
