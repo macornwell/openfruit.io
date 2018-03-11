@@ -313,7 +313,7 @@ STATICFILES_DIRS = [
 # Local Settings
 ############
 try:
-    #from openfruit.local_settings import *
+    from openfruit.local_settings import *
     pass
 except:
     pass
