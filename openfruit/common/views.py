@@ -10,7 +10,35 @@ class EasyRestMixin:
     Provides mixin's for common rest operations.
     """
 
+    def parse_array_query_params(self, request, param):
+        """
+        Parses the given request's array based query parameters.
+        Should be in the format param=[x,y,z] OR param=x
+        Regardless, an array is returned.
+        :param request:
+        :return: An array with the values.
+        """
+        value = request.query_params.get(param, [])
+        if not value:
+            return value
+        results = []
+        if ',' in value:
+            results = value.split(',')
+        else:
+            results.append(value)
+        return results
+
+
     def query_filter(self, request, queryset, parameter, filter_word=None, default_value=None):
+        """
+        Conducts a database filter on a given queryset with a given parameter.
+        :param request:
+        :param queryset:
+        :param parameter: Should be a field on a model.
+        :param filter_word:
+        :param default_value:
+        :return:
+        """
         value = request.query_params.get(parameter, default_value)
         if value:
             if not filter_word:

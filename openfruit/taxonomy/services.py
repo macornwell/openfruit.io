@@ -96,6 +96,16 @@ class TaxonomyDAL:
     def get_cultivars_by_species(self, species):
         return Cultivar.objects.filter(species=species)
 
+    def get_cultivar(self, species, cultivar_name):
+        """
+        Gets a cultivar.
+        Species name can either be in latin or the common name. IExact is for both.
+        :param species:
+        :param cultivar_name:
+        :return:
+        """
+        return Cultivar.objects.filter(name=cultivar_name).filter(Q(species__name__iexact=species) | Q(species__latin_name__iexact=species)).first()
+
     def get_cultivar_by_id(self, cultivar_id):
         return Cultivar.objects.get(pk=cultivar_id)
 

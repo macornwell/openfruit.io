@@ -38,6 +38,7 @@ urlpatterns = [
     url(r'^', include('openfruit.common.urls')),
     url(r'^', include('openfruit.taxonomy.urls')),
     url(r'^', include('openfruit.reports.event.urls')),
+    url(r'^', include('openfruit.reports.review.urls')),
     url(r'^', include('openfruit.userdata.urls')),
     url(r'^', include('openfruit.fruit_search.urls')),
     url(r'^', include('openfruit.geography.urls')),
