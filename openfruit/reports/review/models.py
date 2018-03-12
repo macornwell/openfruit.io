@@ -52,7 +52,16 @@ class FruitReview(models.Model):
         plant = self.fruiting_plant
         if not plant:
             plant = self.cultivar
-        return '{0} - {1} rating.'.format(self.datetime, str(plant), self.submitted_by.username, self.rating)
+        return '{0} - {1} review by {2}: {3} {4} {5} {6} {7}'.format(
+            self.datetime,
+            str(plant),
+            self.submitted_by.username,
+            self.sweet,
+            self.sour,
+            self.bitter,
+            self.juicy,
+            self.firm
+        )
 
 
 auditlog.register(FruitReview)
