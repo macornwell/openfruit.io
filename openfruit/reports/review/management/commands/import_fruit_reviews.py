@@ -7,7 +7,7 @@ from openfruit.taxonomy.models import Cultivar, Species
 from openfruit.reports.review.models import FruitReview
 
 class Command(BaseCommand):
-    help = "Imports a CAR resistant csv sheet."
+    help = "Imports a csv sheet for adding fruit reviews."
 
     def add_arguments(self, parser):
         parser.add_argument('csv_file_path', type=str)

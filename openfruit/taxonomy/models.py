@@ -160,7 +160,7 @@ class Cultivar(models.Model, UrlNameMixin):
     parent_b = models.ForeignKey('Cultivar', blank=True, null=True, related_name='second_children')
 
     # Descriptive Information
-    brief_description = models.CharField(max_length=50, blank=True, null=True)
+    brief_description = models.CharField(max_length=100, blank=True, null=True)
     history = models.TextField(blank=True, null=True)
 
     class Meta:
