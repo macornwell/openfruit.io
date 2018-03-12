@@ -19,7 +19,7 @@ django-compressor==2.2
 django-cors-headers==2.1.0
 django-crispy-forms==1.6.1
 django-datetime-widget==0.9.3
--e git+https://github.com/macornwell/django-geo-db@908ee7af4f41734a5e6d67ae8bed54c1cf7d94e9#egg=django_geo_db
+-e git+https://github.com/macornwell/django-geo-db@master#egg=django_geo_db
 django-jsonfield==1.0.1
 django-rest-auth==0.9.3
 django-storages-redux==1.3.3
