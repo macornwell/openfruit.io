@@ -33,6 +33,7 @@ LOCAL_HOST = os.environ.get('LOCAL_HOST')
 if LOCAL_HOST:
         ALLOWED_HOSTS.append(LOCAL_HOST)
 
+SITE = 1
 
 
 # Application definition
@@ -47,8 +48,16 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_auth',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.twitter',
     'bootstrap3',
     'datetimewidget',
     'auditlog',
@@ -57,7 +66,9 @@ INSTALLED_APPS = (
     'colorful',
     'corsheaders',
     'django_geo_db',
+
     'openfruit',
+    'openfruit.ofauth',
     'openfruit.common',
     'openfruit.taxonomy',
     'openfruit.reports.event',
