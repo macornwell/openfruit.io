@@ -81,6 +81,7 @@ INSTALLED_APPS = (
     'openfruit.fruit_reference',
     'openfruit.fruit_search',
     'openfruit.reports.disease',
+    'openfruit.fruit_api',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -286,7 +287,6 @@ JWT_EXPIRATION_DELTA = datetime.timedelta(hours=1)
 
 OF_API_USERNAME = os.environ.get('OF_API_USERNAME', '')
 OF_API_PASSWORD = os.environ.get('OF_API_PASSWORD', '')
-
 
 
 ############

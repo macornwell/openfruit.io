@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.exceptions import ParseError
 from rest_framework_jwt.views import obtain_jwt_token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.settings import api_settings
@@ -31,6 +32,19 @@ from openfruit.taxonomy.models import Species, Cultivar, Genus, Kingdom, Fruitin
 from openfruit.taxonomy.services import TAXONOMY_DAL
 from openfruit.userdata.services import USER_DATA_DAL
 from openfruit.reports.event.services import EVENT_DAL
+
+
+class TaxonomyRestAPIMixin:
+
+    def get_species_and_cultivar(self, request):
+        species = request.query_params.get('species', None)
+        if not species:
+            raise ParseError('Error: species')
+        cultivar = request.query_params.get('cultivar', None)
+        if not cultivar:
+            raise ParseError('Error: cultivar')
+        return species, cultivar
+
 
 
 @permission_classes((IsAuthenticated,))

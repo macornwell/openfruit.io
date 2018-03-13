@@ -1,8 +1,8 @@
 from rest_framework.views import APIView, Response
 from rest_framework.exceptions import ParseError
 from openfruit.common.views import EasyRestMixin
-from openfruit.reports.review import models, serializers
 from openfruit.reports.review.services import FRUIT_REVIEW_DAL
+from openfruit.taxonomy.services import TAXONOMY_DAL
 
 # Create your views here.
 
@@ -18,7 +18,7 @@ class FruitReviewView(APIView, EasyRestMixin):
     Optional parameters separated separated by commas for multiple.
     :parameter
     ?types=[sweet,sour,firm,bitter,juicy,rating]
-    ?metrics=[average,max,min]
+    ?metrics=[avg,max,min]
 
 
     :returns
@@ -33,7 +33,7 @@ class FruitReviewView(APIView, EasyRestMixin):
             'juicy': 10,
             'rating': 5,
         ],
-        average : [
+        avg : [
             'sweet': 5,
             'sour': 5,
             'firm': 5,
@@ -58,7 +58,7 @@ class FruitReviewView(APIView, EasyRestMixin):
             'sweet': 10,
             'sour': 10,
         ],
-        average : [
+        avg : [
             'sweet': 5,
             'sour': 5,
         ],
@@ -69,13 +69,13 @@ class FruitReviewView(APIView, EasyRestMixin):
     }
 
     If one metric and one type is requested only the value is returned.
-    /api/v1/reports/review/?cultivar=Anna&species=Apple&metrics=average&types=sour
+    /api/v1/reports/review/?cultivar=Anna&species=Apple&metrics=avg&types=sour
     {
         9
     }
 
     If one metric is requested the types are turned.
-    /api/v1/reports/review/?cultivar=Anna&species=Apple&metrics=average
+    /api/v1/reports/review/?cultivar=Anna&species=Apple&metrics=avg
     {
         'sweet': 1,
         'sour': 1,
@@ -98,7 +98,8 @@ class FruitReviewView(APIView, EasyRestMixin):
 
         types = self.parse_array_query_params(request, 'types')
         metrics = self.parse_array_query_params(request, 'metrics')
-        result = FRUIT_REVIEW_DAL.get_averages_for_cultivar(species, cultivar, types=types, metrics=metrics)
+        cultivar = TAXONOMY_DAL.get_cultivar(species, cultivar)
+        result = FRUIT_REVIEW_DAL.get_averages_for_cultivar(cultivar, types=types, metrics=metrics)
         if len(result) == 1:
             values = list(result.values())
             value = values[0]

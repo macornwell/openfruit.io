@@ -26,7 +26,7 @@ class FruitReview(models.Model):
     submitted_by = models.ForeignKey(User)
     datetime = models.DateTimeField(default=timezone.now)
     fruiting_plant = models.ForeignKey(FruitingPlant, blank=True, null=True)
-    cultivar = models.ForeignKey(Cultivar, blank=True, null=True)
+    cultivar = models.ForeignKey(Cultivar)
     sweet = IntegerRangeField(min_value=1, max_value=10, default=5)
     sour = IntegerRangeField(min_value=1, max_value=10, default=5)
     bitter = IntegerRangeField(min_value=1, max_value=10, default=1)
@@ -44,8 +44,13 @@ class FruitReview(models.Model):
             if self.fruiting_plant.cultivar is not self.cultivar:
                 raise Exception('Must have the same cultivar for the fruiting plant and the cultivar.')
 
+    def __clean_values(self):
+        if self.fruiting_plant:
+            self.cultivar = self.fruiting_plant.cultivar
+
     def save(self, *args, **kwargs):
         self.__validate()
+        self.__clean_values()
         super(FruitReview, self).save(*args, **kwargs)
 
     def __str__(self):

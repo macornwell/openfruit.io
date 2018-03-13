@@ -23,7 +23,9 @@ class Command(BaseCommand):
         for name, allowedModelTypes in data:
             try:
                 obj = Group.objects.get(name=name)
+                print(obj)
             except Exception as e:
+                print('Creating {0}'.format(name))
                 obj = Group.objects.create(name=name)
                 for model in allowedModelTypes:
                     ct = ContentType.objects.get_for_model(model)

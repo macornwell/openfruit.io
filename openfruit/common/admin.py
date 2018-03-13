@@ -15,7 +15,9 @@ class FilterUserAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super(FilterUserAdmin, self).get_queryset(request)
-        return qs.filter(submitted_by=request.user)
+        if not is_curator(request.user):
+            return qs.filter(submitted_by=request.user)
+        return qs
 
     def has_change_permission(self, request, obj=None):
         if not obj:

@@ -55,6 +55,7 @@ urlpatterns = [
     url(r'^', include('openfruit.geography.urls')),
     url(r'^', include('openfruit.fruit_reference.urls')),
     url(r'^', include('openfruit.reports.disease.urls')),
+    url(r'^', include('openfruit.fruit_api.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
