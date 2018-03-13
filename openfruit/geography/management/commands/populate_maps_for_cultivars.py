@@ -10,6 +10,7 @@ class Command(BaseCommand):
     help = "Pre-Populates all maps for every cultivar, if possible. MUST HAVE Site set correctly."
 
     def handle(self, *args, **options):
+        domain = ''
         map_type = GEO_DAL.get_map_type('simple')
         for c in Cultivar.objects.all():
             location = c.origin_location
