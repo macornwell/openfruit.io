@@ -1,14 +1,21 @@
 import csv
 from datetime import date
 import re
+
+from django.db import transaction
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from django_geo_db.models import Location, State, County, City, Zipcode
-from openfruit.taxonomy.models import Cultivar, Species
-from django.db import transaction
 
-ZIP_RE = re.compile('\d+')
-COORD_RE = re.compile('-?\d{1,2}\.\d{4,6} -?\d{1,3}\.\d{4,6}')
+from django_geo_db.models import Location, State, County, City, Zipcode, Country
+from django_geo_db.services import GEO_DAL
+from openfruit.taxonomy.models import Cultivar, Species
+
+
+CITY_RE = re.compile(r"(?P<city>[a-zA-Z0-9\s]+), (?P<state>[a-zA-Z\s]+)$")
+COUNTY_RE = re.compile(r"(?P<county>[a-zA-Z0-9\s]+) (County|Parish), (?P<state>[a-zA-Z\s]+)$")
+ZIP_CITY_RE = re.compile(r"(?P<city>[a-zA-Z0-9\s]+), (?P<state>[a-zA-Z\s]+) (?P<zip>\d{5})$")
+ZIP_COUNTY_RE = re.compile(r"(?P<county>[a-zA-Z0-9\s]+) (County|Parish), (?P<state>[a-zA-Z\s]+) (?P<zip>\d{5})$")
+FULL_RE = re.compile(r'(?P<city>[a-zA-Z0-9\s]+), (?P<state>[a-zA-Z\s]+) (?P<zip>\d{5}) (?P<lat>-?\d{1,2}\.\d{4,6}) (?P<lon>-?\d{1,3}\.\d{4,6}) (?P<location_name>.+)$')
 
 @transaction.atomic
 class Command(BaseCommand):
@@ -27,51 +34,95 @@ class Command(BaseCommand):
             return
         if 'Region' in location:
             raise Exception('Regions cannot be handled yet.')
+        us = Country.objects.get(name='United States of America')
         if ',' in location:
-            a, b = location.split(',')
-            a = a.strip()
-            b = b.strip()
-            a_is_county = False
-            if 'County' in a or 'Parish' in a:
-                a = a.replace('County', '')
-                a = a.replace('Parish', '')
-                a_is_county = True
-                coord_match = COORD_RE.search(b)
-                lat_lon = None
-                if coord_match:
-                    lat_lon = coord_match.group(0)
-                    b = b.replace(lat_lon, '')
-                    b = b.strip()
-                zip_match = ZIP_RE.search(b)
-                zip_value = None
-                if zip_match:
-                    zip_value = zip_match.group(0)
-                    b = b.replace(zip_value, '')
-                    b = b.strip()
-                state = b
-                location_obj = None
 
+            match = FULL_RE.search(location)
+            city = None
+            county = None
+            state = None
+            zipcode = None
+            lon = None
+            lat = None
+            location_name = None
+            if match:
+                city = match.group('city')
+                state = match.group('state')
+                zipcode = int(match.group('zip'))
+                lat = float(match.group('lat'))
+                lon = float(match.group('lon'))
+                location_name = match.group('location_name')
             else:
-                pass  # a is city
+                match = ZIP_COUNTY_RE.search(location)
+                if match:
+                    county = match.group('county')
+                    state = match.group('state')
+                    zipcode = int(match.group('zip'))
+                else:
+                    match = ZIP_CITY_RE.search(location)
+                    if match:
+                        city = match.group('city')
+                        state = match.group('state')
+                        zipcode = int(match.group('zip'))
+                    else:
+                        match = COUNTY_RE.search(location)
+                        if match:
+                            county = match.group('county')
+                            state = match.group('state')
+                        else:
+                            match = CITY_RE.search(location)
+                            if match:
+                                city = match.group('city')
+                                state = match.group('state')
+                            else:
+                                raise Exception('Location {0} could not be parsed.'.format(location))
+            state = State.objects.get(name__iexact=state.strip())
+            location_obj = None
+            query = Location.objects.filter(country=us)
+            if zipcode:
+                zipcode = Zipcode.objects.get(zipcode=zipcode)
+            if location_name:
+                query = query.filter(name=location_name.strip()).first()
+                if not query:
+                    location_obj = Location()
+                    location_obj.country = us
+                    location_obj.state = state
+                    location_obj.city = City.objects.get(state=state, name__iexact=city)
+                    location_obj.zipcode = zipcode
+                    location_obj.name = location_name
+                    location_obj.geocoordinate = GEO_DAL.get_or_create_geocoordinate(lat, lon)
+                    print('Creating {0}'.format(location_obj))
+                    location_obj.save()
+            else:
+                query = query.filter(state=state, zipcode=zipcode)
+                if city:
+                    query = query.filter(city__name__iexact=city.strip())
+                if county:
+                    query = query.filter(county__name__iexact=county.strip(), city__isnull=True)
+                """
+                query = query.filter(state=state)
+                """
+                location_obj = query.first()
+                if not location_obj:
+                    print('Location:' + str(location))
+                    raise Exception('A location object was expected, but none was found for {0}'.format(location))
+            if location_obj:
+                print('Setting {0} location to {1}'.format(cultivar, location_obj))
+                cultivar.origin_location = location_obj
         else:
             location = location.strip()
             state = State.objects.filter(name=location).first()
             if not state:  # Location is Country
-                country = Location.objects.filter(country=location, state=None, name=None).first()
+                country = Location.objects.filter(country__name=location, region=None, state=None, name=None).first()
                 if not country:
                     raise Exception('Country {0} does not exist.'.format(location))
                 else:
                     print('Setting {0} location to {1}'.format(cultivar, country))
                     cultivar.origin_location = country
             else:
-                print('Setting {0} location to {1}'.format(cultivar, state))
-                cultivar.origin_location = state
-
-
-
-
-
-
+                location = Location.objects.get(country=us, state=state, county=None, city=None, zipcode=None)
+                print('Setting {0} location to {1}'.format(cultivar, location))
+                cultivar.origin_location = location
 
     def handle(self, *args, **options):
 
@@ -86,7 +137,7 @@ class Command(BaseCommand):
                     species = row[0]
                     species = Species.objects.get(latin_name__iexact=species)
                     name = row[1]
-                    cultivar = Cultivar.objects.get(name__iexact=name)
+                    cultivar = Cultivar.objects.get(species=species, name__iexact=name)
 
                     origin_location = row[2]
                     self.__parse_location(cultivar, origin_location)
@@ -138,9 +189,10 @@ class Command(BaseCommand):
                     self._set_if_not_null(cultivar, 'history', history)
 
                     print('Saving {0}'.format(cultivar))
-                    #cultivar.save()
+                    cultivar.save()
 
                 except Exception as e:
+                    print('Error')
                     print(row)
                     raise e
 
