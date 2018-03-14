@@ -534,7 +534,7 @@ class CultivarListView(ListAPIView):
         queryset = Cultivar.objects.all()
         species = self.request.query_params.get('species', None)
         if species:
-            queryset = queryset.filter(species=species)
+            queryset = queryset.filter(species__latin_name__iexact=species)
         name = self.request.query_params.get('name', None)
         if name:
             queryset = queryset.filter(name__iexact=name)

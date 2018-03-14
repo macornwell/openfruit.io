@@ -19,7 +19,7 @@ class Command(BaseCommand):
                     print('Creating Map for {0}-{1}'.format(c, location))
                     try:
                         if location.name:
-                            LocationMapGenerator(domain).get_location_map_by_location_name(map_type, location)
+                            LocationMapGenerator(domain).get_regional_map(map_type, location)
                         else:
                             LocationMapGenerator(domain).get_or_generate_location_map(map_type, location)
                         print('Success')

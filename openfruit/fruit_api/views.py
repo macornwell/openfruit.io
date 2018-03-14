@@ -51,7 +51,6 @@ class CultivarQuery(APIView, EasyRestMixin, TaxonomyRestAPIMixin):
                 url = request.build_absolute_uri(settings.MEDIA_URL + url)
                 r['location']['map_file_url'] = url
 
-
     def __handle_single(self, request):
         species, cultivar = self.get_species_and_cultivar(request)
         addons = self.parse_array_query_params(request, 'addons')
@@ -65,9 +64,13 @@ class CultivarQuery(APIView, EasyRestMixin, TaxonomyRestAPIMixin):
     def __handle_many(self, request):
         species_and_cultivars = []
         for key in request.query_params:
-            if key.startswith('sc_'):
-                species, cultivar = self.parse_array_query_params(request, key)
-                species_and_cultivars.append((species, cultivar))
+            try:
+                if key.startswith('sc_'):
+                    species, cultivar = self.parse_array_query_params(request, key)
+                    species_and_cultivars.append((species, cultivar))
+            except Exception as e:
+                print(key)
+                raise e
         addons = self.parse_array_query_params(request, 'addons')
         review_types = self.parse_array_query_params(request, 'review_types')
         review_metrics = self.parse_array_query_params(request, 'review_metrics')

@@ -3,8 +3,14 @@ from datetime import date
 import re
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
+from django_geo_db.models import Location, State, County, City, Zipcode
 from openfruit.taxonomy.models import Cultivar, Species
+from django.db import transaction
 
+ZIP_RE = re.compile('\d+')
+COORD_RE = re.compile('-?\d{1,2}\.\d{4,6} -?\d{1,3}\.\d{4,6}')
+
+@transaction.atomic
 class Command(BaseCommand):
     help = "Imports a csv sheet that that changes cultivar entries."
 
@@ -15,6 +21,57 @@ class Command(BaseCommand):
         if value:
             print('Setting {0}'.format(key))
             setattr(cultivar, key, value)
+
+    def __parse_location(self, cultivar, location):
+        if not location:
+            return
+        if 'Region' in location:
+            raise Exception('Regions cannot be handled yet.')
+        if ',' in location:
+            a, b = location.split(',')
+            a = a.strip()
+            b = b.strip()
+            a_is_county = False
+            if 'County' in a or 'Parish' in a:
+                a = a.replace('County', '')
+                a = a.replace('Parish', '')
+                a_is_county = True
+                coord_match = COORD_RE.search(b)
+                lat_lon = None
+                if coord_match:
+                    lat_lon = coord_match.group(0)
+                    b = b.replace(lat_lon, '')
+                    b = b.strip()
+                zip_match = ZIP_RE.search(b)
+                zip_value = None
+                if zip_match:
+                    zip_value = zip_match.group(0)
+                    b = b.replace(zip_value, '')
+                    b = b.strip()
+                state = b
+                location_obj = None
+
+            else:
+                pass  # a is city
+        else:
+            location = location.strip()
+            state = State.objects.filter(name=location).first()
+            if not state:  # Location is Country
+                country = Location.objects.filter(country=location, state=None, name=None).first()
+                if not country:
+                    raise Exception('Country {0} does not exist.'.format(location))
+                else:
+                    print('Setting {0} location to {1}'.format(cultivar, country))
+                    cultivar.origin_location = country
+            else:
+                print('Setting {0} location to {1}'.format(cultivar, state))
+                cultivar.origin_location = state
+
+
+
+
+
+
 
     def handle(self, *args, **options):
 
@@ -32,6 +89,7 @@ class Command(BaseCommand):
                     cultivar = Cultivar.objects.get(name__iexact=name)
 
                     origin_location = row[2]
+                    self.__parse_location(cultivar, origin_location)
 
                     origin_year = row[3]
                     self._set_if_not_null(cultivar, 'origin_year', origin_year)
@@ -80,7 +138,7 @@ class Command(BaseCommand):
                     self._set_if_not_null(cultivar, 'history', history)
 
                     print('Saving {0}'.format(cultivar))
-                    cultivar.save()
+                    #cultivar.save()
 
                 except Exception as e:
                     print(row)
