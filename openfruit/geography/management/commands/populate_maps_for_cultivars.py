@@ -20,7 +20,7 @@ class Command(BaseCommand):
                 if not LocationMap.objects.filter(location=location).exists():
                     print('Creating Map for {0}-{1}'.format(c, location))
                     try:
-                        if location.name:
+                        if location.region:
                             LocationMapGenerator(domain).get_regional_map(map_type, location)
                         else:
                             LocationMapGenerator(domain).get_or_generate_location_map(map_type, location)

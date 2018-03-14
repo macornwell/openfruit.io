@@ -7,7 +7,7 @@ class Command(BaseCommand):
     help = "Sets Limbertwigs with no state to an Appalachia location. NOTE: Appalachia must exist."
 
     def handle(self, *args, **options):
-        appalachia = Location.objects.get(state=None, name='Appalachia')
+        appalachia = Location.objects.get(state=None, region__name='Appalachia')
         for c in Cultivar.objects.filter(name__icontains='Limbertwig', origin_location__state=None)\
                 .filter(~Q(origin_location=appalachia)):
             c.origin_location = appalachia
