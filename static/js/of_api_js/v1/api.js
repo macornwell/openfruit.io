@@ -40,6 +40,7 @@
       this.search_fruiting_plants = bind(this.search_fruiting_plants, this);
       this.search_species = bind(this.search_species, this);
       this.fruit_search = bind(this.fruit_search, this);
+      this.fruit_search_from_url = bind(this.fruit_search_from_url, this);
       this.get_chromosomes = bind(this.get_chromosomes, this);
       this.get_ripenings = bind(this.get_ripenings, this);
       this.get_species_with_cultivars = bind(this.get_species_with_cultivars, this);
@@ -202,6 +203,10 @@
     OpenFruitAPI.prototype.get_chromosomes = function(callback) {
       var url;
       url = OpenFruitAPI.__url_prefix + 'chromosomes/';
+      return this.__query(callback, url);
+    };
+
+    OpenFruitAPI.prototype.fruit_search_from_url = function(url, callback) {
       return this.__query(callback, url);
     };
 

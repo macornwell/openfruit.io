@@ -1,21 +1,11 @@
-from django.shortcuts import render
 from django.conf import settings
 from django.db import connection
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from django_geo_db.models import LocationMapType
-from django_geo_db.services import LocationMapGenerator
-from django_geo_db.serializers import LocationMapSerializer
-from django_geo_db.services import GEO_DAL
-
 from openfruit.common.views import EasyRestMixin
 from openfruit.taxonomy.views import TaxonomyRestAPIMixin
 from openfruit.fruit_api.services import FRUIT_API_SERVICE
-from openfruit.taxonomy.serializers import CultivarSerializer
-from openfruit.reports.disease.services import DISEASE_SERVICE
-from openfruit.reports.review.services import FRUIT_REVIEW_DAL
-from openfruit.taxonomy.services import TAXONOMY_DAL
 
 
 
@@ -30,7 +20,7 @@ class CultivarQuery(APIView, EasyRestMixin, TaxonomyRestAPIMixin):
     /api/v1/fruits/cultivars/?species=Malus domestica&cultivar=Red Rebel
     /api/v1/fruits/cultivars/?sc_1=Malus domestica,Red Rebel&sc_2=Malus domestica,Aunt Rachel
 
-    &addons=[location,review,resistance]
+    &addons=[location,review,resistances]
     &review_types=[sweet,sour,firm,bitter,juicy,rating]
     &review_metrics=[avg,max,min]
     """
@@ -59,7 +49,7 @@ class CultivarQuery(APIView, EasyRestMixin, TaxonomyRestAPIMixin):
         result = FRUIT_API_SERVICE.full_cultivar_query(species, cultivar, addons=addons, review_types=review_types, review_metrics=review_metrics)
         if 'location' in addons:
             self.__process_location_maps(request, [result,])
-        return result[0]
+        return result
 
     def __handle_many(self, request):
         species_and_cultivars = []

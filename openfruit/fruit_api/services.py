@@ -5,7 +5,7 @@ class FruitAPIService:
 
     def full_cultivar_query(self, species_name, cultivar_name, addons=None, review_types=None, review_metrics=None):
         return self.full_cultivar_query_many([(species_name, cultivar_name)], addons=addons,
-                                             review_types=review_types, review_metrics=review_metrics)
+                                             review_types=review_types, review_metrics=review_metrics)[0]
 
     def full_cultivar_query_many(self, species_and_cultivar_list, addons=None, review_types=None, review_metrics=None):
         """
@@ -159,6 +159,28 @@ class FruitAPIService:
             city_g.geocoordinate_id,
             zipcode_g.geocoordinate_id,"""
 
+        if 'resistances' in addons:
+            query_selects += """
+            (SELECT TRUE
+            FROM disease_diseaseresistancereport AS disease
+            LEFT JOIN disease_diseasetype disease_type ON disease.disease_type_id = disease_type.disease_type_id
+            WHERE disease.resistance_level = 'e'
+                  AND disease.cultivar_id = c.cultivar_id
+                  AND disease_type.type = 'Cedar Apple Rust'
+            LIMIT 1
+          ) AS car_resistance,
+          (
+            SELECT TRUE
+            FROM disease_diseaseresistancereport AS disease
+            LEFT JOIN disease_diseasetype disease_type ON disease.disease_type_id = disease_type.disease_type_id
+            WHERE disease.resistance_level = 'e'
+                  AND disease.cultivar_id = c.cultivar_id
+                  AND disease_type.type = 'Fireblight'
+            LIMIT 1
+          ) AS fireblight_resistance 
+          """
+
+
         full_query = self.__preprocess_query_segment(query_selects)
         full_query += self.__preprocess_query_segment(query_from)
         full_query += self.__preprocess_query_segment(query_joins)
@@ -202,8 +224,19 @@ class FruitAPIService:
                 data['location'] = self.__parse_location(result)
             if 'review' in addons:
                 data['review'] = self.__parse_review(review_types, review_metrics, result)
+            if 'resistances' in addons:
+                data['resistances'] = self.__parse_resistances(result)
             final_result.append(data)
         return final_result
+
+    def __parse_resistances(self, result):
+        resistances = []
+        if result['fireblight_resistance']:
+            resistances.append('Fireblight')
+        if result['car_resistance']:
+            resistances.append('Cedar Apple Rust')
+        return resistances
+
 
     def __parse_uses(self, result):
         uses = []

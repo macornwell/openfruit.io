@@ -4,7 +4,7 @@
 {% block body %}
 <div class="search-bar">
 <label>Cultivar Search</label>
-<input id="autocomplete" PLACEHOLDER="Type Cultivar Here" class="form-control">
+<input id="autocomplete" PLACEHOLDER="Try 'Black'" class="form-control">
 </div>
 <hr>
 <div class="detail">
@@ -83,6 +83,7 @@
             var location_value = '';
             var city = location['city'];
             var state = location['state'];
+            var region = location['region'];
             var country = location['country'];
             var county = location['county'];
             var zip = location['zipcode'];
@@ -90,10 +91,14 @@
               location_value += zip;
             }
             else if (city !== null){
-              location_value += city;
+              location_value += city + ', ' + state;
             }
             else if (county !== null){
-              location_value += county;
+              location_value += county + ' County, ' + state;
+            }
+            else if (region !== null) {
+              console.log(region);
+              location_value += region + ' ' + country;
             }
             else if (state !== null){
               location_value += state;
@@ -126,16 +131,22 @@
 
       function update_map(geocoordinate) {
         var lat, lon;
-        var results = geocoordinate.split(" ");
-        lat = results[0];
-        lon = results[1];
-        var latLon = new google.maps.LatLng( lat, lon);
-        map.setCenter(latLon);
-        marker.setMap(null);
-        marker = new google.maps.Marker({
-          position: latLon,
-          map: map
-        });
+        console.log(geocoordinate);
+        if (geocoordinate !== null) {
+            var results = geocoordinate.split(" ");
+
+            lat = results[0];
+            lon = results[1];
+            var latLon = new google.maps.LatLng(lat, lon);
+            map.setCenter(latLon);
+            marker.setMap(null);
+            marker = new google.maps.Marker({
+                position: latLon,
+                map: map
+            });
+        } else {
+          marker.setMap(null);
+        }
       }
 
       function initMap() {

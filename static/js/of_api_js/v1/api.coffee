@@ -120,6 +120,9 @@ class OpenFruitAPI
     url = OpenFruitAPI.__url_prefix + 'chromosomes/'
     @__query(callback, url)
 
+  fruit_search_from_url:(url, callback)=>
+    @__query(callback, url)
+
   fruit_search:(callback, query_or_query_list)=>
     url = OpenFruitAPI.__url_prefix + '/fruit-search/?'
 

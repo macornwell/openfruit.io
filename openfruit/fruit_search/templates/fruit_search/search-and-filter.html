@@ -159,8 +159,6 @@
         var species = $('#species').val();
         if (species === '---'){
           species = null;
-          //species = species_key_to_species[species];
-          //species = species['latin_name']
         }
         var chromosomes = $('#chromosome').val();
         if (chromosomes === '---'){
@@ -172,12 +170,10 @@
             ripening_low, ripening_high, books, chromosomes, resistances);
 
         of_api.fruit_search(process_results, [query]);
-
-        //taxonomy_service.searchCultivars(species, ripening_high, ripening_low,
-        //  year_high, year_low, state, uses, books, chromosomes, resistances, process_results)
       };
 
       var process_results = function(data){
+        console.log(data);
         var totalCount = data['count'];
         $('#found-count').text(totalCount);
         forward_url = data['next'];
@@ -211,10 +207,10 @@
         var county = location_data['county'];
         var city = location_data['city'];
         if (city !== null){
-          locationValue += city;
+          locationValue += city + ', ' + state;
         }
         else if (county !== null){
-          locationValue += county;
+          locationValue += county + ' County, ' + state;
         }
         else if (state !== null){
           locationValue += state;
@@ -308,22 +304,14 @@
 
 
       var forward = function(){
-        $.get(forward_url, function(data){
-          objs = [];
-          _.each(data, function(obj){
-            objs.push(obj);
-          });
-          process_results(objs);
+        of_api.fruit_search_from_url(forward_url, function(data){
+          process_results(data);
         });
       };
 
       var back = function(){
-        $.get(back_url, function(data){
-          objs = [];
-          _.each(data, function(obj){
-            objs.push(obj);
-          });
-          process_results(objs);
+        of_api.fruit_search_from_url(back_url, function(data){
+          process_results(data);
         });
       };
 

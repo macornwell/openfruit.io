@@ -75,6 +75,7 @@ class CultivarSerializer(serializers.HyperlinkedModelSerializer):
             'county': None,
             'zipcode': None,
             'geocoordinate': None,
+            'region': None,
         }
         location = obj.origin_location
         if location:
@@ -86,6 +87,8 @@ class CultivarSerializer(serializers.HyperlinkedModelSerializer):
                 result['country'] = location.country.name
             if location.county:
                 result['county'] = location.county.name
+            if location.region:
+                result['region'] = location.region.name
             if location.zipcode:
                 result['zipcode'] = location.zipcode.zipcode
             result['geocoordinate'] = location.get_geocoordinate().generated_name

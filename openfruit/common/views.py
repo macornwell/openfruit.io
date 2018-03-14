@@ -20,7 +20,7 @@ class EasyRestMixin:
         """
         value = request.query_params.get(param, [])
         if not value:
-            return None
+            return []
         results = []
         if ',' in value:
             results = value.split(',')
