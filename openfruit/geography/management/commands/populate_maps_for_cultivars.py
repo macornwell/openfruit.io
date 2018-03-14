@@ -12,7 +12,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         domain = ''
         if settings.DEBUG:
-            domain = settings.MEDIA_URL
+            domain = 'http://localhost:8000'
         map_type = GEO_DAL.get_map_type('simple')
         for c in Cultivar.objects.all():
             location = c.origin_location
