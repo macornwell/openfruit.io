@@ -17,7 +17,6 @@ from django.conf.urls import include, url
 from django.views.generic import TemplateView
 from django.contrib import admin
 from rest_framework import routers
-from rest_framework.documentation import include_docs_urls
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
 
 from openfruit import settings
@@ -58,7 +57,6 @@ urlpatterns = [
     url(r'^', include('openfruit.reports.disease.urls')),
     url(r'^', include('openfruit.fruit_api.urls')),
 
-    url(r'^api/docs/', include_docs_urls(title='My API title'))
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
