@@ -543,7 +543,7 @@ class CultivarListView(ListAPIView):
             queryset = queryset.filter(name__icontains=name_contains)
         country = self.request.query_params.get('country', None)
         if country:
-            queryset = queryset.filter(origin_location__county__name__iexact=country)
+            queryset = queryset.filter(origin_location__country__name__icontains=country)
         state = self.request.query_params.get('state', None)
         if state:
             queryset = queryset.filter(origin_location__state__name__iexact=state)
@@ -553,12 +553,21 @@ class CultivarListView(ListAPIView):
         county = self.request.query_params.get('county', None)
         if county:
             queryset = queryset.filter(origin_location__county__name__iexact=county)
+        zipcode = self.request.query_params.get('zipcode', None)
+        if zipcode:
+            queryset = queryset.filter(origin_location__zipcode=zipcode)
         year_low = self.request.query_params.get('year_low', None)
         if year_low:
             queryset = queryset.filter(origin_year__gte=year_low)
         year_high = self.request.query_params.get('year_high', None)
         if year_high:
             queryset = queryset.filter(origin_year__lte=year_high)
+        ripening_low = self.request.query_params.get('ripening_low', None)
+        if ripening_low:
+            queryset = queryset.filter(ripens_early=ripening_low)
+        ripening_high = self.request.query_params.get('ripening_high', None)
+        if ripening_high:
+            queryset = queryset.filter(ripens_late=ripening_high)
         uses = self.request.query_params.get('uses', None)
         if uses:
             use_list = uses.split(',')

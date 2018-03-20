@@ -1,10 +1,7 @@
 import csv
-from datetime import date
-import re
 from django.core.management.base import BaseCommand
-from django_geo_db import models as GeoModels
 from openfruit.taxonomy.models import Cultivar, Species
-from openfruit.reports.disease.models import DiseaseType, DiseaseResistanceReport
+from openfruit.reports.disease.models import DiseaseType, DiseaseResistanceReport, DISEASE_RESISTANCE_CHOICES
 from openfruit.fruit_reference.models import FruitReferenceType, FruitReference, Author
 
 class Command(BaseCommand):
@@ -15,6 +12,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         apple = Species.objects.get(latin_name='Malus domestica')
+
+        resistances = {}
+        for short, long in DISEASE_RESISTANCE_CHOICES:
+            resistances[long.lower()] = short
 
         with open(options['csv_file_path']) as f:
             reader = csv.reader(f)
@@ -31,6 +32,7 @@ class Command(BaseCommand):
                 date = row[5]
                 type = row[6]
 
+
                 reference_type, created = FruitReferenceType.objects.get_or_create(type=type)
                 if created:
                     print('Created FruitReferenceType: ' + type)
@@ -45,25 +47,23 @@ class Command(BaseCommand):
 
                 cultivar = Cultivar.objects.filter(species=apple, name=cultivar_name).first()
                 if not cultivar:
-                    cultivar = Cultivar()
-                    cultivar.species = apple
-                    cultivar.name = cultivar_name
-                    cultivar.save()
-                    print('Created Cultivar: ' + cultivar_name)
+                    raise Exception('No cultivar found for {0}'.format(cultivar_name))
                 if reference not in cultivar.fruitreference_set.all():
                     reference.cultivar_list.add(cultivar)
                     reference.save()
                     print('Added Cultivar to Reference: ' + cultivar.name)
 
+                rust_resistance = resistances[rust_resistance.lower()]
+
                 car_type, created = DiseaseType.objects.get_or_create(type='Cedar Apple Rust')
                 if created:
                     print('Created DiseaseType: ' + 'Cedar Apple Rust')
-                report, created = DiseaseResistanceReport.objects.get_or_create(
-                    resistance_level=rust_resistance, disease_type=car_type, reference=reference,
-                    cultivar=cultivar
-                )
-                if created:
+                obj = DiseaseResistanceReport.objects.filter(reference=reference, cultivar=cultivar, resistance_level=rust_resistance, disease_type=car_type).first()
+                if not obj:
+                    report = DiseaseResistanceReport.objects.create(reference=reference, cultivar=cultivar, resistance_level=rust_resistance, disease_type=car_type)
                     print('Created DiseaseResistanceReport')
+                else:
+                    print('Found {0}, skipping creation.'.format(obj))
 
 
 
