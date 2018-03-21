@@ -10,10 +10,64 @@ class FruitAPIService:
     def full_cultivar_query_many(self, species_and_cultivar_list, addons=None, review_types=None, review_metrics=None):
         """
         Queries a cultivar fully for all relevant information.
-        :param species_name:
-        :param cultivar_name:
-        :return:
         """
+
+        def get_params():
+            value_list = []
+            for species, cultivar in species_and_cultivar_list:
+                value_list.append(species)
+                value_list.append(cultivar)
+            return value_list
+
+        def get_where_clause():
+            query_where = "WHERE "
+            length = len(species_and_cultivar_list)
+            for idx in range(length):
+                query_where += """species.latin_name like %s and c.name like %s """
+                if idx < length - 1:
+                    query_where += ' OR '
+            return query_where
+
+        return self._query_generic(get_where_clause, get_params, addons=addons, review_types=review_types, review_metrics=review_metrics)
+
+    def full_cultivar_query_geo(self, country, region=None, state=None, city=None, county=None,
+                                species=None, addons=None, review_types=None, review_metrics=None):
+        def get_params():
+            value_list = []
+            value_list.append(country.name)
+            if region:
+                value_list.append(region.name)
+            if state:
+                value_list.append(state.name)
+            if county:
+                value_list.append(county.name)
+            if city:
+                value_list.append(city.name)
+            if species:
+                value_list.append(species.latin_name)
+            return value_list
+
+        def get_where_clause():
+            query_where = "WHERE country.name like %s "
+            if region:
+                query_where += " AND region.name like %s "
+            if state:
+                query_where += " AND state.name like %s "
+            if county:
+                query_where += " AND county.name like %s "
+            if city:
+                query_where += " AND city.name like %s "
+            if species:
+                query_where += " AND species.latin_name like %s "
+            return query_where
+        return self._query_generic(get_where_clause, get_params, addons=addons, review_types=review_types, review_metrics=review_metrics)
+
+    def _query_generic(self, get_where_clause, get_query_params, addons=None, review_types=None, review_metrics=None):
+        if not get_where_clause:
+            raise Exception('get_where_clause')
+        if not get_query_params:
+            raise Exception('get_query_params')
+
         if not addons:
             addons = []
         if not review_types:
@@ -81,13 +135,6 @@ class FruitAPIService:
         INNER JOIN taxonomy_species as species on species.species_id = c.species_id 
         INNER JOIN django_geo_db_location as location on location.location_id=c.origin_location_id """
 
-        query_where = "WHERE "
-        length = len(species_and_cultivar_list)
-        for idx in range(length):
-            query_where += """species.latin_name like %s and c.name like %s """
-            if idx < length - 1:
-                query_where += ' OR '
-
         query_group_bys = """
         GROUP BY
         c.name, 
@@ -126,10 +173,11 @@ class FruitAPIService:
         if addons and 'location' in addons:
             query_selects += """
             city.name as city_name, county.name as county_name, 
-            state.name as state_name, country.name as country_name,
+            state.name as state_name, country.name as country_name, region.name as region_name,
             map.map_file_url as map_file_url,
             zipcode.zipcode,
             county_g.generated_name as county_geo,
+            region_g.generated_name as region_geo,
             state_g.generated_name as state_geo,
             zipcode_g.generated_name as zipcode_geo,
             location_g.generated_name as location_geo,
@@ -139,12 +187,14 @@ class FruitAPIService:
             query_joins += """
             LEFT JOIN django_geo_db_state as state on location.state_id = state.state_id
             LEFT JOIN django_geo_db_country as country on location.country_id = country.country_id
+            LEFT JOIN django_geo_db_region as region on location.region_id = region.region_id
             LEFT JOIN django_geo_db_county as county on location.county_id=county.county_id
             LEFT JOIN django_geo_db_city as city on location.city_id = city.city_id
             LEFT JOIN django_geo_db_zipcode as zipcode on location.city_id = zipcode.zipcode
             LEFT JOIN django_geo_db_geocoordinate as state_g on state.geocoordinate_id = state_g.geocoordinate_id
             LEFT JOIN django_geo_db_geocoordinate as county_g on county.geocoordinate_id = county_g.geocoordinate_id
             LEFT JOIN django_geo_db_geocoordinate as country_g on country.geocoordinate_id = country_g.geocoordinate_id
+            LEFT JOIN django_geo_db_geocoordinate as region_g on region.geocoordinate_id = region_g.geocoordinate_id
             LEFT JOIN django_geo_db_geocoordinate as location_g on location.geocoordinate_id = country_g.geocoordinate_id
             LEFT JOIN django_geo_db_geocoordinate as city_g on city.geocoordinate_id = city_g.geocoordinate_id
             LEFT JOIN django_geo_db_geocoordinate as zipcode_g on zipcode.geocoordinate_id = zipcode_g.geocoordinate_id
@@ -154,6 +204,7 @@ class FruitAPIService:
             map.location_map_id,
             state_g.geocoordinate_id,
             county_g.geocoordinate_id,
+            region_g.geocoordinate_id,
             country_g.geocoordinate_id,
             location_g.geocoordinate_id,
             city_g.geocoordinate_id,
@@ -180,17 +231,14 @@ class FruitAPIService:
           ) AS fireblight_resistance 
           """
 
-
         full_query = self.__preprocess_query_segment(query_selects)
         full_query += self.__preprocess_query_segment(query_from)
         full_query += self.__preprocess_query_segment(query_joins)
-        full_query += self.__preprocess_query_segment(query_where)
+        full_query += self.__preprocess_query_segment(get_where_clause())
         full_query += self.__preprocess_query_segment(query_group_bys)
 
-        value_list = []
-        for species, cultivar in species_and_cultivar_list:
-            value_list.append(species)
-            value_list.append(cultivar)
+        value_list = [p for p in get_query_params()]
+
         results = []
         with connection.cursor() as cursor:
             cursor.execute(full_query, value_list)
@@ -228,6 +276,7 @@ class FruitAPIService:
                 data['resistances'] = self.__parse_resistances(result)
             final_result.append(data)
         return final_result
+
 
     def __parse_resistances(self, result):
         resistances = []
@@ -317,6 +366,7 @@ class FruitAPIService:
             'city_geo',
             'county_geo',
             'state_geo',
+            'region_geo',
             'country_geo',
         ]
         for value in values_in_order:
