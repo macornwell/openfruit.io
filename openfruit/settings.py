@@ -83,6 +83,7 @@ INSTALLED_APPS = (
     'openfruit.fruit_search',
     'openfruit.reports.disease',
     'openfruit.fruit_api',
+    'rest_framework_swagger',
 )
 
 MIDDLEWARE_CLASSES = (

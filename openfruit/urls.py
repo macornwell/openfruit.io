@@ -18,6 +18,8 @@ from django.views.generic import TemplateView
 from django.contrib import admin
 from rest_framework import routers
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
+from rest_framework_swagger.views import get_swagger_view
+schema_view = get_swagger_view(title='User API')
 
 from openfruit import settings
 from openfruit.views import home, about, site_change, testing
@@ -56,6 +58,8 @@ urlpatterns = [
     url(r'^', include('openfruit.fruit_reference.urls')),
     url(r'^', include('openfruit.reports.disease.urls')),
     url(r'^', include('openfruit.fruit_api.urls')),
+
+    url(r'^api/v1/view/$', schema_view),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
