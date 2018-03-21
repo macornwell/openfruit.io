@@ -312,7 +312,7 @@ class FruitAPIService:
             'county': result['county_name'],
             'city': result['city_name'],
             'zipcode': result['zipcode'],
-            'region': result['region'],
+            'region': result['region_name'],
             'geocoordinate': self.__parse_coordinate(result),
             'map_file_url': result['map_file_url'],
         }
