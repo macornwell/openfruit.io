@@ -66,6 +66,7 @@ INSTALLED_APPS = (
     'colorful',
     'corsheaders',
     'django_geo_db',
+    'django_filters',
 
     'openfruit',
     'openfruit.ofauth',
@@ -279,6 +280,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_PAGINATION_CLASS': 'openfruit.common.serializers.StandardResultsSetPagination',
     'PAGE_SIZE': 20
 }
