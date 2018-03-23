@@ -131,6 +131,8 @@ class FruitAPIService:
         query_from = """
         FROM taxonomy_cultivar as c """
 
+        query_where = get_where_clause()
+
         query_joins = """
         INNER JOIN taxonomy_species as species on species.species_id = c.species_id 
         INNER JOIN django_geo_db_location as location on location.location_id=c.origin_location_id """
@@ -198,7 +200,10 @@ class FruitAPIService:
             LEFT JOIN django_geo_db_geocoordinate as location_g on location.geocoordinate_id = country_g.geocoordinate_id
             LEFT JOIN django_geo_db_geocoordinate as city_g on city.geocoordinate_id = city_g.geocoordinate_id
             LEFT JOIN django_geo_db_geocoordinate as zipcode_g on zipcode.geocoordinate_id = zipcode_g.geocoordinate_id
-            LEFT JOIN django_geo_db_locationmap as map on location.location_id = map.location_id """
+            LEFT JOIN django_geo_db_locationmap as map on location.location_id = map.location_id 
+            LEFT JOIN django_geo_db_locationmaptype as map_type on map.type_id = map_type.location_map_type_id
+            """
+            query_where += "AND map_type.type = 'simple' "
 
             query_group_bys += """
             map.location_map_id,
@@ -208,6 +213,7 @@ class FruitAPIService:
             country_g.geocoordinate_id,
             location_g.geocoordinate_id,
             city_g.geocoordinate_id,
+            map_type.location_map_type_id,
             zipcode_g.geocoordinate_id,"""
 
         if 'resistances' in addons:
@@ -234,12 +240,13 @@ class FruitAPIService:
         full_query = self.__preprocess_query_segment(query_selects)
         full_query += self.__preprocess_query_segment(query_from)
         full_query += self.__preprocess_query_segment(query_joins)
-        full_query += self.__preprocess_query_segment(get_where_clause())
+        full_query += self.__preprocess_query_segment(query_where)
         full_query += self.__preprocess_query_segment(query_group_bys)
 
         value_list = [p for p in get_query_params()]
 
         results = []
+        print(full_query)
         with connection.cursor() as cursor:
             cursor.execute(full_query, value_list)
             columns = [col[0] for col in cursor.description]
