@@ -26,7 +26,7 @@ django-crispy-forms==1.6.1
 django-datetime-widget==0.9.3
 django-filter==1.1.0
 django-filters==0.2.1
--e git+https://github.com/macornwell/django-geo-db@6275be41656a6ba5ad910fc98ac13858ce044ef3#egg=django_geo_db
+-e git+https://github.com/macornwell/django-geo-db#egg=django_geo_db
 django-jsonfield==1.0.1
 django-rest-auth==0.9.3
 django-rest-swagger==2.1.2
