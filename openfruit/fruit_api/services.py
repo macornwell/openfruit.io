@@ -203,7 +203,8 @@ class FruitAPIService:
             LEFT JOIN django_geo_db_locationmap as map on location.location_id = map.location_id 
             LEFT JOIN django_geo_db_locationmaptype as map_type on map.type_id = map_type.location_map_type_id
             """
-            query_where += "AND map_type.type = 'simple' "
+            query_where = "WHERE map_type.type = 'simple' AND " + query_where[len("WHERE "):]
+            #query_where += "AND map_type.type = 'simple' "
 
             query_group_bys += """
             map.location_map_id,
