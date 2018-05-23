@@ -3,12 +3,13 @@ import csv
 from django.db.models import Q
 from openfruit.settings import BASE_DIR
 from openfruit.taxonomy.models import Species, Genus, Cultivar, FruitingPlant
-from django_geo_db.models import GeoCoordinate
 from django_geo_db.utilities import BoundingBox, LatLon, GeoResolutionAlgorithm
 
 
-
 class TaxonomyDAL:
+    """
+    The taxonomy data access layer.
+    """
 
     def get_all_species_with_cultivars(self):
         species_id_list = Cultivar.objects.order_by('species').values('species_id').distinct()
@@ -39,7 +40,6 @@ class TaxonomyDAL:
         if species:
             objects.filter(species=species)
         return objects
-
 
     def get_all_species_with_fruiting_plants(self):
         speciesUsed = FruitingPlant.objects.order_by('species').values('species').distinct()
@@ -181,12 +181,6 @@ class TaxonomyDAL:
 
     def get_species_with_google_maps_images(self):
         return Species.objects.filter(Q(google_maps_image_url__isnull=False) & ~Q(google_maps_image_url=''))
-
-
-
-
-
-
 
 
 TAXONOMY_DAL = TaxonomyDAL()

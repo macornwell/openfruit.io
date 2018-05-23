@@ -1,15 +1,67 @@
 from django.db import connection
-from openfruit.taxonomy.models import RIPENING_MONTH_CHOICES, RIPENING_MODIFIER, FruitUsageType
+from openfruit.taxonomy.models import RIPENING_MONTH_CHOICES, RIPENING_MODIFIER
+
 
 class FruitAPIService:
+    """
+    Provides services for the Fruit API
+
+    Cultivar Data Structure
+    {
+        'cultivar_id': 0,
+        'name': 'Red Delicious',
+        'generated_name': 'Red Delicious (Apple)',
+        'ripens_early_mod': 'Early',
+        'ripens_late_mod': 'Late',
+        'ripens_early': 9,
+        'ripens_late': 10,
+        'latin_name': 'Malus domestica',
+        'origin_year': 1980,
+        'brief_description': 'A brief description',
+        'chromosome_count': 3,
+        'uses': [
+            'Drying',
+            'Fresh Eating',
+            'Preserves',
+        ],
+        'location': {
+            'country': 'United States',
+            'state': 'Virginia',
+            'county': 'Montgomery County',
+            'city': 'Blacksburg',
+            'zipcode': 24060,
+            'region': None,
+            'geocoordinate': 30.123 -90.1234,
+            'map_file_url': 'http://xyz.com',
+        },
+        'resistances': {
+            'Cedar Apple Rust',
+        }
+
+    }
+    """
 
     def full_cultivar_query(self, species_name, cultivar_name, addons=None, review_types=None, review_metrics=None):
+        """
+        Queries for a single cultivar.
+        :param species_name: The species name.
+        :param cultivar_name:  The cultivar name.
+        :param addons: Array with the desired results. ['location','review','resistances']
+        :param review_types: Array with the desired review types. ['sweet','sour','firm','bitter','juicy','rating']
+        :param review_metrics: Array with desired metric types. ['avg','max','min']
+        :return: A single cultivar result. See above.
+        """
         return self.full_cultivar_query_many([(species_name, cultivar_name)], addons=addons,
                                              review_types=review_types, review_metrics=review_metrics)[0]
 
     def full_cultivar_query_many(self, species_and_cultivar_list, addons=None, review_types=None, review_metrics=None):
         """
-        Queries a cultivar fully for all relevant information.
+        Queries for many cultivars.
+        :param species_and_cultivar_list: Tuple pairs inside a list. ('Malus domestica', 'Red Delicious')
+        :param addons: Array with the desired results. ['location','review','resistances']
+        :param review_types: Array with the desired review types. ['sweet','sour','firm','bitter','juicy','rating']
+        :param review_metrics: Array with desired metric types. ['avg','max','min']
+        :return: Multiple cultivar results. See above.
         """
 
         def get_params():
@@ -32,6 +84,18 @@ class FruitAPIService:
 
     def full_cultivar_query_geo(self, country, region=None, state=None, city=None, county=None,
                                 species=None, addons=None, review_types=None, review_metrics=None):
+        """
+        Queries for many cultivars inside of a geographic space.
+        :param country: The country where the cultivar originates.
+        :param region: The region where the cultivar originates.
+        :param state: The state where the cultivar originates.
+        :param county: The county where the cultivar originates.
+        :param species: The species of plant.
+        :param addons: Array with the desired results. ['location','review','resistances']
+        :param review_types: Array with the desired review types. ['sweet','sour','firm','bitter','juicy','rating']
+        :param review_metrics: Array with desired metric types. ['avg','max','min']
+        :return: Multiple cultivar results. See above.
+        """
         def get_params():
             value_list = []
             value_list.append(country.name)
@@ -204,7 +268,6 @@ class FruitAPIService:
             LEFT JOIN django_geo_db_locationmaptype as map_type on map.type_id = map_type.location_map_type_id
             """
             query_where = "WHERE map_type.type = 'simple' AND (" + query_where[len("WHERE "):] + ")"
-            #query_where += "AND map_type.type = 'simple' "
 
             query_group_bys += """
             map.location_map_id,
@@ -285,7 +348,6 @@ class FruitAPIService:
             final_result.append(data)
         return final_result
 
-
     def __parse_resistances(self, result):
         resistances = []
         if result['fireblight_resistance']:
@@ -293,7 +355,6 @@ class FruitAPIService:
         if result['car_resistance']:
             resistances.append('Cedar Apple Rust')
         return resistances
-
 
     def __parse_uses(self, result):
         uses = []
@@ -389,5 +450,6 @@ class FruitAPIService:
             return float(value)
         else:
             return None
+
 
 FRUIT_API_SERVICE = FruitAPIService()

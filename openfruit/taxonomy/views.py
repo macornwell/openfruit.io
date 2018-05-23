@@ -3,17 +3,16 @@ from django.conf import settings
 from django.db.models import Q
 from django.shortcuts import render, Http404, HttpResponseRedirect, HttpResponse, reverse, get_object_or_404, redirect
 from django.http import HttpResponseServerError
-from django.views.generic import View, ListView, DetailView, CreateView
+from django.views.generic import View, ListView, DetailView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from rest_framework.decorators import api_view, APIView, permission_classes
+from rest_framework.decorators import APIView, permission_classes
 from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import status
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.exceptions import ParseError
-from rest_framework_jwt.views import obtain_jwt_token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.settings import api_settings
 
@@ -44,7 +43,6 @@ class TaxonomyRestAPIMixin:
         if not cultivar:
             raise ParseError('Error: cultivar')
         return species, cultivar
-
 
 
 @permission_classes((IsAuthenticated,))
@@ -523,7 +521,6 @@ class SpeciesListView(ListAPIView):
         if limit:
             queryset = queryset[:int(limit)]
         return queryset
-
 
 
 class CultivarListView(ListAPIView):

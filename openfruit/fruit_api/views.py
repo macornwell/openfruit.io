@@ -11,7 +11,6 @@ from openfruit.taxonomy.models import Species
 from openfruit.fruit_api.services import FRUIT_API_SERVICE
 
 
-
 class CultivarQuery(APIView, EasyRestMixin, TaxonomyRestAPIMixin):
     """
     Queries for full information on cultivars.
@@ -32,7 +31,6 @@ class CultivarQuery(APIView, EasyRestMixin, TaxonomyRestAPIMixin):
     &review_types=[sweet,sour,firm,bitter,juicy,rating]
     &review_metrics=[avg,max,min]
     """
-
 
     def get(self, request):
         print(len(connection.queries))
@@ -61,7 +59,6 @@ class CultivarQuery(APIView, EasyRestMixin, TaxonomyRestAPIMixin):
         if 'location' in addons:
             self.__process_location_maps(request, [result,])
         return result
-
 
     def __handle_many(self, request):
         species_and_cultivars = []
