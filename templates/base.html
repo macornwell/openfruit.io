@@ -65,17 +65,20 @@
                        href="{% url 'home' %}">
                     <i class="fa fa-home" aria-hidden="true"></i></a>
                 </li>
+                {% comment %}
                 <li><a data-toggle="tooltip" title="Browse" class=" btn btn-default btn-lg nav-btn" href="{% url 'browse' %}">
                     <i class="fa fa-book" aria-hidden="true"></i></a>
                 </li>
+                {% endcomment %}
                 <li><a data-toggle="tooltip" title="Search" class="btn btn-default btn-lg nav-btn"
-                       href="{% url 'fruit-search' %}"
-                >
+                       href="{% url 'fruit-search' %}">
                     <i class="fa fa-search" aria-hidden="true"></i></a>
                 </li>
+                {% comment %}
                 <li><a data-toggle="tooltip" title="This fruit tastes like..." class=" btn btn-default btn-lg nav-btn">
                     <i class="fa fa-star" aria-hidden="true"></i></a>
                 </li>
+                {% endcomment %}
                 <li role="presentation" class="dropdown">
                     <a class="dropdown-toggle btn btn-default btn-lg nav-btn" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-bars" aria-hidden="true">
