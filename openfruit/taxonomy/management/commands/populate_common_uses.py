@@ -6,6 +6,9 @@ class Command(BaseCommand):
     help = "Creates all of the default Fruit Uses."
 
     def handle(self, *args, **options):
+        self.populate()
+
+    def populate(self):
         for use in COMMON_USES:
             obj, made = FruitUsageType.objects.get_or_create(type=use)
             if made:

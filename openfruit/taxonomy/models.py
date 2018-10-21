@@ -3,8 +3,8 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from colorful.fields import RGBColorField
 from sorl.thumbnail.fields import ImageField
-from openfruit.common.models import IntegerRangeField
 from django_geo_db.models import Location, GeoCoordinate
+from openfruit.common.models import IntegerRangeField
 from openfruit.taxonomy.managers import GenusManager, KingdomManager, SpeciesManager, CultivarManager, FruitingPlantManager
 from openfruit.taxonomy.mixins import UrlNameMixin
 

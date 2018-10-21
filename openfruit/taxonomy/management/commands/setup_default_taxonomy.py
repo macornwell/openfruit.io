@@ -8,6 +8,9 @@ class Command(BaseCommand):
     help = "Creates all of the default taxonomy objects."
 
     def handle(self, *args, **options):
+        self.populate()
+
+    def populate(self):
         print('Looking at Kingdoms')
         commonName, latinName = PLANT_KINGDOM_NAMES
         plantKingdom, created = Kingdom.objects.get_or_create(name=commonName, latin_name=latinName)

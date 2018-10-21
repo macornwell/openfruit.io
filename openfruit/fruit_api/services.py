@@ -51,8 +51,11 @@ class FruitAPIService:
         :param review_metrics: Array with desired metric types. ['avg','max','min']
         :return: A single cultivar result. See above.
         """
-        return self.full_cultivar_query_many([(species_name, cultivar_name)], addons=addons,
-                                             review_types=review_types, review_metrics=review_metrics)[0]
+        as_list = self.full_cultivar_query_many([(species_name, cultivar_name)], addons=addons,
+                                             review_types=review_types, review_metrics=review_metrics)
+        if len(as_list):
+            return as_list[0]
+        return None
 
     def full_cultivar_query_many(self, species_and_cultivar_list, addons=None, review_types=None, review_metrics=None):
         """

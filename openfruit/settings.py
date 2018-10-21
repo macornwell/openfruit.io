@@ -135,6 +135,7 @@ DATABASES['default'] = dj_database_url.config(default=default)
 dbUsername = os.environ.get('OPENFRUIT_DB_USERNAME', '')
 dbPassword = os.environ.get('OPENFRUIT_DB_PASSWORD', '')
 dbHost = os.environ.get('OPENFRUIT_DB_HOST', '')
+dbName = os.environ.get('OPENFRUIT_DB_NAME', 'openfruit')
 
 if dbHost:
     DATABASES['default'] = {
@@ -143,7 +144,7 @@ if dbHost:
         'PASSWORD': dbPassword,
         'PORT': '3306',
         'HOST': dbHost,
-        'NAME': 'openfruit'
+        'NAME': dbName,
     }
 
 
