@@ -112,7 +112,7 @@ class SpeciesListView(generics.ListAPIView):
         generated_name = self.request.query_params.get('generated_name', None)
         if generated_name:
             queryset = queryset.filter(generated_name__icontains=generated_name)
-        limit = self.request.query_params.get('limit', 10)
+        limit = self.request.query_params.get('limit', None)
         if limit:
             queryset = queryset[:int(limit)]
         return queryset
