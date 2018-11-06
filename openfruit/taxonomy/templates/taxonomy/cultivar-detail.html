@@ -7,9 +7,9 @@
 
 {% block breadcrumb %}
     <li><a href="{% url 'browse' %}">Browse</a></li>
-    <li><a href="{% url 'genus-list' kingdom=kingdom.latin_name %}">{{ kingdom.latin_name }}</a></li>
-    <li><a href="{% url 'genus-detail' kingdom=kingdom.latin_name genus=genus.latin_name %}">{{ genus.latin_name }}</a></li>
-    <li><a href="{% url 'species-detail' kingdom=kingdom.latin_name genus=genus.latin_name species=species.latin_name %}">{{ species.latin_name }}</a></li>
+    <li><a href="{% url 'browse-genus-list' kingdom=kingdom.latin_name %}">{{ kingdom.latin_name }}</a></li>
+    <li><a href="{% url 'browse-genus-detail' kingdom=kingdom.latin_name genus=genus.latin_name %}">{{ genus.latin_name }}</a></li>
+    <li><a href="{% url 'browse-species-detail' kingdom=kingdom.latin_name genus=genus.latin_name species=species.latin_name %}">{{ species.latin_name }}</a></li>
     <li class="active">{{ cultivar.name }}</li>
 {% endblock %}
 {% block body %}

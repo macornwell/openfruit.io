@@ -41,7 +41,7 @@
         {% for genus in object_list %}
             <p class="group-item" >
                 {% if not genus_to_species_count|get_item:genus.genus_id %}
-                    <a class="btn btn-default btn-lg btn-block list-group-item" href="{% url 'genus-detail' kingdom=kingdom.url_latin_name genus=genus.url_latin_name %}">
+                    <a class="btn btn-default btn-lg btn-block list-group-item" href="{% url 'browse-genus-detail' kingdom=kingdom.url_latin_name genus=genus.url_latin_name %}">
                         {% if genus.featured_image %}
                             {% thumbnail genus.featured_image "50x50" crop="center" as im %}
                                 <img class="list-thumbnail" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">

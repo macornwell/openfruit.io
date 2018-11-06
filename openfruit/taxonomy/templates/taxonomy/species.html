@@ -4,8 +4,8 @@
 {% block title %}OpenFruit - {% if is_add %}Add{% else%}Edit{% endif %} Species{% endblock %}
 
 {% block breadcrumb %}
-    <li><a href="{% url 'genus-list' kingdom='plantae' %}">Plantae</a></li>
-    <li><a href="{% url 'genus-detail' kingdom=kingdom.latin_name genus=genus.latin_name %}">{{ genus.latin_name }}</a></li>
+    <li><a href="{% url 'browse-genus-list' kingdom='plantae' %}">Plantae</a></li>
+    <li><a href="{% url 'browse-genus-detail' kingdom=kingdom.latin_name genus=genus.latin_name %}">{{ genus.latin_name }}</a></li>
     <li class="active">{% if is_add %}Add{% else %}Edit{% endif %} Species</li>
 {% endblock %}
 {% block body %}

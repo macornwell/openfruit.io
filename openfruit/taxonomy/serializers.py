@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from openfruit.taxonomy.models import FruitingPlant, Species, Cultivar, FruitUsageType
+from openfruit.taxonomy.models import FruitingPlant, Species, Cultivar, FruitUsageType, Genus
 
 
 class FruitingPlantSerializer(serializers.ModelSerializer):
@@ -31,10 +31,16 @@ class FruitingPlantSerializer(serializers.ModelSerializer):
         fields = ('fruiting_plant_id', 'cultivar', 'cultivar_name', 'cultivar_id', 'species_id', 'species', 'species_name', 'date_planted', 'coordinate', 'created_by', 'created_by_name', 'date_died', 'details_url')
 
 
+class GenusSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Genus
+        fields = ('genus_id', 'kingdom_id', 'name', 'latin_name', 'generated_name')
+
+
 class SpeciesSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Species
-        fields = ('species_id', 'name', 'latin_name', 'generated_name')
+        fields = ('species_id', 'genus_id', 'name', 'latin_name', 'generated_name')
 
 
 class CultivarSerializer(serializers.HyperlinkedModelSerializer):
@@ -103,7 +109,7 @@ class CultivarSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Cultivar
-        fields = ('cultivar_id', 'name', 'species', 'species_latin', 'generated_name', 'origin_location',
+        fields = ('cultivar_id', 'name', 'species_id', 'species', 'species_latin', 'generated_name', 'origin_location',
                   'origin_year', 'uses', 'chromosome_count', 'ripens_early', 'ripens_late', 'brief_description')
 
 

@@ -4,7 +4,7 @@
 {% block title %}OpenFruit - {% if is_add %}Add{% else%}Edit{% endif %} Genus{% endblock %}
 
 {% block breadcrumb %}
-    <li><a href="{% url 'genus-list' kingdom='plantae' %}">Plantae</a></li>
+    <li><a href="{% url 'browse-genus-list' kingdom='plantae' %}">Plantae</a></li>
     <li class="active">{% if is_add %}Add{% else %}Edit{% endif %} Genus</li>
 {% endblock %}
 {% block body %}

@@ -7,7 +7,7 @@
 
 {% block breadcrumb %}
     <li><a href="{% url 'browse' %}">Browse</a></li>
-    <li><a href="{% url 'genus-list' kingdom=kingdom.url_latin_name %}">{{ kingdom.latin_name }}</a></li>
+    <li><a href="{% url 'browse-genus-list' kingdom=kingdom.url_latin_name %}">{{ kingdom.latin_name }}</a></li>
     <li class="active">{{ genus.latin_name }}</li>
 {% endblock %}
 {% block body %}
@@ -28,7 +28,7 @@
     <div>
         {% for species in species_list %}
             <p class="group-item" >
-                <a class="btn btn-default btn-lg btn-block list-group-item" href="{% url 'species-detail' kingdom=kingdom.url_latin_name genus=genus.url_latin_name species=species.url_latin_name %}">
+                <a class="btn btn-default btn-lg btn-block list-group-item" href="{% url 'browse-species-detail' kingdom=kingdom.url_latin_name genus=genus.url_latin_name species=species.url_latin_name %}">
                 {% if species.featured_image %}
                     {% thumbnail species.featured_image "50x50" crop="center" as im %}
                         <img class="list-thumbnail" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
